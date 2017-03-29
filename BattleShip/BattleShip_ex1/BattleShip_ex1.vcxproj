@@ -88,6 +88,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -101,6 +103,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,13 +147,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ex1\ArgParser.h" />
+    <ClInclude Include="..\..\ex1\GameBoard.h" />
+    <ClInclude Include="..\..\ex1\GameMaker.h" />
     <ClInclude Include="..\..\ex1\ISubmarinesGameAlgo.h" />
-    <ClInclude Include="..\..\ex1\MyGameAlgo.h" />
+    <ClInclude Include="..\..\ex1\Player.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\ex1\ArgParser.cpp" />
-    <ClCompile Include="..\..\ex1\MyGameAlgo.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\..\ex1\GameBoard.cpp" />
+    <ClCompile Include="..\..\ex1\GameMaker.cpp" />
+    <ClCompile Include="..\..\ex1\main.cpp" />
+    <ClCompile Include="..\..\ex1\Player.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

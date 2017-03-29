@@ -9,7 +9,7 @@ enum class AttackResult {
 class ISubmarinesGameAlgo {
 public:
 	virtual ~ISubmarinesGameAlgo() = default;
-	virtual void setBoard(const char** board, int numRows, int numCols); // called once to notify player on his board
-	virtual std::pair<int, int> attack(); // ask player for his move
-	virtual void notifyOnAttackResult(int player, int row, int col, AttackResult result); // notify on last move result
+	virtual void setBoard(const char** board, int numRows, int numCols) = 0; // called once to notify player on his board
+	virtual std::pair<int, int> attack() = 0; // ask player for his move
+	virtual void notifyOnAttackResult(int player, int row, int col, AttackResult result) = 0; // notify on last move result
 };

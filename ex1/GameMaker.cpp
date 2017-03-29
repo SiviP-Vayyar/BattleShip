@@ -25,6 +25,33 @@ GameMaker::GameMaker(int argc, char* argv[])
 
 }
 
+GameMaker::~GameMaker()
+{
+}
+
+GameMaker& GameMaker::operator=(const GameMaker& otheBoard)
+{
+	return *this; //TODO: implement
+}
+
+void GameMaker::RunGame()
+{
+}
+
+void GameMaker::SetConfiguration()
+{
+}
+
+bool GameMaker::ValidateInput(const std::string& path)
+{
+	return false; //TODO: implement
+}
+
+bool GameMaker::ValidateBoards()
+{
+	return false; //TODO: implement
+}
+
 bool ValidateInput(const std::string& path)
 {
 	bool misBoard, misFileA, misFileB;

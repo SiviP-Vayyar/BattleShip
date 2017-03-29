@@ -19,11 +19,11 @@ public:
 	void notifyOnAttackResult(int player, int row, int col, AttackResult result) override;
 
 	/*Hard coded algorithm*/
-	void SetMoves(const std::vector<int, int>& moves) { _myMoves = moves; }
+	void SetMoves(const std::vector<std::pair<int, int>>& moves) { _myMoves = moves; }
 
 
 private:
 	GameBoard _myBoard;
 	GameBoard _opponentBoard;
-	std::vector<int, int> _myMoves;
+	std::vector<std::pair<int,int>> _myMoves;
 };
