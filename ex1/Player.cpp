@@ -1,7 +1,7 @@
 #include "Player.h"
 
 
-Player::Player()
+Player::Player() //Zohar
 {
 	_myBoard = GameBoard();
 	_opponentBoard = GameBoard();

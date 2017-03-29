@@ -1,8 +1,6 @@
-#pragma once
-
 #include "ArgParser.h"
 
-ArgParser::ArgParser()
+ArgParser::ArgParser() //Zohar
 {
 }
 

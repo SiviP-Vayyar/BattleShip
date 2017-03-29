@@ -4,24 +4,24 @@ GameMaker::GameMaker(int argc, char* argv[])
 {
 	/*Build parse arguments*/
 	_parser = ArgParser();
-	_parser.AddArgument("--folder...", "");
+	_parser.AddArgument("--folder...dsfsdfa", "");
 	_parser.AddArgument("--help", "false");
 	//parser.AddArgument("", "");
 
 	/*Parse command line arguments*/
 	_parser.Parse(argc, argv);
-
+	
 	/*Set input arguments*/
-
+	//Zohar
 
 	/*Init players (algorithms)*/
-
+	//Noam
 	
 	/*Set boards for both players*/
-
+	//Sivan
 	
 	/*Set algorithm moves for both players*/
-
+	//Sivan
 
 }
 
@@ -42,17 +42,7 @@ void GameMaker::SetConfiguration()
 {
 }
 
-bool GameMaker::ValidateInput(const std::string& path)
-{
-	return false; //TODO: implement
-}
-
-bool GameMaker::ValidateBoards()
-{
-	return false; //TODO: implement
-}
-
-bool ValidateInput(const std::string& path)
+bool GameMaker::ValidateInput(const std::string& path) //Noam
 {
 	bool misBoard, misFileA, misFileB;
 	misBoard = misFileA = misFileB = false;
@@ -82,7 +72,7 @@ bool ValidateInput(const std::string& path)
 	return true;
 }
 
-bool ValidateBoards()
+bool GameMaker::ValidateBoards() //Noam
 {
 	bool fewA, fewB, manyA, manyB, adjacent;
 	fewA = fewB = manyA = manyB = adjacent = false;
