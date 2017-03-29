@@ -1,4 +1,3 @@
-#pragma once
 #include "GameBoard.h"
 
 GameBoard::GameBoard()
@@ -21,7 +20,6 @@ void GameBoard::setBoard(const char** board, int numRows, int numCols)
 	_rows = numRows;
 	_cols = numCols;
 	_isSet = true;
-
 	_board = new char*[numRows];
 
 	for(int i = 0; i < _rows; i++)

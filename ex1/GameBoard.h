@@ -14,11 +14,10 @@ public:
 
 	/*Using 1-based matrix call on vector*/
 	char& operator()(int row, int col);
-
+	
 private:
 	char** _board;
 	int _rows;
 	int _cols;
 	bool _isSet;
-
 };

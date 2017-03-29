@@ -7,6 +7,7 @@ class GameMaker
 public:
 	GameMaker(int argc, char* argv[]);
 	~GameMaker();
+	//TODO: copy constructor
 
 	GameMaker& operator=(const GameMaker& otheBoard); //TODO: take exact syntax from presentation and implement
 
