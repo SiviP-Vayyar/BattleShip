@@ -9,6 +9,7 @@ public:
 
 	void AddArgument(std::string name, std::string defaultValue);
 	void Parse(int argc, char* argv[]);
+	void PrintHelp();
 	
 	std::string GetArgument(std::string name);
 
