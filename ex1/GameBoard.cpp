@@ -1,10 +1,5 @@
 #include "GameBoard.h"
 
-GameBoard::GameBoard()
-{
-	
-}
-
 GameBoard::~GameBoard()
 {
 	for(int i = 0; i < _rows; i++)
@@ -36,7 +31,14 @@ void GameBoard::setBoard(const char** board, int numRows, int numCols)
 	}
 }
 
-char& GameBoard::operator()(int row, int col)
+const char** GameBoard::getBoard()
+{
+	//todo: Having trouble with const char**
+	const char** a;
+	return a;
+}
+
+char& GameBoard::operator()(int row, int col) const
 {
 	return _board[row - 1][col - 1];
 }

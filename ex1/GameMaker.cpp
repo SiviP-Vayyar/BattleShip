@@ -1,55 +1,53 @@
 #include "GameMaker.h"
+#include "GameException.h"
 #include <iostream>
+
 
 GameMaker::GameMaker(int argc, char* argv[])
 {
-	/*Build parse arguments*/
-	_parser = ArgParser();
-	_parser.AddArgument("--folder...dsfsdfa", "");
-	_parser.AddArgument("--help", "false");
-	//parser.AddArgument("", "");
+	/*Validate input & Set input arguments*/
+	std::string inputPath;
+	if(!ParseInput(argc, argv, inputPath))
+	{
+		throw GameException("");
+	}
 
-	/*Parse command line arguments*/
-	_parser.Parse(argc, argv);
+	/*Validate Boards*/
+	if(!ValidateBoards())
+	{
+		throw GameException("");
+	}
 	
-	/*Set input arguments*/
-	//Zohar
-
 	/*Init players (algorithms)*/
-	//Noam
+	_playerA = Player();
+	_playerB = Player();
 	
 	/*Set boards for both players*/
-	//Sivan
+	_playerA.setBoard(_boardA.getBoard(), _boardA.rows(), _boardA.cols());
+	_playerB.setBoard(_boardB.getBoard(), _boardB.rows(), _boardB.cols());
 	
 	/*Set algorithm moves for both players*/
-	//Sivan
-
+	_playerA.SetMoves(getMovesFromFile(_attackFilePathA));
+	_playerB.SetMoves(getMovesFromFile(_attackFilePathB));
 }
 
 GameMaker::~GameMaker()
 {
 }
 
-GameMaker& GameMaker::operator=(const GameMaker& otheBoard)
+void GameMaker::RunGame() //ZOHAR
 {
-	return *this; //TODO: implement
+	//TODO: implement 
 }
 
-void GameMaker::RunGame()
-{
-}
-
-void GameMaker::SetConfiguration()
-{
-}
-
-bool GameMaker::ValidateInput(const std::string& path)
+/*Validate input, parse it, and set all needed local variables*/
+bool GameMaker::ParseInput(int argc, char* argv[], std::string& path) //NOAM
 {
 	bool badPath, misBoard, misFileA, misFileB;
 	badPath = misBoard = misFileA = misFileB = false;
 
 	/*Validate input by an exact order*/
-	// TODO: calculate booleans NOAM
+	// TODO: calculate booleans
 	// Path don't exist / bad format
 	// Missing board file
 	// Missing attack file for player A
@@ -77,6 +75,15 @@ bool GameMaker::ValidateInput(const std::string& path)
 		}
 		return false;
 	}
+
+	//TODO: set local variables
+	/*
+	* 	std::string _inputFolder;
+	*std::string _boardFilePath;
+	*std::string _attackFilePathA;
+	*std::string _attackFilePathB;
+	*/
+
 	return true;
 }
 
@@ -86,11 +93,13 @@ bool GameMaker::ValidateBoards() //Noam
 	fewA = fewB = manyA = manyB = adjacent = false;
 
 	/*Validate input by an exact order*/
+	//use local variables to read files - if we get here we can assume the files are there.
 	//Too many ships for player A
 	//Too few ships for player A
 	//Too many ships for player B
 	//Too few ships for player B
 	//Adjacent Ships on Board
+
 
 	if(fewA || fewB || manyA || manyB || adjacent)
 	{
@@ -117,5 +126,15 @@ bool GameMaker::ValidateBoards() //Noam
 		}
 		return false;
 	}
+
+
+	//TODO: Set local boards
+
 	return true;
+}
+
+std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(const std::string& cs) //NOAM
+{
+	//TODO: implement
+	return std::vector<std::pair<int, int>>();
 }

@@ -1,19 +1,19 @@
 #pragma once
-#include <vector>
 
 class GameBoard
 {
 public:
-	GameBoard();
+	GameBoard() : _board(nullptr), _rows(0), _cols(0), _isSet(false){}
 	~GameBoard();
 
 	void setBoard(const char** board, int numRows, int numCols);
-	int rows() { return _rows; }
-	int cols() { return _cols; }
-	bool isSet() { return _isSet; }
+	int rows() const { return _rows; }
+	int cols() const { return _cols; }
+	bool isSet() const { return _isSet; }
+	const char** getBoard();
 
 	/*Using 1-based matrix call on vector*/
-	char& operator()(int row, int col);
+	char& operator()(int row, int col) const;
 	
 private:
 	char** _board;

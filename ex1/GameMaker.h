@@ -1,10 +1,11 @@
 #pragma once
-#include "ArgParser.h"
+
 #include "Player.h"
 
 class GameMaker
 {
 public:
+	std::vector<std::pair<int, int>> getMovesFromFile(const std::string& cs);
 	GameMaker(int argc, char* argv[]);
 	~GameMaker();
 	//TODO: copy constructor
@@ -15,13 +16,16 @@ public:
 
 
 private:
-	ArgParser _parser;
 	Player _playerA;
 	Player _playerB;
 	GameBoard _boardA;
 	GameBoard _boardB;
 
-	void SetConfiguration();
-	bool ValidateInput(const std::string& path);
+	std::string _inputFolder;
+	std::string _boardFilePath;
+	std::string _attackFilePathA;
+	std::string _attackFilePathB;
+
+	bool ParseInput(int argc, char* argv[], std::string& path);
 	bool ValidateBoards();
 };
