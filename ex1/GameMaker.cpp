@@ -133,7 +133,7 @@ bool GameMaker::ValidateBoards() //Noam
 	return true;
 }
 
-std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(const std::string& cs) //NOAM
+std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(const std::string& movesFilePath) //NOAM
 {
 	//TODO: implement
 	return std::vector<std::pair<int, int>>();

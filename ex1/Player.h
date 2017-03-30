@@ -30,7 +30,7 @@ public:
 	void notifyOnAttackResult(int player, int row, int col, AttackResult result) override;
 
 	/*Hard coded algorithm*/
-	void SetMoves(std::vector<std::pair<int, int>>& moves);
+	void SetMoves(std::vector<std::pair<int, int>> moves);
 
 
 private:
@@ -40,6 +40,6 @@ private:
 	std::vector<std::pair<int,int>> _myMoves;
 	std::vector<std::pair<int, int>>::iterator _movesIterator;
 
-	char attackResultToChar(AttackResult result);
+	char attackResultToChar(AttackResult result) const;
 	void updateOpponentBoardAfterAttack(int row, int col, char attackChar);
 };

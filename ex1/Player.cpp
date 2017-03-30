@@ -1,7 +1,7 @@
 #include "Player.h"
 
 
-Player::Player() //Zohar
+Player::Player()
 {
 	_myBoard = GameBoard();
 	_opponentBoard = GameBoard();
@@ -12,7 +12,7 @@ void Player::setBoard(const char** board, int numRows, int numCols)
 	_myBoard.setBoard(board, numRows, numCols);
 }
 
-void Player::SetMoves(std::vector<std::pair<int, int>>& moves)
+void Player::SetMoves(std::vector<std::pair<int, int>> moves)
 {
 	_myMoves = moves;
 	_movesIterator = moves.begin();
