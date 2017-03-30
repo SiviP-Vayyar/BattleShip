@@ -1,4 +1,5 @@
 #include "GameMaker.h"
+#include <iostream>
 
 GameMaker::GameMaker(int argc, char* argv[])
 {
@@ -42,30 +43,37 @@ void GameMaker::SetConfiguration()
 {
 }
 
-bool GameMaker::ValidateInput(const std::string& path) //Noam
+bool GameMaker::ValidateInput(const std::string& path)
 {
-	bool misBoard, misFileA, misFileB;
-	misBoard = misFileA = misFileB = false;
+	bool badPath, misBoard, misFileA, misFileB;
+	badPath = misBoard = misFileA = misFileB = false;
 
 	/*Validate input by an exact order*/
+	// TODO: calculate booleans NOAM
+	// Path don't exist / bad format
 	// Missing board file
 	// Missing attack file for player A
 	// Missing attack file for player B
 
-	if(misBoard || misFileA || misFileB)
+	if(badPath || misBoard || misFileA || misFileB)
 	{
-		//print "Wrong Path: <path>"
+		std::cout << "Wrong path: " << path.c_str() << std::endl;
+		
+		if(badPath)
+		{
+			return false;
+		}
 		if(misBoard)
 		{
-			//print
+			std::cout << "Missing board file (*.sboard) looking in path: " << path.c_str() << std::endl;
 		}
 		if(misFileA)
 		{
-			//print
+			std::cout << "Missing attack file for player A (*.attack-a) looking in path: " << path.c_str() << std::endl;
 		}
 		if(misFileB)
 		{
-			//print
+			std::cout << "Missing attack file for player B (*.attack-b) looking in path: " << path.c_str() << std::endl;
 		}
 		return false;
 	}
