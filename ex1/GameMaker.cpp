@@ -35,9 +35,31 @@ GameMaker::~GameMaker()
 {
 }
 
+/*@pre: assume players and board were set and validated*/
 void GameMaker::RunGame() //ZOHAR
 {
-	//TODO: implement 
+	auto currentPlayerDef = PLAYER_A;
+	auto currentPlayer = &_playerA;
+	auto currentBoard = &_boardB;
+	while (true)
+	{
+		// get attack from player and play it on the board
+		auto attackPosition = currentPlayer->attack();
+		auto attackResult = currentBoard->attack(attackPosition);
+		int row = attackPosition.first, col = attackPosition.second;
+
+		// notify the players
+		_playerA.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+		_playerB.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+
+		// determine if the game is finished
+		// TODO
+
+		// switch players for next round
+		currentPlayerDef = currentPlayerDef == PLAYER_A ? PLAYER_B : PLAYER_A;
+		currentPlayer = currentPlayer == &_playerA ? &_playerB : &_playerA;
+		currentBoard = currentBoard == &_boardA ? &_boardB : &_boardA;
+	}
 }
 
 /*Validate input, parse it, and set all needed local variables*/

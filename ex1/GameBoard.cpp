@@ -38,6 +38,12 @@ const char** GameBoard::getBoard()
 	return a;
 }
 
+AttackResult GameBoard::attack(std::pair<int, int> attackPosition)
+{
+	// TODO: implement
+	return AttackResult();
+}
+
 char& GameBoard::operator()(int row, int col) const
 {
 	return _board[row - 1][col - 1];
