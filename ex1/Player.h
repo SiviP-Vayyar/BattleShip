@@ -3,6 +3,9 @@
 #include "ISubmarinesGameAlgo.h"
 #include <vector>
 
+#define PLAYER_A 0
+#define PLAYER_B 1
+
 class Player : public ISubmarinesGameAlgo
 {
 public:
@@ -23,6 +26,7 @@ public:
 
 
 private:
+	int _player; // figure out which player I am according to first attack()/notifyOnAttackResult() call
 	GameBoard _myBoard;
 	GameBoard _opponentBoard;
 	std::vector<std::pair<int,int>> _myMoves;
