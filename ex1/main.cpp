@@ -1,4 +1,5 @@
 #include "GameMaker.h"
+#include "GameException.h"
 #include <iostream>
 
 void print_error(const std::string& s)
@@ -13,9 +14,17 @@ int main(int argc, char* argv[])
 		GameMaker gameMaker = GameMaker(argc, argv);
 		gameMaker.RunGame();
 	}
-	catch (std::exception e)
+	catch (GameException ex)
 	{
-		print_error(e.what());
+		/*If a game exception was thrown,
+		 *the throwing method already printed the error msgs
+		 * all we need is to end the program
+		 */
+		return -1;
+	}
+	catch (std::exception ex)
+	{
+		print_error(ex.what());
 		return -1;
 	}
 	
