@@ -9,7 +9,7 @@ public:
 	~GameMaker();
 	//TODO: copy constructor
 
-	GameMaker& operator=(const GameMaker& otheBoard); //TODO: take exact syntax from presentation and implement
+	GameMaker& operator=(const GameMaker& otheBoard) = delete; // We intend to instantiate only once
 
 	void RunGame();
 
