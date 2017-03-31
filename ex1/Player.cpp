@@ -35,6 +35,7 @@ std::pair<int, int> Player::attack()
 	return ATTACK_END;
 }
 
+// TODO: make sure Player::notifyOnAttackResult can handle ATTACK_END
 void Player::notifyOnAttackResult(int player, int row, int col, AttackResult result)
 {
 	if(_player == PLAYER_NOT_YET_KNOWN)

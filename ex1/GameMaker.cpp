@@ -38,28 +38,55 @@ GameMaker::~GameMaker()
 /*@pre: assume players and board were set and validated*/
 void GameMaker::RunGame() //ZOHAR
 {
+	// counters and flags
+	int remainingShipsA = MAX_SHIPS, remainingShipsB = MAX_SHIPS;
+	bool movesRemainingA = true, movesRemainingB = true;
+
+	// alternating variables for game loop
 	auto currentPlayerDef = PLAYER_A;
 	auto currentPlayer = &_playerA;
-	auto currentBoard = &_boardB;
-	while (true)
+	auto currentPlayerMovesRemaining = &movesRemainingA;
+	auto opponentBoard = &_boardB;
+	auto opponentShipsCntr = &remainingShipsB;
+
+	// game loop
+	while (remainingShipsA > 0 && remainingShipsB > 0 && (movesRemainingA || movesRemainingB))
 	{
 		// get attack from player and play it on the board
 		auto attackPosition = currentPlayer->attack();
-		auto attackResult = currentBoard->attack(attackPosition);
+		*currentPlayerMovesRemaining = attackPosition != ATTACK_END;
+		auto attackResult = opponentBoard->attack(attackPosition);
 		int row = attackPosition.first, col = attackPosition.second;
 
 		// notify the players
+		// TODO: make sure Player::notifyOnAttackResult can handle ATTACK_END
 		_playerA.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 		_playerB.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 
-		// determine if the game is finished
-		// TODO
+		// upon hit player gets another turn
+		if (attackResult == AttackResult::Hit)
+			continue;
+		// upon sink player gets another turn + update ships counter
+		if (attackResult == AttackResult::Sink)
+		{
+			*opponentShipsCntr = *opponentShipsCntr - 1;
+			continue;
+		}
 
 		// switch players for next round
 		currentPlayerDef = currentPlayerDef == PLAYER_A ? PLAYER_B : PLAYER_A;
 		currentPlayer = currentPlayer == &_playerA ? &_playerB : &_playerA;
-		currentBoard = currentBoard == &_boardA ? &_boardB : &_boardA;
+		currentPlayerMovesRemaining = currentPlayerMovesRemaining == &movesRemainingA ? &movesRemainingB : &movesRemainingA;
+		opponentBoard = opponentBoard == &_boardA ? &_boardB : &_boardA;
+		opponentShipsCntr = opponentShipsCntr == &remainingShipsA ? &remainingShipsB : &remainingShipsA;
 	}
+
+	// print end game results
+	if (remainingShipsA == 0 || remainingShipsB == 0)
+		std::cout << "Player " << (remainingShipsA == 0 ? 'B' : 'A') << " won" << std::endl;
+	std::cout << "Points:" << std::endl;
+	std::cout << "Player A: " << _boardB.getScore() << std::endl;
+	std::cout << "Player B: " << _boardA.getScore() << std::endl;
 }
 
 /*Validate input, parse it, and set all needed local variables*/

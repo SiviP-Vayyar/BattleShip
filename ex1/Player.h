@@ -13,6 +13,7 @@
 #define HIT 'H'
 #define MISS 'M'
 #define SINK 'S'
+#define MAX_SHIPS 5
 
 class Player : public ISubmarinesGameAlgo
 {

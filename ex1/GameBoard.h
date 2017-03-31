@@ -14,6 +14,7 @@ public:
 	bool isSet() const { return _isSet; }
 	const char** getBoard();
 	AttackResult attack(std::pair<int, int> attackPosition);
+	int getScore();
 
 	/*Using 1-based matrix call on vector*/
 	char& operator()(int row, int col) const;

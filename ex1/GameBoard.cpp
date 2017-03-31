@@ -1,4 +1,5 @@
 #include "GameBoard.h"
+#include "Player.h"
 
 GameBoard::~GameBoard()
 {
@@ -38,10 +39,23 @@ const char** GameBoard::getBoard()
 	return a;
 }
 
+// TODO: make sure GameBoard::attack can handle ATTACK_END and return AttackResult::Miss
+/*update the board to reflect an attack, and notify on the result*/
 AttackResult GameBoard::attack(std::pair<int, int> attackPosition)
 {
+	// ignore ATTACK_END
+	if (attackPosition == ATTACK_END)
+		return AttackResult::Miss;
+
 	// TODO: implement
 	return AttackResult();
+}
+
+/*calculate how well the opponent scored on this board at the end of the game*/
+int GameBoard::getScore()
+{
+	// TODO: implemet
+	return 0;
 }
 
 char& GameBoard::operator()(int row, int col) const
