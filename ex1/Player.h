@@ -1,6 +1,6 @@
 #pragma once
 #include "GameBoard.h"
-#include "ISubmarinesGameAlgo.h"
+#include "IBattleshipGameAlgo.h"
 #include <vector>
 
 /*Player Macros*/
@@ -15,7 +15,7 @@
 #define SINK 'S'
 #define MAX_SHIPS 5
 
-class Player : public ISubmarinesGameAlgo
+class Player : public IBattleshipGameAlgo
 {
 public:
 	Player();

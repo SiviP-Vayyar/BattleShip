@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ISubmarinesGameAlgo.h"
+#include "IBattleshipGameAlgo.h"
 #include <cctype>
 #include "Player.h"
 

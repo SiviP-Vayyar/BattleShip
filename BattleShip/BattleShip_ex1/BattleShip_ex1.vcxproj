@@ -149,7 +149,7 @@
     <ClInclude Include="..\..\ex1\ArgParser.h" />
     <ClInclude Include="..\..\ex1\GameBoard.h" />
     <ClInclude Include="..\..\ex1\GameMaker.h" />
-    <ClInclude Include="..\..\ex1\ISubmarinesGameAlgo.h" />
+    <ClInclude Include="..\..\ex1\IBattleshipGameAlgo.h" />
     <ClInclude Include="..\..\ex1\Player.h" />
   </ItemGroup>
   <ItemGroup>

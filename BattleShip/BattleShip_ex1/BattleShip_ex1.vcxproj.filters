@@ -18,9 +18,6 @@
     <ClInclude Include="..\..\ex1\ArgParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\ex1\ISubmarinesGameAlgo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\ex1\GameMaker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -28,6 +25,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ex1\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ex1\IBattleshipGameAlgo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
