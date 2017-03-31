@@ -1,6 +1,30 @@
 #pragma once
 
 #include "ISubmarinesGameAlgo.h"
+#include <cctype>
+#include "Player.h"
+
+/*ship types definitions*/
+#define RUBBER		'B'
+#define MISSILE		'P'
+#define SUB			'M'
+#define DESTROYER	'D'
+
+/*ship attack definitions*/
+#define SHIP_HIT	'X'
+
+/*ship types score*/
+#define RUBBER_SCORE	2
+#define MISSILE_SCORE	3
+#define SUB_SCORE		7
+#define DESTROYER_SCORE	8
+
+/*ship types length*/
+#define RUBBER_LEN		1
+#define MISSILE_LEN		2
+#define SUB_LEN			3
+#define DESTROYER_LEN	4
+
 
 class GameBoard
 {
@@ -14,7 +38,13 @@ public:
 	bool isSet() const { return _isSet; }
 	const char** getBoard();
 	AttackResult attack(std::pair<int, int> attackPosition);
-	int getScore();
+	int getScore() const { return _score; } /*calculate how well the opponent scored on this board at the end of the game*/
+	inline bool isInBoard(int row, int col) const;
+	bool isShipSunk(int row, int col);
+
+	static int getShipScore(char piece);
+	static bool isShip(char piece);
+	static char playerShipType(int player, char typeDef) { return char(player == PLAYER_A ? toupper(typeDef) : tolower(typeDef)); }
 
 	/*Using 1-based matrix call on vector*/
 	char& operator()(int row, int col) const;
@@ -24,4 +54,5 @@ private:
 	int _rows;
 	int _cols;
 	bool _isSet;
+	int _score = 0;
 };
