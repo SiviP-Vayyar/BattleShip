@@ -32,7 +32,7 @@ void GameBoard::setBoard(const char** board, int numRows, int numCols)
 	}
 }
 
-const char** GameBoard::getBoard()
+const char** GameBoard::getBoard() //ZOHAR + SIVAN
 {
 	//todo: Having trouble with const char**
 	const char** a;

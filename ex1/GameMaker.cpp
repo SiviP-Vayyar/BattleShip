@@ -5,7 +5,7 @@
 #include <sstream>
 #include <windows.h>
 #include <tchar.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <strsafe.h>
 #include <winapifamily.h>
 
@@ -42,7 +42,7 @@ GameMaker::~GameMaker()
 }
 
 /*@pre: assume players and board were set and validated*/
-void GameMaker::RunGame() //ZOHAR
+void GameMaker::RunGame()
 {
 	// counters and flags
 	int remainingShipsA = MAX_SHIPS, remainingShipsB = MAX_SHIPS;
@@ -60,7 +60,7 @@ void GameMaker::RunGame() //ZOHAR
 	{
 		// get attack from player and play it on the board
 		auto attackPosition = currentPlayer->attack();
-		*currentPlayerMovesRemaining = attackPosition != ATTACK_END;
+		*currentPlayerMovesRemaining = (attackPosition != ATTACK_END); //TODO: need to address that situation - only other player continues attacking!
 		auto attackResult = opponentBoard->attack(attackPosition);
 		int row = attackPosition.first, col = attackPosition.second;
 
@@ -69,8 +69,10 @@ void GameMaker::RunGame() //ZOHAR
 		_playerB.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 
 		// upon hit player gets another turn
-		if (attackResult == AttackResult::Hit)
+		if(attackResult == AttackResult::Hit)
+		{
 			continue;
+		}
 		// upon sink player gets another turn + update ships counter
 		if (attackResult == AttackResult::Sink)
 		{
@@ -83,7 +85,7 @@ void GameMaker::RunGame() //ZOHAR
 		currentPlayer = currentPlayer == &_playerA ? &_playerB : &_playerA;
 		currentPlayerMovesRemaining = currentPlayerMovesRemaining == &movesRemainingA ? &movesRemainingB : &movesRemainingA;
 		opponentBoard = opponentBoard == &_boardA ? &_boardB : &_boardA;
-		opponentShipsCntr = opponentShipsCntr == &remainingShipsA ? &remainingShipsB : &remainingShipsA;
+		opponentShipsCntr = ((opponentShipsCntr == &remainingShipsA) ? &remainingShipsB : &remainingShipsA);
 	}
 
 	// print end game results
@@ -92,6 +94,7 @@ void GameMaker::RunGame() //ZOHAR
 	std::cout << "Points:" << std::endl;
 	std::cout << "Player A: " << _boardB.getScore() << std::endl;
 	std::cout << "Player B: " << _boardA.getScore() << std::endl;
+	//TODO: third print case: No win - print only scores.
 }
 
 /*chek if the path is a valid directory*/
@@ -100,11 +103,15 @@ bool isDirectory(const std::string& path)
 	DWORD ftyp = GetFileAttributesA(path.c_str());
 	
 	// test for invalid path
-	if (ftyp == INVALID_FILE_ATTRIBUTES)
+	if(ftyp == INVALID_FILE_ATTRIBUTES)
+	{
 		return false;
+	}
 	// test if path is a directory
-	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+	if(ftyp & FILE_ATTRIBUTE_DIRECTORY)
+	{
 		return true;
+	}
 
 	return false;
 }
@@ -112,25 +119,33 @@ bool isDirectory(const std::string& path)
 /*test if str ends with suffix*/
 inline bool endsWith(std::string const & str, std::string const & suffix)
 {
-	if (suffix.size() > str.size())
+	if(suffix.size() > str.size())
+	{
 		return false;
+	}
 
 	return std::equal(suffix.rbegin(), suffix.rend(), str.rbegin());
 }
 
 /*Validate input, parse it, and set all needed local variables*/
-bool GameMaker::ParseInput(int argc, char* argv[], std::string& path) //ZOHAR
+bool GameMaker::ParseInput(int argc, char* argv[], std::string& path)
 {
 	bool badPath, misBoard, misFileA, misFileB;
 	badPath = misBoard = misFileA = misFileB = true;
 
 	// set path according to argv
-	if (argc == 1)
+	if(argc == 1)
+	{
 		path = ".";
-	else if (argc == 2)
+	}
+	else if(argc == 2)
+	{
 		path = argv[1];
-	else
-		path = argv[1]; // TODO: how to handle too many args?
+	}
+	else //In case more that 1 argument was given - we choose to stop the program
+	{
+		throw GameException("Program takes only 1 argument!");
+	}
 
 	// iterate over files in path
 	if (isDirectory(path))
@@ -147,28 +162,31 @@ bool GameMaker::ParseInput(int argc, char* argv[], std::string& path) //ZOHAR
 		if (dir != INVALID_HANDLE_VALUE)
 		{
 			// test each file suffix and set variables as needed
-			do {
+			do
+			{
 				std::wstring wfileName = fileData.cFileName;
 				std::string fileName(wfileName.begin(), wfileName.end());
 				std::string fullFileName = path + "\\" + fileName;
 
-				// TODO: what if there are multiple possibilities? currently takes the last one
-				if (endsWith(fileName, ".sboard")) {
+				// In case there are multiple possibilities - we choose to take the last one
+				if (endsWith(fileName, ".sboard"))
+				{
 					_boardFilePath = fullFileName;
 					misBoard = false;
 				}
-				else if (endsWith(fileName, ".attack-a")) {
+				else if (endsWith(fileName, ".attack-a"))
+				{
 					_attackFilePathA = fullFileName;
 					misFileA = false;
 				}
-				else if (endsWith(fileName, ".attack-b")) {
+				else if (endsWith(fileName, ".attack-b"))
+				{
 					_attackFilePathB = fullFileName;
 					misFileB = false;
 				}
 
 			} while (FindNextFile(dir, &fileData));
 		}
-
 	}	
 
 	/*Validate input by an exact order*/
@@ -177,14 +195,21 @@ bool GameMaker::ParseInput(int argc, char* argv[], std::string& path) //ZOHAR
 		std::cout << "Wrong path: " << path.c_str() << std::endl;
 		
 		if(badPath)
+		{
 			return false;
+		}
 		if(misBoard)
+		{
 			std::cout << "Missing board file (*.sboard) looking in path: " << path.c_str() << std::endl;
+		}
 		if(misFileA)
+		{
 			std::cout << "Missing attack file for player A (*.attack-a) looking in path: " << path.c_str() << std::endl;
+		}
 		if(misFileB)
+		{
 			std::cout << "Missing attack file for player B (*.attack-b) looking in path: " << path.c_str() << std::endl;
-		
+		}
 		return false;
 	}
 
@@ -239,7 +264,7 @@ bool GameMaker::ValidateBoards() //Noam
 
 /*@pre: assume opponent's board was loaded and set. required for GameBoard::isInBoard method*/
 std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
-	const std::string& movesFilePath, const GameBoard& opponentBoard) const //ZOHAR
+	const std::string& movesFilePath, const GameBoard& opponentBoard) const
 {
 	std::vector<std::pair<int, int>> moves;
 	std::ifstream fin(movesFilePath);
@@ -247,8 +272,10 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 	int row, col;
 
 	// check if file failed to open
-	if (!fin)
+	if(!fin)
+	{
 		throw GameException("Failed to open file in path: " + movesFilePath);
+	}
 
 	// parse the file line by line
 	while (std::getline(fin, line))
@@ -259,27 +286,36 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 		try
 		{
 			// skip leading spaces
-			while (lineStream.peek() == ' ')
+			while (lineStream.peek() == ' ') //TODO: a line cannot start with spaces - change to illegal
 				lineStream.ignore();
 
 			// read first parameter
-			lineStream >> row;
+			lineStream >> row; //TODO: make sure can read any number - even 2 digits (maybe 3 even - is that a problem?)
+			//TODO: also make sure it is a digit and not a char with the value "7" or something 
 
 			// skip spaces and comma between parameters
-			while (lineStream.peek() == ' ')
+			while(lineStream.peek() == ' ')
+			{
 				lineStream.ignore();
-			if (lineStream.peek() != ',') // illegal line - skip
+			}
+			if(lineStream.peek() != ',') // illegal line - skip
+			{
 				continue;
+			}
 			lineStream.ignore();
-			while (lineStream.peek() == ' ')
+			while(lineStream.peek() == ' ')
+			{
 				lineStream.ignore();
+			}
 
 			// read second parameter
-			lineStream >> col;
+			lineStream >> col; //TODO: same goes here - maybe do it in isInBoard() ?
 
 			// verify legal position
-			if (!opponentBoard.isInBoard(row, col))
+			if(!opponentBoard.isInBoard(row, col))
+			{
 				continue;
+			}
 
 			// add values to vector
 			moves.push_back(std::pair<int, int>(row, col));
