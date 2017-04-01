@@ -11,7 +11,7 @@
 
 /*Board Macros*/
 #define HIT 'H'
-#define MISS 'M'
+#define MISS 'O'
 #define SINK 'S'
 #define MAX_SHIPS 5
 
