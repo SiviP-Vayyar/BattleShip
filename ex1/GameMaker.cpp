@@ -59,7 +59,6 @@ void GameMaker::RunGame() //ZOHAR
 		int row = attackPosition.first, col = attackPosition.second;
 
 		// notify the players
-		// TODO: make sure Player::notifyOnAttackResult can handle ATTACK_END
 		_playerA.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 		_playerB.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 

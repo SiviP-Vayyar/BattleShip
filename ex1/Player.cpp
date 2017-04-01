@@ -35,7 +35,6 @@ std::pair<int, int> Player::attack()
 	return ATTACK_END;
 }
 
-// TODO: make sure Player::notifyOnAttackResult can handle ATTACK_END
 void Player::notifyOnAttackResult(int player, int row, int col, AttackResult result)
 {
 	if(_player == PLAYER_NOT_YET_KNOWN)
@@ -43,8 +42,8 @@ void Player::notifyOnAttackResult(int player, int row, int col, AttackResult res
 		// If notifyOnAttackResult() was called first, I am player B
 		_player = PLAYER_B;
 	}
-	/*Getting feedback for my attack*/
-	if(player == _player)
+	/*Getting feedback for my attack (while ignoring ATTACK_END and all positions outside the board)*/
+	if(player == _player &&  _opponentBoard.isInBoard(row, col))
 	{
 		_opponentBoard(row, col) = attackResultToChar(result);
 		updateOpponentBoardAfterAttack(row, col, attackResultToChar(result));
