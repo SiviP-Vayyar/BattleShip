@@ -27,5 +27,5 @@ private:
 	std::string _attackFilePathB;
 
 	bool ParseInput(int argc, char* argv[], std::string& path);
-	bool ValidateBoards();
+	bool SetAndValidateBoards();
 };

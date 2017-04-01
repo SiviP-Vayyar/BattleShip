@@ -30,6 +30,7 @@ class GameBoard
 {
 public:
 	GameBoard() : _board(nullptr), _rows(0), _cols(0), _isSet(false){}
+	explicit GameBoard(const std::string& path);
 	~GameBoard();
 
 	void setBoard(const char** board, int numRows, int numCols);
@@ -37,10 +38,14 @@ public:
 	int cols() const { return _cols; }
 	bool isSet() const { return _isSet; }
 	const char** getBoard();
+	const char** getBoardForPlayer(int player);
 	AttackResult attack(std::pair<int, int> attackPosition);
 	int getScore() const { return _score; } /*calculate how well the opponent scored on this board at the end of the game*/
 	inline bool isInBoard(int row, int col) const;
 	bool isShipSunk(int row, int col);
+	void getIllegalShips(int player, std::vector<char>& illegalShips) const;
+	int countShips(int player) const;
+	bool isAdjacent() const;
 
 	static int getShipScore(char piece);
 	static bool isShip(char piece);

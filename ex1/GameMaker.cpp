@@ -18,8 +18,8 @@ GameMaker::GameMaker(int argc, char* argv[])
 		throw GameException("");
 	}
 
-	/*Validate Boards*/
-	if(!ValidateBoards())
+	/*Set local Boards & Validate them*/
+	if(!SetAndValidateBoards())
 	{
 		throw GameException("");
 	}
@@ -60,7 +60,7 @@ void GameMaker::RunGame()
 	{
 		// get attack from player and play it on the board
 		auto attackPosition = currentPlayer->attack();
-		*currentPlayerMovesRemaining = (attackPosition != ATTACK_END); //TODO: need to address that situation - only other player continues attacking!
+		*currentPlayerMovesRemaining = (attackPosition != ATTACK_END);
 		auto attackResult = opponentBoard->attack(attackPosition);
 		int row = attackPosition.first, col = attackPosition.second;
 
@@ -69,7 +69,7 @@ void GameMaker::RunGame()
 		_playerB.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 
 		// upon hit player gets another turn
-		if(attackResult == AttackResult::Hit)
+		if (attackResult == AttackResult::Hit)
 		{
 			continue;
 		}
@@ -85,7 +85,7 @@ void GameMaker::RunGame()
 		currentPlayer = currentPlayer == &_playerA ? &_playerB : &_playerA;
 		currentPlayerMovesRemaining = currentPlayerMovesRemaining == &movesRemainingA ? &movesRemainingB : &movesRemainingA;
 		opponentBoard = opponentBoard == &_boardA ? &_boardB : &_boardA;
-		opponentShipsCntr = ((opponentShipsCntr == &remainingShipsA) ? &remainingShipsB : &remainingShipsA);
+		opponentShipsCntr = opponentShipsCntr == &remainingShipsA ? &remainingShipsB : &remainingShipsA;
 	}
 
 	// print end game results
@@ -94,7 +94,6 @@ void GameMaker::RunGame()
 	std::cout << "Points:" << std::endl;
 	std::cout << "Player A: " << _boardB.getScore() << std::endl;
 	std::cout << "Player B: " << _boardA.getScore() << std::endl;
-	//TODO: third print case: No win - print only scores.
 }
 
 /*chek if the path is a valid directory*/
@@ -144,7 +143,7 @@ bool GameMaker::ParseInput(int argc, char* argv[], std::string& path)
 	}
 	else //In case more that 1 argument was given - we choose to stop the program
 	{
-		throw GameException("Program takes only 1 argument!");
+		throw GameException("Program takes at most 1 argument!");
 	}
 
 	// iterate over files in path
@@ -216,48 +215,75 @@ bool GameMaker::ParseInput(int argc, char* argv[], std::string& path)
 	return true;
 }
 
-bool GameMaker::ValidateBoards() //Noam
+bool GameMaker::SetAndValidateBoards() //ZOHAR
 {
-	bool fewA, fewB, manyA, manyB, adjacent;
-	fewA = fewB = manyA = manyB = adjacent = false;
+	bool wrongSizeA, wrongSizeB, fewA, fewB, manyA, manyB, adjacent;
+	wrongSizeA = wrongSizeB = fewA = fewB = manyA = manyB = adjacent = false;
+	GameBoard fullBoard(_boardFilePath);
+
+	// find out if there are ships with wrong size on the board
+	std::vector<char> illegalShipsA, illegalShipsB;
+	fullBoard.getIllegalShips(PLAYER_A, illegalShipsA);
+	fullBoard.getIllegalShips(PLAYER_B, illegalShipsB);
+	wrongSizeA = !illegalShipsA.empty();
+	wrongSizeB = !illegalShipsB.empty();
+
+	// count number of ships for each player
+	int numShipsA = fullBoard.countShips(PLAYER_A);
+	int numShipsB = fullBoard.countShips(PLAYER_B);
+	manyA = (numShipsA > MAX_SHIPS);
+	fewA = (numShipsA < MAX_SHIPS);
+	manyB = (numShipsB > MAX_SHIPS);
+	fewB = (numShipsB < MAX_SHIPS);
+
+	// detect illegal ship placement (adjacent ships)
+	adjacent = fullBoard.isAdjacent();
 
 	/*Validate input by an exact order*/
-	//use local variables to read files - if we get here we can assume the files are there.
-	//Too many ships for player A
-	//Too few ships for player A
-	//Too many ships for player B
-	//Too few ships for player B
-	//Adjacent Ships on Board
-
-
-	if(fewA || fewB || manyA || manyB || adjacent)
+	if (wrongSizeA || wrongSizeB || fewA || fewB || manyA || manyB || adjacent)
 	{
-		//print "Wrong Path: <path>"
-		if(fewA)
+		if (wrongSizeA)
 		{
-			//print
+			//print a line for each wrong size type
+			for (char shipType : illegalShipsA)
+			{
+				std::cout << "Wrong size or shape for ship " << shipType << " for player A" << std::endl;
+			}
 		}
-		if(fewB)
+		if (wrongSizeB)
 		{
-			//print
+			//print a line for each wrong size type
+			for (char shipType : illegalShipsB)
+			{
+				std::cout << "Wrong size or shape for ship " << shipType << " for player B" << std::endl;
+			}
 		}
-		if(manyA)
+		if (manyA)
 		{
-			//print
+			std::cout << "Too many ships for player A" << std::endl;
 		}
-		if(manyB)
+		if (fewA)
 		{
-			//print
+			std::cout << "Too few ships for player A" << std::endl;
 		}
-		if(adjacent)
+		if (manyB)
 		{
-			//print
+			std::cout << "Too many ships for player B" << std::endl;
+		}
+		if (fewB)
+		{
+			std::cout << "Too few ships for player B" << std::endl;
+		}
+		if (adjacent)
+		{
+			std::cout << "Adjacent Ships on Board" << std::endl;
 		}
 		return false;
 	}
 
-
-	//TODO: Set local boards
+	// set local boards
+	_boardA.setBoard(fullBoard.getBoardForPlayer(PLAYER_A), fullBoard.rows(), fullBoard.cols());
+	_boardB.setBoard(fullBoard.getBoardForPlayer(PLAYER_B), fullBoard.rows(), fullBoard.cols());
 
 	return true;
 }
@@ -285,13 +311,14 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 		// try parsing assuming legal line
 		try
 		{
-			// skip leading spaces
-			while (lineStream.peek() == ' ') //TODO: a line cannot start with spaces - change to illegal
-				lineStream.ignore();
+			// treat line as illegal if starts with spaces
+			if(lineStream.peek() == ' ')
+			{
+				continue;
+			}
 
 			// read first parameter
-			lineStream >> row; //TODO: make sure can read any number - even 2 digits (maybe 3 even - is that a problem?)
-			//TODO: also make sure it is a digit and not a char with the value "7" or something 
+			lineStream >> row; //TODO: make sure it reads the whole number and not single digits
 
 			// skip spaces and comma between parameters
 			while(lineStream.peek() == ' ')
@@ -309,7 +336,13 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 			}
 
 			// read second parameter
-			lineStream >> col; //TODO: same goes here - maybe do it in isInBoard() ?
+			lineStream >> col; //TODO: make sure it reads the whole number and not single digits
+
+			// treat line as illegal if ends with spaces
+			if (lineStream.peek() == ' ')
+			{
+				continue;
+			}
 
 			// verify legal position
 			if(!opponentBoard.isInBoard(row, col))

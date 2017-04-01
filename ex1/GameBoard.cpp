@@ -1,6 +1,13 @@
 #include "GameBoard.h"
 #include "Player.h"
 
+GameBoard::GameBoard(const std::string& path) : GameBoard()
+{
+	// TODO: implement
+	// read numRows, numCols and board matrix from file, then call setBoard
+	throw std::exception("Not Implemented");
+}
+
 GameBoard::~GameBoard()
 {
 	for(int i = 0; i < _rows; i++)
@@ -37,6 +44,12 @@ const char** GameBoard::getBoard() //ZOHAR + SIVAN
 	//todo: Having trouble with const char**
 	const char** a;
 	return a;
+}
+
+const char** GameBoard::getBoardForPlayer(int player)
+{
+	// TODO: implement
+	throw std::exception("Not implemented");
 }
 
 /*update the board to reflect an attack, and notify on the result*/
@@ -116,6 +129,27 @@ bool GameBoard::isShipSunk(int row, int col)
 
 	// seaerched in all directions for a piece of the ship that was not yet hit - and failed
 	return true;
+}
+
+/*finds ships with illegal shape or size for player, and appends them to the vector*/
+void GameBoard::getIllegalShips(int player, std::vector<char>& illegalShips) const
+{
+	// TODO: implement
+	throw std::exception("Not implemented");
+}
+
+/*count ships of legal shape and size for player*/
+int GameBoard::countShips(int player) const
+{
+	// TODO: implement
+	throw std::exception("Not implemented");
+}
+
+/*@return: false iff there are no adjacent ships on the board*/
+bool GameBoard::isAdjacent() const
+{
+	// TODO: implement
+	throw std::exception("Not implemented");
 }
 
 int GameBoard::getShipScore(char piece)
