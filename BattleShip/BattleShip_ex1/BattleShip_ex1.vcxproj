@@ -146,14 +146,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\ex1\ArgParser.h" />
     <ClInclude Include="..\..\ex1\GameBoard.h" />
     <ClInclude Include="..\..\ex1\GameMaker.h" />
     <ClInclude Include="..\..\ex1\IBattleshipGameAlgo.h" />
     <ClInclude Include="..\..\ex1\Player.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\ex1\ArgParser.cpp" />
     <ClCompile Include="..\..\ex1\GameBoard.cpp" />
     <ClCompile Include="..\..\ex1\GameMaker.cpp" />
     <ClCompile Include="..\..\ex1\main.cpp" />

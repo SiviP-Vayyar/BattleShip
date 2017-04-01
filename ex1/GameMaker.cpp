@@ -3,6 +3,11 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <windows.h>
+#include <tchar.h>
+#include <stdio.h>
+#include <strsafe.h>
+#include <winapifamily.h>
 
 GameMaker::GameMaker(int argc, char* argv[])
 {
@@ -89,49 +94,99 @@ void GameMaker::RunGame() //ZOHAR
 	std::cout << "Player B: " << _boardA.getScore() << std::endl;
 }
 
+/*chek if the path is a valid directory*/
+bool isDirectory(const std::string& path)
+{
+	DWORD ftyp = GetFileAttributesA(path.c_str());
+	
+	// test for invalid path
+	if (ftyp == INVALID_FILE_ATTRIBUTES)
+		return false;
+	// test if path is a directory
+	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+		return true;
+
+	return false;
+}
+
+/*test if str ends with suffix*/
+inline bool endsWith(std::string const & str, std::string const & suffix)
+{
+	if (suffix.size() > str.size())
+		return false;
+
+	return std::equal(suffix.rbegin(), suffix.rend(), str.rbegin());
+}
+
 /*Validate input, parse it, and set all needed local variables*/
-bool GameMaker::ParseInput(int argc, char* argv[], std::string& path) //NOAM
+bool GameMaker::ParseInput(int argc, char* argv[], std::string& path) //ZOHAR
 {
 	bool badPath, misBoard, misFileA, misFileB;
-	badPath = misBoard = misFileA = misFileB = false;
+	badPath = misBoard = misFileA = misFileB = true;
+
+	// set path according to argv
+	if (argc == 1)
+		path = ".";
+	else if (argc == 2)
+		path = argv[1];
+	else
+		path = argv[1]; // TODO: how to handle too many args?
+
+	// iterate over files in path
+	if (isDirectory(path))
+	{
+		HANDLE dir;
+		WIN32_FIND_DATA fileData;
+		badPath = false;
+		_inputFolder = path;
+
+		// test for empty directory
+		std::string s = path + "\\*";
+		std::wstring wpath(s.begin(), s.end());
+		dir = FindFirstFile(wpath.c_str(), &fileData);
+		if (dir != INVALID_HANDLE_VALUE)
+		{
+			// test each file suffix and set variables as needed
+			do {
+				std::wstring wfileName = fileData.cFileName;
+				std::string fileName(wfileName.begin(), wfileName.end());
+				std::string fullFileName = path + "\\" + fileName;
+
+				// TODO: what if there are multiple possibilities? currently takes the last one
+				if (endsWith(fileName, ".sboard")) {
+					_boardFilePath = fullFileName;
+					misBoard = false;
+				}
+				else if (endsWith(fileName, ".attack-a")) {
+					_attackFilePathA = fullFileName;
+					misFileA = false;
+				}
+				else if (endsWith(fileName, ".attack-b")) {
+					_attackFilePathB = fullFileName;
+					misFileB = false;
+				}
+
+			} while (FindNextFile(dir, &fileData));
+		}
+
+	}	
 
 	/*Validate input by an exact order*/
-	// TODO: calculate booleans
-	// Path don't exist / bad format
-	// Missing board file
-	// Missing attack file for player A
-	// Missing attack file for player B
-
 	if(badPath || misBoard || misFileA || misFileB)
 	{
 		std::cout << "Wrong path: " << path.c_str() << std::endl;
 		
 		if(badPath)
-		{
 			return false;
-		}
 		if(misBoard)
-		{
 			std::cout << "Missing board file (*.sboard) looking in path: " << path.c_str() << std::endl;
-		}
 		if(misFileA)
-		{
 			std::cout << "Missing attack file for player A (*.attack-a) looking in path: " << path.c_str() << std::endl;
-		}
 		if(misFileB)
-		{
 			std::cout << "Missing attack file for player B (*.attack-b) looking in path: " << path.c_str() << std::endl;
-		}
+		
 		return false;
 	}
-
-	//TODO: set local variables
-	/*
-	* 	std::string _inputFolder;
-	*std::string _boardFilePath;
-	*std::string _attackFilePathA;
-	*std::string _attackFilePathB;
-	*/
 
 	return true;
 }
