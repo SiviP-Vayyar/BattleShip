@@ -5,7 +5,7 @@
 class GameMaker
 {
 public:
-	std::vector<std::pair<int, int>> getMovesFromFile(const std::string& movesFilePath);
+	std::vector<std::pair<int, int>> getMovesFromFile(const std::string& movesFilePath, const GameBoard& opponentBoard) const;
 	GameMaker(int argc, char* argv[]);
 	~GameMaker();
 	//TODO: copy constructor

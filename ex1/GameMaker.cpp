@@ -1,7 +1,8 @@
 #include "GameMaker.h"
 #include "GameException.h"
 #include <iostream>
-
+#include <fstream>
+#include <sstream>
 
 GameMaker::GameMaker(int argc, char* argv[])
 {
@@ -27,8 +28,8 @@ GameMaker::GameMaker(int argc, char* argv[])
 	_playerB.setBoard(_boardB.getBoard(), _boardB.rows(), _boardB.cols());
 	
 	/*Set algorithm moves for both players*/
-	_playerA.SetMoves(getMovesFromFile(_attackFilePathA));
-	_playerB.SetMoves(getMovesFromFile(_attackFilePathB));
+	_playerA.SetMoves(getMovesFromFile(_attackFilePathA,_boardB));
+	_playerB.SetMoves(getMovesFromFile(_attackFilePathB,_boardA));
 }
 
 GameMaker::~GameMaker()
@@ -181,8 +182,61 @@ bool GameMaker::ValidateBoards() //Noam
 	return true;
 }
 
-std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(const std::string& movesFilePath) //NOAM
+/*@pre: assume opponent's board was loaded and set. required for GameBoard::isInBoard method*/
+std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
+	const std::string& movesFilePath, const GameBoard& opponentBoard) const //ZOHAR
 {
-	//TODO: implement
-	return std::vector<std::pair<int, int>>();
+	std::vector<std::pair<int, int>> moves;
+	std::ifstream fin(movesFilePath);
+	std::string line;
+	int row, col;
+
+	// check if file failed to open
+	if (!fin)
+		throw GameException("Failed to open file in path: " + movesFilePath);
+
+	// parse the file line by line
+	while (std::getline(fin, line))
+	{
+		std::stringstream lineStream(line);
+
+		// try parsing assuming legal line
+		try
+		{
+			// skip leading spaces
+			while (lineStream.peek() == ' ')
+				lineStream.ignore();
+
+			// read first parameter
+			lineStream >> row;
+
+			// skip spaces and comma between parameters
+			while (lineStream.peek() == ' ')
+				lineStream.ignore();
+			if (lineStream.peek() != ',') // illegal line - skip
+				continue;
+			lineStream.ignore();
+			while (lineStream.peek() == ' ')
+				lineStream.ignore();
+
+			// read second parameter
+			lineStream >> col;
+
+			// verify legal position
+			if (!opponentBoard.isInBoard(row, col))
+				continue;
+
+			// add values to vector
+			moves.push_back(std::pair<int, int>(row, col));
+		}
+
+		// if line has illegal format - skip
+		catch (std::exception e)
+		{
+			continue;
+		}
+	}
+
+	fin.close();
+	return moves;
 }
