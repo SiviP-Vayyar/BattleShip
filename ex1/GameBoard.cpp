@@ -180,8 +180,40 @@ int GameBoard::countShips(int player) const
 /*@return: false iff there are no adjacent ships on the board*/
 bool GameBoard::isAdjacent() const
 {
-	// TODO: implement
-	throw std::exception("Not implemented");
+	const GameBoard& thisBoard = *this;
+
+	for (int row = 1 ; row <= _rows ; row++)
+	{
+		for (int col = 1 ; col <= _cols ; col++)
+		{
+			char center = thisBoard(row, col);
+			if (!isShip(center))
+				continue;
+
+			// for every piece on the board that belongs to a ship, check the surrounding pieces
+			for (int r = -1 ; r <= 1 ; r++)
+			{
+				for (int c = -1 ; c <=1 ; c++)
+				{
+					// don't check the center or positions outside the board
+					if ((c == 0 && r == 0) || !isInBoard(row + r, col + c))
+						continue;
+
+					// if the adjacent piece is not a ship - it's good
+					char adjacentPiece = thisBoard(row + r, col + c);
+					if (!isShip(adjacentPiece))
+						continue;
+					
+					// if center and adjacentPiece are of different ships or players - it's bad
+					if (center != adjacentPiece)
+						return true;
+				}
+			}
+			
+		}
+	}
+
+	return false;
 }
 
 int GameBoard::getShipScore(char piece)
