@@ -35,13 +35,13 @@ public:
 	GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols) {} // copy c'tor
 	explicit GameBoard(const std::string& path);
 	~GameBoard();
-	static void GameBoard::deleteRawBoard(const char** board, int rows, int cols);
+	static void GameBoard::deleteRawBoard(char** board, int rows, int cols);
 
 	int rows() const { return _rows; }
 	int cols() const { return _cols; }
 	bool isSet() const { return _isSet; }
-	const char** getBoard() const;
-	const char** getBoardForPlayer(int player) const;
+	char** getBoard() const;
+	char** getBoardForPlayer(int player) const;
 	AttackResult attack(std::pair<int, int> attackPosition);
 	int getScore() const { return _score; } /*calculate how well the opponent scored on this board at the end of the game*/
 	inline bool isInBoard(int row, int col) const;

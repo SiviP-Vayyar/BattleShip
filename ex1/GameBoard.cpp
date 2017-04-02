@@ -10,10 +10,10 @@ GameBoard::GameBoard(const std::string& path) : GameBoard()
 
 GameBoard::~GameBoard()
 {
-	deleteRawBoard(const_cast<const char**>(_board), _rows, _cols);
+	deleteRawBoard(_board, _rows, _cols);
 }
 
-void GameBoard::deleteRawBoard(const char** board, int rows, int cols)
+void GameBoard::deleteRawBoard(char** board, int rows, int cols)
 {
 	if (board == nullptr)
 	{
@@ -30,19 +30,17 @@ void GameBoard::deleteRawBoard(const char** board, int rows, int cols)
 
 void GameBoard::setBoard(const char* const* board, int numRows, int numCols)
 {
+	deleteRawBoard(_board, _rows, _cols);
+	
 	_rows = numRows;
 	_cols = numCols;
 	_isSet = true;
 	_board = new char*[numRows];
 
-	for(int i = 0; i < _rows; i++)
-	{
-		_board[i] = new char[numCols];
-	}
-
 	for(int row = 0; row < _rows; row++)
 	{
-		for(int col = 0; col < _rows; col++)
+		_board[row] = new char[numCols];
+		for (int col = 0; col < _rows; col++)
 		{
 			_board[row][col] = board[row][col];
 		}
@@ -50,19 +48,40 @@ void GameBoard::setBoard(const char* const* board, int numRows, int numCols)
 }
 
 /*return a new raw board*/
-/*@post: the returned boad is dynamically allocated and must be freed*/
-const char** GameBoard::getBoard() const //ZOHAR + SIVAN
+/*@post: the returned board is dynamically allocated and must be freed*/
+char** GameBoard::getBoard() const //ZOHAR + SIVAN
 {
-	// TODO: implement - create a new "raw" char** board
-	throw std::exception("Not implemented");
+	char** board = new char*[_rows];
+
+	for (int row = 0; row < _rows; row++)
+	{
+		board[row] = new char[_cols];
+		for (int col = 0; col < _rows; col++)
+		{
+			board[row][col] = _board[row][col];
+		}
+	}
+
+	return board;
 }
 
 /*return a new raw board with only the player's ships*/
 /*@post: the returned boad is dynamically allocated and must be freed*/
-const char** GameBoard::getBoardForPlayer(int player) const
+char** GameBoard::getBoardForPlayer(int player) const
 {
-	// TODO: implement - create a new "raw" char** board and remove enemy ships
-	throw std::exception("Not implemented");
+	char** board = new char*[_rows];
+
+	for (int row = 0; row < _rows; row++)
+	{
+		board[row] = new char[_cols];
+		for (int col = 0; col < _rows; col++)
+		{
+			char piece = _board[row][col];
+			board[row][col] = (playerShipType(player, piece) == piece ? piece : EMPTY);
+		}
+	}
+
+	return board;
 }
 
 /*update the board to reflect an attack, and notify on the result*/
