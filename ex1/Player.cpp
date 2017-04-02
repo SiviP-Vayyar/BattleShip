@@ -1,15 +1,10 @@
 #include "Player.h"
 
 
-Player::Player()
-{
-	_myBoard = GameBoard();
-	_opponentBoard = GameBoard();
-}
-
 void Player::setBoard(const char** board, int numRows, int numCols)
 {
-	_myBoard.setBoard(board, numRows, numCols);
+	_myBoard = GameBoard(board, numRows, numCols);
+	// TODO: need to init _opponentBoard somehow. Make a GameBoard constructor with only dimentions.
 }
 
 void Player::SetMoves(std::vector<std::pair<int, int>> moves)

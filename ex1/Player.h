@@ -18,8 +18,8 @@
 class Player : public IBattleshipGameAlgo
 {
 public:
-	Player();
-	~Player(){};
+	Player() {};
+	~Player() {};
 
 	/* Will be called once from outside the class, to init the board*/
 	void setBoard(const char** board, int numRows, int numCols) override;

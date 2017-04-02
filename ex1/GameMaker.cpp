@@ -29,8 +29,12 @@ GameMaker::GameMaker(int argc, char* argv[])
 	_playerB = Player();
 	
 	/*Set boards for both players*/
-	_playerA.setBoard(_boardA.getBoard(), _boardA.rows(), _boardA.cols());
-	_playerB.setBoard(_boardB.getBoard(), _boardB.rows(), _boardB.cols());
+	const char** rawBoardA = _boardA.getBoard();
+	const char** rawBoardB = _boardB.getBoard();
+	_playerA.setBoard(rawBoardA, _boardA.rows(), _boardA.cols());
+	_playerB.setBoard(rawBoardB, _boardB.rows(), _boardB.cols());
+	GameBoard::deleteRawBoard(rawBoardA, _boardA.rows(), _boardA.cols());
+	GameBoard::deleteRawBoard(rawBoardB, _boardB.rows(), _boardB.cols());
 	
 	/*Set algorithm moves for both players*/
 	_playerA.SetMoves(getMovesFromFile(_attackFilePathA,_boardB));
@@ -282,8 +286,12 @@ bool GameMaker::SetAndValidateBoards() //ZOHAR
 	}
 
 	// set local boards
-	_boardA.setBoard(fullBoard.getBoardForPlayer(PLAYER_A), fullBoard.rows(), fullBoard.cols());
-	_boardB.setBoard(fullBoard.getBoardForPlayer(PLAYER_B), fullBoard.rows(), fullBoard.cols());
+	const char** rawBoardA = fullBoard.getBoardForPlayer(PLAYER_A);
+	const char** rawBoardB = fullBoard.getBoardForPlayer(PLAYER_B);
+	_boardA = GameBoard(rawBoardA, fullBoard.rows(), fullBoard.cols());
+	_boardB = GameBoard(rawBoardB, fullBoard.rows(), fullBoard.cols());
+	GameBoard::deleteRawBoard(rawBoardA, fullBoard.rows(), fullBoard.cols());
+	GameBoard::deleteRawBoard(rawBoardB, fullBoard.rows(), fullBoard.cols());
 
 	return true;
 }

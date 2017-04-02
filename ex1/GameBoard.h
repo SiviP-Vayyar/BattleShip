@@ -9,6 +9,7 @@
 #define MISSILE		'P'
 #define SUB			'M'
 #define DESTROYER	'D'
+#define EMPTY		' '
 
 /*ship attack definitions*/
 #define SHIP_HIT	'X'
@@ -30,16 +31,17 @@ class GameBoard
 {
 public:
 	GameBoard() : _board(nullptr), _rows(0), _cols(0), _isSet(false){}
-	GameBoard(const GameBoard& other) = delete;
+	GameBoard(const char* const* board, int numRows, int numCols) { setBoard(board, numRows, numCols); }
+	GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols) {} // copy c'tor
 	explicit GameBoard(const std::string& path);
 	~GameBoard();
+	static void GameBoard::deleteRawBoard(const char** board, int rows, int cols);
 
-	void setBoard(const char** board, int numRows, int numCols);
 	int rows() const { return _rows; }
 	int cols() const { return _cols; }
 	bool isSet() const { return _isSet; }
-	const char** getBoard();
-	const char** getBoardForPlayer(int player);
+	const char** getBoard() const;
+	const char** getBoardForPlayer(int player) const;
 	AttackResult attack(std::pair<int, int> attackPosition);
 	int getScore() const { return _score; } /*calculate how well the opponent scored on this board at the end of the game*/
 	inline bool isInBoard(int row, int col) const;
@@ -54,7 +56,7 @@ public:
 
 	/*Using 1-based matrix call on vector*/
 	char& operator()(int row, int col) const;
-	GameBoard& operator=(const GameBoard& other) = delete;
+	GameBoard& operator=(const GameBoard& other) { setBoard(other._board, other._rows, other._cols); return *this; };
 	
 private:
 	char** _board;
@@ -62,4 +64,7 @@ private:
 	int _cols;
 	bool _isSet;
 	int _score = 0;
+
+	void setBoard(const char* const* board, int numRows, int numCols);
+
 };

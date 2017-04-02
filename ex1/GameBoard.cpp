@@ -10,15 +10,25 @@ GameBoard::GameBoard(const std::string& path) : GameBoard()
 
 GameBoard::~GameBoard()
 {
-	for(int i = 0; i < _rows; i++)
-	{
-		delete[] _board[i];
-	}
-
-	delete [] _board;
+	deleteRawBoard(const_cast<const char**>(_board), _rows, _cols);
 }
 
-void GameBoard::setBoard(const char** board, int numRows, int numCols)
+void GameBoard::deleteRawBoard(const char** board, int rows, int cols)
+{
+	if (board == nullptr)
+	{
+		return;
+	}
+
+	for (int i = 0; i < rows; i++)
+	{
+		delete[] board[i];
+	}
+
+	delete[] board;
+}
+
+void GameBoard::setBoard(const char* const* board, int numRows, int numCols)
 {
 	_rows = numRows;
 	_cols = numCols;
@@ -39,16 +49,19 @@ void GameBoard::setBoard(const char** board, int numRows, int numCols)
 	}
 }
 
-const char** GameBoard::getBoard() //ZOHAR + SIVAN
+/*return a new raw board*/
+/*@post: the returned boad is dynamically allocated and must be freed*/
+const char** GameBoard::getBoard() const //ZOHAR + SIVAN
 {
-	//todo: Having trouble with const char**
-	const char** a;
-	return a;
+	// TODO: implement - create a new "raw" char** board
+	throw std::exception("Not implemented");
 }
 
-const char** GameBoard::getBoardForPlayer(int player)
+/*return a new raw board with only the player's ships*/
+/*@post: the returned boad is dynamically allocated and must be freed*/
+const char** GameBoard::getBoardForPlayer(int player) const
 {
-	// TODO: implement
+	// TODO: implement - create a new "raw" char** board and remove enemy ships
 	throw std::exception("Not implemented");
 }
 

@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		GameMaker gameMaker = GameMaker(argc, argv);
+		GameMaker gameMaker(argc, argv);
 		gameMaker.RunGame();
 	}
 	catch (GameException ex)
