@@ -35,7 +35,7 @@ public:
 	GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols) {} // copy c'tor
 	explicit GameBoard(const std::string& path);
 	~GameBoard();
-	static void GameBoard::deleteRawBoard(char** board, int rows, int cols);
+	static void deleteRawBoard(char** board, int rows, int cols);
 
 	int rows() const { return _rows; }
 	int cols() const { return _cols; }
@@ -46,11 +46,13 @@ public:
 	int getScore() const { return _score; } /*calculate how well the opponent scored on this board at the end of the game*/
 	inline bool isInBoard(int row, int col) const;
 	bool isShipSunk(int row, int col);
+	std::pair<int, int> getShipDimensions(int row, int col) const;
 	void getIllegalShips(int player, std::vector<char>& illegalShips) const;
 	int countShips(int player) const;
 	bool isAdjacent() const;
 
 	static int getShipScore(char piece);
+	static int getShipLength(char piece);
 	static bool isShip(char piece);
 	static char playerShipType(int player, char typeDef) { return char(player == PLAYER_A ? toupper(typeDef) : tolower(typeDef)); }
 
