@@ -68,13 +68,6 @@ char Player::attackResultToChar(AttackResult result) const
 
 void Player::updateOpponentBoardAfterAttack(int row, int col, char attackChar) //NOAM
 {
-	//TODO:
-	/*
-	 * After we attack, we get this feedback from game maker, we need to update the board:
-	 * 1) Miss - just mark it
-	 * 2) Hit - mark it, in case it is 2-3 squares streak, we can update some MISSes around it
-	 * 3) Sink - mark it, replace all HITs of that ship with SINKs, mark it's perimiter with MISSes.
-	 */
 	switch (attackChar)
 	{
 		case MISS:
