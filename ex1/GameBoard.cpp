@@ -163,11 +163,37 @@ bool GameBoard::isShipSunk(int row, int col)
 	return true;
 }
 
-/*finds ships with illegal shape or size for player, and appends them to the vector*/
-void GameBoard::getIllegalShips(int player, std::vector<char>& illegalShips) const
+/*returns the width and length of the ship in position (row,col)*/
+std::pair<int, int> GameBoard::getShipDimensions(int row, int col) const
 {
 	// TODO: implement
 	throw std::exception("Not implemented");
+}
+
+/*finds ships with illegal shape or size for player, and appends them to the vector*/
+void GameBoard::getIllegalShips(int player, std::vector<char>& illegalShips) const
+{
+	const GameBoard& thisBoard = *this;
+
+	for (int row = 1; row <= _rows; row++)
+	{
+		for (int col = 1; col <= _cols; col++)
+		{
+			// skips pieces that are not this player's ship type
+			char piece = thisBoard(row, col);
+			if (!isShip(piece) || playerShipType(player, piece) != piece)
+				continue;
+
+			// get dimentions of the ship and compare against known ship types
+			auto dim = getShipDimensions(row, col);
+			int size = getShipLength(piece);
+			// a legal ship must be of the right size and shape ("narrow")
+			if (size != dim.first*dim.second || (dim.first != 1 && dim.second != 1))
+				illegalShips.push_back(piece);
+		}
+	}
+
+	// TODO: clear duplicates before return, or possibly avoid them in the loop
 }
 
 /*count ships of legal shape and size for player*/
@@ -180,8 +206,40 @@ int GameBoard::countShips(int player) const
 /*@return: false iff there are no adjacent ships on the board*/
 bool GameBoard::isAdjacent() const
 {
-	// TODO: implement
-	throw std::exception("Not implemented");
+	const GameBoard& thisBoard = *this;
+
+	for (int row = 1 ; row <= _rows ; row++)
+	{
+		for (int col = 1 ; col <= _cols ; col++)
+		{
+			char center = thisBoard(row, col);
+			if (!isShip(center))
+				continue;
+
+			// for every piece on the board that belongs to a ship, check the surrounding pieces
+			for (int r = -1 ; r <= 1 ; r++)
+			{
+				for (int c = -1 ; c <=1 ; c++)
+				{
+					// don't check the center or positions outside the board
+					if ((c == 0 && r == 0) || !isInBoard(row + r, col + c))
+						continue;
+
+					// if the adjacent piece is not a ship - it's good
+					char adjacentPiece = thisBoard(row + r, col + c);
+					if (!isShip(adjacentPiece))
+						continue;
+					
+					// if center and adjacentPiece are of different ships or players - it's bad
+					if (center != adjacentPiece)
+						return true;
+				}
+			}
+			
+		}
+	}
+
+	return false;
 }
 
 int GameBoard::getShipScore(char piece)
@@ -196,6 +254,23 @@ int GameBoard::getShipScore(char piece)
 		if (playerShipType(PLAYER_A, shipType) == piece ||
 			playerShipType(PLAYER_B, shipType) == piece)
 			return shipScores[i];
+	}
+
+	return 0;
+}
+
+int GameBoard::getShipLength(char piece)
+{
+	int size = 4;
+	char shipTypes[] = { RUBBER, MISSILE, SUB, DESTROYER };
+	int shipLengths[] = { RUBBER_LEN, MISSILE_LEN, SUB_LEN, DESTROYER_LEN };
+
+	for (int i = 0; i<size; i++)
+	{
+		auto shipType = shipTypes[i];
+		if (playerShipType(PLAYER_A, shipType) == piece ||
+			playerShipType(PLAYER_B, shipType) == piece)
+			return shipLengths[i];
 	}
 
 	return 0;
