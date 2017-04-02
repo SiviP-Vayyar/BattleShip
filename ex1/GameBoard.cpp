@@ -205,3 +205,51 @@ char& GameBoard::operator()(int row, int col) const
 {
 	return _board[row - 1][col - 1];
 }
+
+/*return a vector of all valid surrounding cordinates*/
+std::vector<std::pair<int, int>> GameBoard::getSurroundingCordinatesAsVector(int row, int col) const
+{
+	std::vector<std::pair<int, int>> surroundingCordinates;
+
+	//iterate through all surrounding cordinates and if valid -> add to return vector
+	for (int tempRow = row - 1; tempRow <= row + 1; ++tempRow) {
+		for (int tempCol = col - 1; tempCol <= col + 1; ++tempCol) {
+			if (tempCol == col && tempRow == row)
+			{
+				continue;
+			}
+			if (isInBoard(tempRow, tempCol))
+			{
+				surroundingCordinates.push_back(std::pair<int, int>(tempRow, tempCol));
+			}
+		}
+	}
+
+	return surroundingCordinates;
+	
+}
+
+/*returns a vector of all adjacent cordinates (does not include diagonal cordinates)*/
+std::vector<std::pair<int, int>> GameBoard::getAdjacentCordinatesAsVector(int row, int col) const
+{
+	std::vector<std::pair<int, int>> adjacentCordinates;
+
+	if (isInBoard(row - 1, col -1))
+	{
+		adjacentCordinates.push_back(std::pair<int, int>(row - 1, col - 1));
+	}
+	if (isInBoard(row + 1, col - 1))
+	{
+		adjacentCordinates.push_back(std::pair<int, int>(row + 1, col - 1));
+	}
+	if (isInBoard(row - 1, col + 1))
+	{
+		adjacentCordinates.push_back(std::pair<int, int>(row - 1, col + 1));
+	}
+	if (isInBoard(row + 1, col + 1))
+	{
+		adjacentCordinates.push_back(std::pair<int, int>(row + 1, col + 1));
+	}
+
+	return adjacentCordinates;
+}

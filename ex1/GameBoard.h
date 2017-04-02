@@ -49,6 +49,8 @@ public:
 	void getIllegalShips(int player, std::vector<char>& illegalShips) const;
 	int countShips(int player) const;
 	bool isAdjacent() const;
+	std::vector<std::pair<int, int>> getSurroundingCordinatesAsVector(int row, int col) const;
+	std::vector<std::pair<int, int>> getAdjacentCordinatesAsVector(int row, int col) const;
 
 	static int getShipScore(char piece);
 	static bool isShip(char piece);
