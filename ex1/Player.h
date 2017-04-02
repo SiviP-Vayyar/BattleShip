@@ -43,4 +43,11 @@ private:
 
 	char attackResultToChar(AttackResult result) const;
 	void updateOpponentBoardAfterAttack(int row, int col, char attackChar);
+	void updateOpponentBoardAfterMiss(int row, int col);
+	void updateOpponentBoardAfterSink(int row, int col);
+	void updateOpponentBoardAfterHit(int row, int col);
+	void deduceOpponentBoardAfterMiss(int row, int col);
+	void deduceOpponentBoardAfterHit(int row, int col);
+	void deduceOpponentBoardAfterSink(int row, int col);
+	void markOpponentBoardAfterSink(int row, int col);
 };

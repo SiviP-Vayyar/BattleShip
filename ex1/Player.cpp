@@ -75,4 +75,70 @@ void Player::updateOpponentBoardAfterAttack(int row, int col, char attackChar) /
 	 * 2) Hit - mark it, in case it is 2-3 squares streak, we can update some MISSes around it
 	 * 3) Sink - mark it, replace all HITs of that ship with SINKs, mark it's perimiter with MISSes.
 	 */
+	switch (attackChar)
+	{
+		case MISS:
+		{
+			updateOpponentBoardAfterMiss(row, col);
+			return;
+		}
+		case  HIT:
+		{
+			updateOpponentBoardAfterHit(row, col);
+			return;
+		}
+		case SINK:
+		{
+			updateOpponentBoardAfterSink(row, col);
+			return ;
+		}
+		default:
+			return; 
+	}
+}
+
+void Player::updateOpponentBoardAfterMiss(int row, int col)
+{
+	_opponentBoard(row, col) = MISS;
+}
+
+void Player::updateOpponentBoardAfterHit(int row, int col)
+{
+	_opponentBoard(row, col) = HIT;
+	deduceOpponentBoardAfterHit(row, col);
+}
+
+void Player::updateOpponentBoardAfterSink(int row, int col) 
+{
+	markOpponentBoardAfterSink(row, col);
+	deduceOpponentBoardAfterSink(row, col);
+}
+
+void Player::deduceOpponentBoardAfterMiss(int row, int col)
+{
+	//TODO: On scaleup - implement smart board state deduction and update after miss
+}
+
+void Player::deduceOpponentBoardAfterHit(int row, int col)
+{
+	//TODO: On scaleup - implement smart board state deduction and update after hit
+}
+
+void Player::deduceOpponentBoardAfterSink(int row, int col)
+{
+	//TODO: On scaleup - implement smart board state deduction and update after sink
+}
+
+void Player::markOpponentBoardAfterSink(int row, int col)
+{
+	_opponentBoard(row, col) = SINK;
+	auto surroundingCordinates = _opponentBoard.getAdjacentCordinatesAsVector(row, col);
+
+	for (auto cordinates : surroundingCordinates) 
+	{
+		if (_opponentBoard(cordinates.first, cordinates.second) == HIT)
+		{
+			markOpponentBoardAfterSink(cordinates.first, cordinates.second);
+		}
+	}
 }
