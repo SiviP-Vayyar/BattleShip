@@ -30,6 +30,7 @@ class GameBoard
 {
 public:
 	GameBoard() : _board(nullptr), _rows(0), _cols(0), _isSet(false){}
+	GameBoard(const GameBoard& other) = delete;
 	explicit GameBoard(const std::string& path);
 	~GameBoard();
 
@@ -53,6 +54,7 @@ public:
 
 	/*Using 1-based matrix call on vector*/
 	char& operator()(int row, int col) const;
+	GameBoard& operator=(const GameBoard& other) = delete;
 	
 private:
 	char** _board;
