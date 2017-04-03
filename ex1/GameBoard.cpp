@@ -163,10 +163,28 @@ bool GameBoard::isShipSunk(int row, int col)
 }
 
 /*returns the width and length of the ship in position (row,col)*/
+/*@Post: May return an underestimate of the dims, but when covering the entire ship, we will get at
+ *least one the will catch an illegal ship */
 std::pair<int, int> GameBoard::getShipDimensions(int row, int col) const
 {
-	// TODO: implement
-	throw std::exception("Not implemented");
+	const GameBoard& thisBoard = *this;
+	auto increments = { std::pair<int,int>(1,0), std::pair<int,int>(-1,0), std::pair<int,int>(0,1), std::pair<int,int>(0,-1) };
+	char piece = thisBoard(row, col);
+	int rowDim = 1, colDim = 1;
+
+	for (auto inc : increments)
+	{
+		int r = row, c = col;
+		while(isInBoard(r, c) && thisBoard(r, c) == piece)
+		{
+			r += inc.first;
+			c += inc.second;
+		}
+		rowDim += abs(row - r);
+		colDim += abs(col - c);
+	}
+
+	return std::make_pair(rowDim, colDim);
 }
 
 /*finds ships with illegal shape or size for player, and appends them to the vector*/
@@ -199,7 +217,7 @@ std::set<char> GameBoard::getIllegalShips(int player) const
 }
 
 /*count ships of legal shape and size for player*/
-int GameBoard::countShips(int player) const
+int GameBoard::countLegalShips(int player) const
 {
 	// TODO: implement
 	throw std::exception("Not implemented");

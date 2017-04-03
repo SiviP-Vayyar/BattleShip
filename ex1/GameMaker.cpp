@@ -232,8 +232,8 @@ bool GameMaker::SetAndValidateBoards()
 	wrongSizeB = !illegalShipsB.empty();
 
 	// count number of ships for each player
-	int numShipsA = fullBoard.countShips(PLAYER_A);
-	int numShipsB = fullBoard.countShips(PLAYER_B);
+	int numShipsA = fullBoard.countLegalShips(PLAYER_A);
+	int numShipsB = fullBoard.countLegalShips(PLAYER_B);
 	manyA = (numShipsA > MAX_SHIPS);
 	fewA = (numShipsA < MAX_SHIPS);
 	manyB = (numShipsB > MAX_SHIPS);
