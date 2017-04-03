@@ -2,8 +2,9 @@
 
 #include "IBattleshipGameAlgo.h"
 #include <cctype>
-#include "Player.h"
+#include <string>
 #include <set>
+#include<vector>
 
 /*ship types definitions*/
 #define RUBBER		'B'
@@ -27,6 +28,14 @@
 #define SUB_LEN			3
 #define DESTROYER_LEN	4
 
+
+//TODO: 
+/*
+might want to move this to a different header and include the new header 
+from GameBoard.h and Player.h - but we can't include Player.h 
+as this causes a cyclic dependency between GameBoard.h and Player.h
+*/
+#define PLAYER_A 0
 
 class GameBoard
 {
