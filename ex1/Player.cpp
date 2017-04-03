@@ -66,7 +66,7 @@ char Player::attackResultToChar(AttackResult result) const
 	}
 }
 
-void Player::updateOpponentBoardAfterAttack(int row, int col, char attackChar) //NOAM
+void Player::updateOpponentBoardAfterAttack(int row, int col, char attackChar)
 {
 	switch (attackChar)
 	{
