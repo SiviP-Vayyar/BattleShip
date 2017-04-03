@@ -224,22 +224,27 @@ bool GameMaker::SetAndValidateBoards()
 	bool wrongSizeA, wrongSizeB, fewA, fewB, manyA, manyB, adjacent;
 	wrongSizeA = wrongSizeB = fewA = fewB = manyA = manyB = adjacent = false;
 	GameBoard fullBoard(_boardFilePath);
+	GameBoard copyBoard(fullBoard);
+
+	// shipsData = pair<int, set<char>>
+	auto shipsDataA = copyBoard.analyseShips(PLAYER_A);
+	auto shipsDataB = copyBoard.analyseShips(PLAYER_B);
 
 	// find out if there are ships with wrong size on the board
-	auto illegalShipsA = fullBoard.getIllegalShips(PLAYER_A);
-	auto illegalShipsB = fullBoard.getIllegalShips(PLAYER_B);
+	auto illegalShipsA = shipsDataA.second;
+	auto illegalShipsB = shipsDataB.second;
 	wrongSizeA = !illegalShipsA.empty();
 	wrongSizeB = !illegalShipsB.empty();
 
 	// count number of ships for each player
-	int numShipsA = fullBoard.countLegalShips(PLAYER_A);
-	int numShipsB = fullBoard.countLegalShips(PLAYER_B);
+	int numShipsA = shipsDataA.first;
+	int numShipsB = shipsDataB.first;
 	manyA = (numShipsA > MAX_SHIPS);
 	fewA = (numShipsA < MAX_SHIPS);
 	manyB = (numShipsB > MAX_SHIPS);
 	fewB = (numShipsB < MAX_SHIPS);
 
-	// detect illegal ship placement (adjacent ships)
+	// detect illegal ship placement (adjacent ships) - work on full board
 	adjacent = fullBoard.isAdjacent();
 
 	/*Validate input by an exact order*/

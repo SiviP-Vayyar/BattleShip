@@ -165,63 +165,92 @@ bool GameBoard::isShipSunk(int row, int col)
 /*returns the width and length of the ship in position (row,col)*/
 /*@Post: May return an underestimate of the dims, but when covering the entire ship, we will get at
  *least one the will catch an illegal ship */
-std::pair<int, int> GameBoard::getShipDimensions(int row, int col) const
+std::pair<int, int> GameBoard::getShipDimensions(const std::set<std::pair<int, int>>& coords) const
 {
-	const GameBoard& thisBoard = *this;
-	auto increments = { std::pair<int,int>(1,0), std::pair<int,int>(-1,0), std::pair<int,int>(0,1), std::pair<int,int>(0,-1) };
-	char piece = thisBoard(row, col);
-	int rowDim = 1, colDim = 1;
-
-	for (auto inc : increments)
+	int rowMin, rowMax, colMin, colMax;
+	rowMin = colMin = _cols + 1;
+	rowMax = colMax = 0;
+	
+	for (auto pos : coords)
 	{
-		int r = row, c = col;
-		while(isInBoard(r, c) && thisBoard(r, c) == piece)
-		{
-			r += inc.first;
-			c += inc.second;
-		}
-		rowDim += abs(row - r);
-		colDim += abs(col - c);
+		rowMin = std::min(rowMin, pos.first);
+		colMin = std::min(colMin, pos.second);
+		rowMax = std::max(rowMax, pos.first);
+		colMax = std::max(colMax, pos.second);
 	}
 
-	return std::make_pair(rowDim, colDim);
+	return std::make_pair(rowMax - rowMin + 1, colMax - colMin + 1);
 }
 
-/*finds ships with illegal shape or size for player, and appends them to the vector*/
-std::set<char> GameBoard::getIllegalShips(int player) const
+/*recursively gather all coordinates of the given ship*/
+void GameBoard::getShipCoordinates(int row, int col, std::set<std::pair<int, int>>& coords) const
 {
 	const GameBoard& thisBoard = *this;
+
+	// if this position is already in the set - stop recursion
+	if (coords.find(std::make_pair(row,col)) != coords.end())
+	{
+		return;
+	}
+
+	//insert coordinate to set
+	coords.insert(std::make_pair(row, col));
+
+	//continue to neighbors
+	for (auto neighbor : getAdjacentCoordinatesAsVector(row, col))
+	{
+		// if same type - continue recursion
+		int r = neighbor.first;
+		int c = neighbor.second;
+		if (thisBoard(r, c) == thisBoard(row, col))
+		{
+			getShipCoordinates(r, c, coords);
+		}
+	}
+}
+
+/*returns: legalShipsCount, illegalShips*/
+std::pair<int, std::set<char>> GameBoard::analyseShips(int player) const
+{
+	const GameBoard& thisBoard = *this;
+	int legalShipsCount = 0;
 	std::set<char> illegalShips;
 
-	for (int row = 1; row <= _rows; row++)
+	for(int row = 1; row <= _rows; row++)
 	{
-		for (int col = 1; col <= _cols; col++)
+		for(int col = 1; col <= _cols; col++)
 		{
 			// skips pieces that are not this player's ship type
 			char piece = thisBoard(row, col);
-			if (!isShip(piece) || playerShipType(player, piece) != piece)
+			if(!isShip(piece) || playerShipType(player, piece) != piece)
 				continue;
 
-			// get dimentions of the ship and compare against known ship types
-			auto dim = getShipDimensions(row, col);
+			std::set<std::pair<int, int>> coords;
+			getShipCoordinates(row, col, coords);
+			auto dim = getShipDimensions(coords);
 			int size = getShipLength(piece);
+
 			// a legal ship must be of the right size and shape ("narrow")
-			if (size != dim.first*dim.second || (dim.first != 1 && dim.second != 1))
+			if(size != dim.first*dim.second || (dim.first != 1 && dim.second != 1))
 			{
 				illegalShips.insert(piece);
 			}
+			// else - a legal ship
+			else
+			{
+				legalShipsCount++;
+			}
+
+			// clear ship from board
+			for (auto pos : coords)
+			{
+				thisBoard(pos.first, pos.second) = EMPTY;
+			}
 		}
 	}
-
-	return illegalShips;
+	return std::make_pair(legalShipsCount, illegalShips);
 }
 
-/*count ships of legal shape and size for player*/
-int GameBoard::countLegalShips(int player) const
-{
-	// TODO: implement
-	throw std::exception("Not implemented");
-}
 
 /*@return: false iff there are no adjacent ships on the board*/
 bool GameBoard::isAdjacent() const

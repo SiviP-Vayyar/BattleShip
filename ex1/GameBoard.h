@@ -47,9 +47,9 @@ public:
 	int getScore() const { return _score; } /*calculate how well the opponent scored on this board at the end of the game*/
 	bool isInBoard(int row, int col) const { return 0 < row && row <= _rows && 0 < col && col <= _cols; }
 	bool isShipSunk(int row, int col);
-	std::pair<int, int> getShipDimensions(int row, int col) const;
-	std::set<char> getIllegalShips(int player) const;
-	int countLegalShips(int player) const;
+	std::pair<int, int> getShipDimensions(const std::set<std::pair<int, int>>& coords) const;
+	void getShipCoordinates(int row, int col, std::set<std::pair<int, int>>& coords) const;
+	std::pair<int, std::set<char>> analyseShips(int player) const;
 	bool isAdjacent() const;
 	std::vector<std::pair<int, int>> getSurroundingCoordinatesAsVector(int row, int col) const;
 	std::vector<std::pair<int, int>> getAdjacentCoordinatesAsVector(int row, int col) const;
