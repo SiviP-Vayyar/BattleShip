@@ -318,38 +318,23 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 		// try parsing assuming legal line
 		try
 		{
-			// treat line as illegal if starts with spaces
-			if(lineStream.peek() == ' ')
-			{
-				continue;
-			}
+			// skip leading spaces
+			skipSpaces(lineStream);
 
 			// read first parameter
 			lineStream >> row; //TODO: make sure it reads the whole number and not single digits
 
 			// skip spaces and comma between parameters
-			while(lineStream.peek() == ' ')
-			{
-				lineStream.ignore();
-			}
+			skipSpaces(lineStream);
 			if(lineStream.peek() != ',') // illegal line - skip
 			{
 				continue;
 			}
 			lineStream.ignore();
-			while(lineStream.peek() == ' ')
-			{
-				lineStream.ignore();
-			}
+			skipSpaces(lineStream);
 
 			// read second parameter
 			lineStream >> col; //TODO: make sure it reads the whole number and not single digits
-
-			// treat line as illegal if ends with spaces
-			if (lineStream.peek() == ' ')
-			{
-				continue;
-			}
 
 			// verify legal position
 			if(!opponentBoard.isInBoard(row, col))
@@ -370,4 +355,13 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 
 	fin.close();
 	return moves;
+}
+
+std::stringstream& GameMaker::skipSpaces(std::stringstream& s)
+{
+	while (s.peek() == ' ')
+	{
+		s.ignore();
+	}
+	return s;
 }

@@ -5,7 +5,6 @@
 class GameMaker
 {
 public:
-	std::vector<std::pair<int, int>> getMovesFromFile(const std::string& movesFilePath, const GameBoard& opponentBoard) const;
 	GameMaker(int argc, char* argv[]);
 	GameMaker(const GameMaker& other) = delete; //TODO: copy constructor
 	~GameMaker();
@@ -13,6 +12,8 @@ public:
 	GameMaker& operator=(const GameMaker& otheBoard) = delete; // We intend to instantiate only once
 
 	void RunGame();
+	std::vector<std::pair<int, int>> getMovesFromFile(const std::string& movesFilePath, const GameBoard& opponentBoard) const;
+	static std::stringstream& GameMaker::skipSpaces(std::stringstream& s);
 
 
 private:
