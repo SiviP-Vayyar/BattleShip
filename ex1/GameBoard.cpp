@@ -1,15 +1,38 @@
 #include "GameBoard.h"
 #include "Player.h"
 #include <algorithm>
-#include <set>
+#include <iostream>
+#include <fstream>
 
 GameBoard::GameBoard(const std::string& path) : GameBoard()
 {
-	// TODO: implement
-	// TODO: clean all slots that are not ship
-	// TODO: if not 10*10 -> throw GameException
-	// read numRows, numCols and board matrix from file, then call setBoard
-	throw std::exception("Not Implemented");
+	GameBoard& thisBoard = *this;
+	//allocate an empty board for setBoard
+	const char emptyLine[10] = { EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY };
+	const char *emptyBoard[10] = { emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine };
+	//call setBoard to allocate a board
+	setBoard(emptyBoard, 10, 10);
+
+	//start reading from file
+	std::ifstream inputFileStream(path);
+	std::string line;
+
+	int linesReadCount = 1;
+	int charInLineCount;
+	while(std::getline(inputFileStream, line) && linesReadCount <= 10 )
+	{
+		
+		charInLineCount = 1;
+		for (char pieceChar : line)
+		{
+			thisBoard(linesReadCount, charInLineCount) = isShip(pieceChar) ? pieceChar : EMPTY;
+			charInLineCount++;
+		}
+		//if not a full line - the board is already filled with EMPTY slots
+		linesReadCount++;
+	}
+	//if under 10 lines - the board is already filled with EMPTY slots
+	inputFileStream.close();
 }
 
 GameBoard::~GameBoard()
