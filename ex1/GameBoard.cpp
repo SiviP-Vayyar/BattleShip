@@ -1,9 +1,12 @@
 #include "GameBoard.h"
 #include "Player.h"
+#include <algorithm>
 
 GameBoard::GameBoard(const std::string& path) : GameBoard()
 {
 	// TODO: implement
+	// TODO: clean all slots that are not ship
+	// TODO: if not 10*10 -> throw GameException
 	// read numRows, numCols and board matrix from file, then call setBoard
 	throw std::exception("Not Implemented");
 }
@@ -185,11 +188,15 @@ std::vector<char> GameBoard::getIllegalShips(int player) const
 			int size = getShipLength(piece);
 			// a legal ship must be of the right size and shape ("narrow")
 			if (size != dim.first*dim.second || (dim.first != 1 && dim.second != 1))
-				illegalShips.push_back(piece);
+			{
+				if (std::find(illegalShips.begin(), illegalShips.end(), piece) != illegalShips.end())
+				{
+					illegalShips.push_back(piece);
+				}
+			}
 		}
 	}
 
-	// TODO: clear duplicates before return, or possibly avoid them in the loop
 	return illegalShips;
 }
 
@@ -214,7 +221,7 @@ bool GameBoard::isAdjacent() const
 				continue;
 
 			// for every piece on the board that belongs to a ship, check the surrounding pieces
-			auto surroudingPositions = getSurroundingCoordinatesAsVector(row, col);
+			auto surroudingPositions = getAdjacentCoordinatesAsVector(row, col);
 			for (auto position : surroudingPositions)
 			{
 				// if the adjacent piece is not a ship - it's good
