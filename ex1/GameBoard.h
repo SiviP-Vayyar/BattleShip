@@ -47,11 +47,11 @@ public:
 	inline bool isInBoard(int row, int col) const;
 	bool isShipSunk(int row, int col);
 	std::pair<int, int> getShipDimensions(int row, int col) const;
-	void getIllegalShips(int player, std::vector<char>& illegalShips) const;
+	std::vector<char> getIllegalShips(int player) const;
 	int countShips(int player) const;
 	bool isAdjacent() const;
-	std::vector<std::pair<int, int>> getSurroundingCordinatesAsVector(int row, int col) const;
-	std::vector<std::pair<int, int>> getAdjacentCordinatesAsVector(int row, int col) const;
+	std::vector<std::pair<int, int>> getSurroundingCoordinatesAsVector(int row, int col) const;
+	std::vector<std::pair<int, int>> getAdjacentCoordinatesAsVector(int row, int col) const;
 
 	static int getShipScore(char piece);
 	static int getShipLength(char piece);

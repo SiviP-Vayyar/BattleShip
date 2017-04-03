@@ -219,16 +219,15 @@ bool GameMaker::ParseInput(int argc, char* argv[], std::string& path)
 	return true;
 }
 
-bool GameMaker::SetAndValidateBoards() //ZOHAR
+bool GameMaker::SetAndValidateBoards()
 {
 	bool wrongSizeA, wrongSizeB, fewA, fewB, manyA, manyB, adjacent;
 	wrongSizeA = wrongSizeB = fewA = fewB = manyA = manyB = adjacent = false;
 	GameBoard fullBoard(_boardFilePath);
 
 	// find out if there are ships with wrong size on the board
-	std::vector<char> illegalShipsA, illegalShipsB;
-	fullBoard.getIllegalShips(PLAYER_A, illegalShipsA);
-	fullBoard.getIllegalShips(PLAYER_B, illegalShipsB);
+	auto illegalShipsA = fullBoard.getIllegalShips(PLAYER_A);
+	auto illegalShipsB = fullBoard.getIllegalShips(PLAYER_B);
 	wrongSizeA = !illegalShipsA.empty();
 	wrongSizeB = !illegalShipsB.empty();
 

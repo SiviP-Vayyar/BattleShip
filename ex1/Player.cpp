@@ -125,13 +125,13 @@ void Player::deduceOpponentBoardAfterSink(int row, int col)
 void Player::markOpponentBoardAfterSink(int row, int col)
 {
 	_opponentBoard(row, col) = SINK;
-	auto surroundingCordinates = _opponentBoard.getAdjacentCordinatesAsVector(row, col);
+	auto surroundingCoordinates = _opponentBoard.getAdjacentCoordinatesAsVector(row, col);
 
-	for (auto cordinates : surroundingCordinates) 
+	for (auto Coordinates : surroundingCoordinates) 
 	{
-		if (_opponentBoard(cordinates.first, cordinates.second) == HIT)
+		if (_opponentBoard(Coordinates.first, Coordinates.second) == HIT)
 		{
-			markOpponentBoardAfterSink(cordinates.first, cordinates.second);
+			markOpponentBoardAfterSink(Coordinates.first, Coordinates.second);
 		}
 	}
 }

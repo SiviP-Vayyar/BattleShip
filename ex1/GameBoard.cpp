@@ -171,9 +171,10 @@ std::pair<int, int> GameBoard::getShipDimensions(int row, int col) const
 }
 
 /*finds ships with illegal shape or size for player, and appends them to the vector*/
-void GameBoard::getIllegalShips(int player, std::vector<char>& illegalShips) const
+std::vector<char> GameBoard::getIllegalShips(int player) const
 {
 	const GameBoard& thisBoard = *this;
+	std::vector<char> illegalShips;
 
 	for (int row = 1; row <= _rows; row++)
 	{
@@ -194,6 +195,7 @@ void GameBoard::getIllegalShips(int player, std::vector<char>& illegalShips) con
 	}
 
 	// TODO: clear duplicates before return, or possibly avoid them in the loop
+	return illegalShips;
 }
 
 /*count ships of legal shape and size for player*/
@@ -217,25 +219,18 @@ bool GameBoard::isAdjacent() const
 				continue;
 
 			// for every piece on the board that belongs to a ship, check the surrounding pieces
-			for (int r = -1 ; r <= 1 ; r++)
+			auto surroudingPositions = getSurroundingCoordinatesAsVector(row, col);
+			for (auto position : surroudingPositions)
 			{
-				for (int c = -1 ; c <=1 ; c++)
-				{
-					// don't check the center or positions outside the board
-					if ((c == 0 && r == 0) || !isInBoard(row + r, col + c))
-						continue;
+				// if the adjacent piece is not a ship - it's good
+				char adjacentPiece = thisBoard(position.first, position.second);
+				if (!isShip(adjacentPiece))
+					continue;
 
-					// if the adjacent piece is not a ship - it's good
-					char adjacentPiece = thisBoard(row + r, col + c);
-					if (!isShip(adjacentPiece))
-						continue;
-					
-					// if center and adjacentPiece are of different ships or players - it's bad
-					if (center != adjacentPiece)
-						return true;
-				}
-			}
-			
+				// if center and adjacentPiece are of different ships or players - it's bad
+				if (center != adjacentPiece)
+					return true;
+			}			
 		}
 	}
 
@@ -281,12 +276,12 @@ char& GameBoard::operator()(int row, int col) const
 	return _board[row - 1][col - 1];
 }
 
-/*return a vector of all valid surrounding cordinates*/
-std::vector<std::pair<int, int>> GameBoard::getSurroundingCordinatesAsVector(int row, int col) const
+/*return a vector of all valid surrounding Coordinates*/
+std::vector<std::pair<int, int>> GameBoard::getSurroundingCoordinatesAsVector(int row, int col) const
 {
-	std::vector<std::pair<int, int>> surroundingCordinates;
+	std::vector<std::pair<int, int>> surroundingCoordinates;
 
-	//iterate through all surrounding cordinates and if valid -> add to return vector
+	//iterate through all surrounding Coordinates and if valid -> add to return vector
 	for (int tempRow = row - 1; tempRow <= row + 1; ++tempRow) {
 		for (int tempCol = col - 1; tempCol <= col + 1; ++tempCol) {
 			if (tempCol == col && tempRow == row)
@@ -295,36 +290,29 @@ std::vector<std::pair<int, int>> GameBoard::getSurroundingCordinatesAsVector(int
 			}
 			if (isInBoard(tempRow, tempCol))
 			{
-				surroundingCordinates.push_back(std::pair<int, int>(tempRow, tempCol));
+				surroundingCoordinates.push_back(std::pair<int, int>(tempRow, tempCol));
 			}
 		}
 	}
 
-	return surroundingCordinates;
+	return surroundingCoordinates;
 	
 }
 
-/*returns a vector of all adjacent cordinates (does not include diagonal cordinates)*/
-std::vector<std::pair<int, int>> GameBoard::getAdjacentCordinatesAsVector(int row, int col) const
+/*returns a vector of all adjacent Coordinates (does not include diagonal Coordinates)*/
+std::vector<std::pair<int, int>> GameBoard::getAdjacentCoordinatesAsVector(int row, int col) const
 {
-	std::vector<std::pair<int, int>> adjacentCordinates;
+	std::vector<std::pair<int, int>> adjacentCoordinates;
 
-	if (isInBoard(row - 1, col -1))
+	auto increments = { std::pair<int,int>(1,0), std::pair<int,int>(-1,0), std::pair<int,int>(0,1), std::pair<int,int>(0,-1) };
+	for (auto inc : increments)
 	{
-		adjacentCordinates.push_back(std::pair<int, int>(row - 1, col - 1));
-	}
-	if (isInBoard(row + 1, col - 1))
-	{
-		adjacentCordinates.push_back(std::pair<int, int>(row + 1, col - 1));
-	}
-	if (isInBoard(row - 1, col + 1))
-	{
-		adjacentCordinates.push_back(std::pair<int, int>(row - 1, col + 1));
-	}
-	if (isInBoard(row + 1, col + 1))
-	{
-		adjacentCordinates.push_back(std::pair<int, int>(row + 1, col + 1));
+		int r = row + inc.first, c = col + inc.second;
+		if (isInBoard(r, c))
+		{
+			adjacentCoordinates.push_back(std::pair<int, int>(r, c));
+		}
 	}
 
-	return adjacentCordinates;
+	return adjacentCoordinates;
 }
