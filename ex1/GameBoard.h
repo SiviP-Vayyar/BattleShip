@@ -49,7 +49,7 @@ public:
 	bool isShipSunk(int row, int col);
 	std::pair<int, int> getShipDimensions(int row, int col) const;
 	std::set<char> getIllegalShips(int player) const;
-	int countShips(int player) const;
+	int countLegalShips(int player) const;
 	bool isAdjacent() const;
 	std::vector<std::pair<int, int>> getSurroundingCoordinatesAsVector(int row, int col) const;
 	std::vector<std::pair<int, int>> getAdjacentCoordinatesAsVector(int row, int col) const;
