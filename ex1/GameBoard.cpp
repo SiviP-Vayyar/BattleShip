@@ -126,11 +126,6 @@ bool GameBoard::isShip(char piece)
 	return false;
 }
 
-inline bool GameBoard::isInBoard(int row, int col) const
-{
-	return 0 < row && row <= _rows && 0 < col && col <= _cols;
-}
-
 // given a position on a ship, explore all directions to determine if sunk
 /*@pre: assume (row,col) is some position on a ship*/
 bool GameBoard::isShipSunk(int row, int col)

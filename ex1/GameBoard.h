@@ -44,7 +44,7 @@ public:
 	char** getBoardForPlayer(int player) const;
 	AttackResult attack(std::pair<int, int> attackPosition);
 	int getScore() const { return _score; } /*calculate how well the opponent scored on this board at the end of the game*/
-	inline bool isInBoard(int row, int col) const;
+	bool isInBoard(int row, int col) const { return 0 < row && row <= _rows && 0 < col && col <= _cols; }
 	bool isShipSunk(int row, int col);
 	std::pair<int, int> getShipDimensions(int row, int col) const;
 	std::vector<char> getIllegalShips(int player) const;
