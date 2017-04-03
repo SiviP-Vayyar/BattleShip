@@ -1,6 +1,7 @@
 #include "GameBoard.h"
 #include "Player.h"
 #include <algorithm>
+#include <set>
 
 GameBoard::GameBoard(const std::string& path) : GameBoard()
 {
@@ -169,10 +170,10 @@ std::pair<int, int> GameBoard::getShipDimensions(int row, int col) const
 }
 
 /*finds ships with illegal shape or size for player, and appends them to the vector*/
-std::vector<char> GameBoard::getIllegalShips(int player) const
+std::set<char> GameBoard::getIllegalShips(int player) const
 {
 	const GameBoard& thisBoard = *this;
-	std::vector<char> illegalShips;
+	std::set<char> illegalShips;
 
 	for (int row = 1; row <= _rows; row++)
 	{
@@ -189,10 +190,7 @@ std::vector<char> GameBoard::getIllegalShips(int player) const
 			// a legal ship must be of the right size and shape ("narrow")
 			if (size != dim.first*dim.second || (dim.first != 1 && dim.second != 1))
 			{
-				if (std::find(illegalShips.begin(), illegalShips.end(), piece) != illegalShips.end())
-				{
-					illegalShips.push_back(piece);
-				}
+				illegalShips.insert(piece);
 			}
 		}
 	}

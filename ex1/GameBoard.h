@@ -3,6 +3,7 @@
 #include "IBattleshipGameAlgo.h"
 #include <cctype>
 #include "Player.h"
+#include <set>
 
 /*ship types definitions*/
 #define RUBBER		'B'
@@ -47,7 +48,7 @@ public:
 	bool isInBoard(int row, int col) const { return 0 < row && row <= _rows && 0 < col && col <= _cols; }
 	bool isShipSunk(int row, int col);
 	std::pair<int, int> getShipDimensions(int row, int col) const;
-	std::vector<char> getIllegalShips(int player) const;
+	std::set<char> getIllegalShips(int player) const;
 	int countShips(int player) const;
 	bool isAdjacent() const;
 	std::vector<std::pair<int, int>> getSurroundingCoordinatesAsVector(int row, int col) const;
