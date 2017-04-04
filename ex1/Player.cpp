@@ -3,8 +3,20 @@
 
 void Player::setBoard(const char** board, int numRows, int numCols)
 {
+	// init my board from given board
 	_myBoard = GameBoard(board, numRows, numCols);
-	// TODO: need to init _opponentBoard somehow. Make a GameBoard constructor with only dimentions.
+	
+	// init blank opponent board - placeholder for future algorithm usage
+	char** opponentBoard = new char*[numRows];
+	for (int row = 0; row < numRows; row++)
+	{
+		opponentBoard[row] = new char[numCols];
+		for (int col = 0; col < numCols; col++)
+		{
+			opponentBoard[row][col] = EMPTY;
+		}
+	}
+	_opponentBoard = GameBoard(opponentBoard, numRows, numCols);
 }
 
 void Player::SetMoves(std::vector<std::pair<int, int>> moves)

@@ -67,7 +67,7 @@ void GameBoard::setBoard(const char* const* board, int numRows, int numCols)
 	for(int row = 0; row < _rows; row++)
 	{
 		_board[row] = new char[numCols];
-		for (int col = 0; col < _rows; col++)
+		for (int col = 0; col < _cols; col++)
 		{
 			_board[row][col] = board[row][col];
 		}
@@ -83,7 +83,7 @@ char** GameBoard::getBoard() const //ZOHAR + SIVAN
 	for (int row = 0; row < _rows; row++)
 	{
 		board[row] = new char[_cols];
-		for (int col = 0; col < _rows; col++)
+		for (int col = 0; col < _cols; col++)
 		{
 			board[row][col] = _board[row][col];
 		}
@@ -101,7 +101,7 @@ char** GameBoard::getBoardForPlayer(int player) const
 	for (int row = 0; row < _rows; row++)
 	{
 		board[row] = new char[_cols];
-		for (int col = 0; col < _rows; col++)
+		for (int col = 0; col < _cols; col++)
 		{
 			char piece = _board[row][col];
 			board[row][col] = (playerShipType(player, piece) == piece ? piece : EMPTY);
