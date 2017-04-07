@@ -26,15 +26,6 @@
 #define SUB_LEN			3
 #define DESTROYER_LEN	4
 
-
-//TODO: 
-/*
-might want to move this to a different header and include the new header 
-from GameBoard.h and Player.h - but we can't include Player.h 
-as this causes a cyclic dependency between GameBoard.h and Player.h
-*/
-#define PLAYER_A 0
-
 class GameBoard
 {
 public:
@@ -64,7 +55,7 @@ public:
 	static int getShipScore(char piece);
 	static int getShipLength(char piece);
 	static bool isShip(char piece);
-	static char playerShipType(int player, char typeDef) { return char(player == PLAYER_A ? toupper(typeDef) : tolower(typeDef)); }
+	static char playerShipType(int player, char piece);
 
 	/*Using 1-based matrix call on vector*/
 	char& operator()(int row, int col) const;

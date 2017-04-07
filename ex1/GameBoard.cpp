@@ -158,6 +158,11 @@ bool GameBoard::isShip(char piece)
 	return false;
 }
 
+char GameBoard::playerShipType(int player, char typeDef)
+{
+	return char(player == PLAYER_A ? toupper(typeDef) : tolower(typeDef));
+}
+
 // given a position on a ship, explore all directions to determine if sunk
 /*@pre: assume (row,col) is some position on a ship*/
 bool GameBoard::isShipSunk(int row, int col)
