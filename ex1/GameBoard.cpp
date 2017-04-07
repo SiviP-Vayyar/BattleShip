@@ -1,15 +1,20 @@
 #include "GameBoard.h"
+
 #include "Player.h"
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <cctype>
+#include <string>
 
 GameBoard::GameBoard(const std::string& path) : GameBoard()
 {
 	GameBoard& thisBoard = *this;
-	//allocate an empty board for setBoard
+
+	//allocate an empty board for setBoard - for now, use static 10x10 board allocation
 	const char emptyLine[10] = { EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY };
 	const char *emptyBoard[10] = { emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine };
+	
 	//call setBoard to allocate a board
 	setBoard(emptyBoard, 10, 10);
 

@@ -1,20 +1,18 @@
 #pragma once
 
 #include "IBattleshipGameAlgo.h"
-#include <cctype>
-#include <string>
 #include <set>
-#include<vector>
+#include <vector>
 
 /*ship types definitions*/
-#define RUBBER		'B'
-#define MISSILE		'P'
-#define SUB			'M'
-#define DESTROYER	'D'
-#define EMPTY		' '
+#define RUBBER			'B'
+#define MISSILE			'P'
+#define SUB				'M'
+#define DESTROYER		'D'
+#define EMPTY			' '
 
 /*ship attack definitions*/
-#define SHIP_HIT	'X'
+#define SHIP_HIT		'X'
 
 /*ship types score*/
 #define RUBBER_SCORE	2

@@ -121,17 +121,17 @@ void Player::updateOpponentBoardAfterSink(int row, int col)
 
 void Player::deduceOpponentBoardAfterMiss(int row, int col)
 {
-	//TODO: On scaleup - implement smart board state deduction and update after miss
+	//On scaleup - implement smart board state deduction and update after miss
 }
 
 void Player::deduceOpponentBoardAfterHit(int row, int col)
 {
-	//TODO: On scaleup - implement smart board state deduction and update after hit
+	//On scaleup - implement smart board state deduction and update after hit
 }
 
 void Player::deduceOpponentBoardAfterSink(int row, int col)
 {
-	//TODO: On scaleup - implement smart board state deduction and update after sink
+	//On scaleup - implement smart board state deduction and update after sink
 }
 
 void Player::markOpponentBoardAfterSink(int row, int col)
