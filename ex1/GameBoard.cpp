@@ -24,9 +24,8 @@ GameBoard::GameBoard(const std::string& path) : GameBoard()
 
 	int linesReadCount = 1;
 	int charInLineCount;
-	while(std::getline(inputFileStream, line) && linesReadCount <= 10 )
+	while (std::getline(inputFileStream, line) && linesReadCount <= 10 )
 	{
-		
 		charInLineCount = 1;
 		for (char pieceChar : line)
 		{
@@ -69,7 +68,7 @@ void GameBoard::setBoard(const char* const* board, int numRows, int numCols)
 	_isSet = true;
 	_board = new char*[numRows];
 
-	for(int row = 0; row < _rows; row++)
+	for (int row = 0; row < _rows; row++)
 	{
 		_board[row] = new char[numCols];
 		for (int col = 0; col < _cols; col++)
@@ -112,7 +111,6 @@ char** GameBoard::getBoardForPlayer(int player) const
 			board[row][col] = (playerShipType(player, piece) == piece ? piece : EMPTY);
 		}
 	}
-
 	return board;
 }
 
@@ -141,7 +139,6 @@ AttackResult GameBoard::attack(std::pair<int, int> attackPosition)
 		}
 		return AttackResult::Hit;
 	}
-
 	return AttackResult::Miss;
 }
 
@@ -152,9 +149,10 @@ bool GameBoard::isShip(char piece)
 	{
 		if (playerShipType(PLAYER_A, shipType) == piece ||
 			playerShipType(PLAYER_B, shipType) == piece)
+		{
 			return true;
+		}
 	}
-
 	return false;
 }
 
@@ -180,17 +178,18 @@ bool GameBoard::isShipSunk(int row, int col)
 			
 			// if this piece was hit - continue searching
 			if (piece == SHIP_HIT)
+			{
 				continue;
-			
+			}
 			// if this piece is not part of the ship - stop searching in this direction
 			if (!isShip(piece))
+			{
 				break;
-			
+			}
 			// if we reached this point, this piece of the ship is intact
 			return false;
 		}
 	}
-
 	// seaerched in all directions for a piece of the ship that was not yet hit - and failed
 	return true;
 }
@@ -249,14 +248,16 @@ std::pair<int, std::set<char>> GameBoard::analyseShips(int player)
 	int legalShipsCount = 0;
 	std::set<char> illegalShips;
 
-	for(int row = 1; row <= _rows; row++)
+	for (int row = 1; row <= _rows; row++)
 	{
-		for(int col = 1; col <= _cols; col++)
+		for (int col = 1; col <= _cols; col++)
 		{
 			// skips pieces that are not this player's ship type
 			char piece = thisBoard(row, col);
 			if(!isShip(piece) || playerShipType(player, piece) != piece)
+			{
 				continue;
+			}
 
 			std::set<std::pair<int, int>> coords;
 			getShipCoordinates(row, col, coords);
@@ -264,7 +265,7 @@ std::pair<int, std::set<char>> GameBoard::analyseShips(int player)
 			int size = getShipLength(piece);
 
 			// a legal ship must be of the right size and shape ("narrow")
-			if(size != dim.first*dim.second || (dim.first != 1 && dim.second != 1))
+			if (size != dim.first*dim.second || (dim.first != 1 && dim.second != 1))
 			{
 				illegalShips.insert(piece);
 			}
@@ -296,7 +297,9 @@ bool GameBoard::isAdjacent() const
 		{
 			char center = thisBoard(row, col);
 			if (!isShip(center))
+			{
 				continue;
+			}				
 
 			// for every piece on the board that belongs to a ship, check the surrounding pieces
 			auto surroudingPositions = getAdjacentCoordinatesAsVector(row, col);
@@ -305,15 +308,18 @@ bool GameBoard::isAdjacent() const
 				// if the adjacent piece is not a ship - it's good
 				char adjacentPiece = thisBoard(position.first, position.second);
 				if (!isShip(adjacentPiece))
+				{
 					continue;
+				}
 
 				// if center and adjacentPiece are of different ships or players - it's bad
 				if (center != adjacentPiece)
+				{
 					return true;
+				}
 			}			
 		}
 	}
-
 	return false;
 }
 
@@ -323,14 +329,15 @@ int GameBoard::getShipScore(char piece)
 	char shipTypes[] = { RUBBER, MISSILE, SUB, DESTROYER };
 	int shipScores[] = { RUBBER_SCORE, MISSILE_SCORE, SUB_SCORE, DESTROYER_SCORE };
 
-	for (int i=0 ; i<size ; i++)
+	for (int i=0 ; i < size ; i++)
 	{
 		auto shipType = shipTypes[i];
 		if (playerShipType(PLAYER_A, shipType) == piece ||
 			playerShipType(PLAYER_B, shipType) == piece)
+		{
 			return shipScores[i];
+		}
 	}
-
 	return 0;
 }
 
@@ -340,14 +347,15 @@ int GameBoard::getShipLength(char piece)
 	char shipTypes[] = { RUBBER, MISSILE, SUB, DESTROYER };
 	int shipLengths[] = { RUBBER_LEN, MISSILE_LEN, SUB_LEN, DESTROYER_LEN };
 
-	for (int i = 0; i<size; i++)
+	for (int i = 0; i < size; i++)
 	{
 		auto shipType = shipTypes[i];
 		if (playerShipType(PLAYER_A, shipType) == piece ||
 			playerShipType(PLAYER_B, shipType) == piece)
+		{
 			return shipLengths[i];
+		}
 	}
-
 	return 0;
 }
 
@@ -361,14 +369,22 @@ char GameBoard::operator()(int row, int col) const
 	return _board[row - 1][col - 1];
 }
 
+GameBoard& GameBoard::operator=(const GameBoard& other)
+{
+	setBoard(other._board, other._rows, other._cols);
+	return *this;
+};
+
 /*return a vector of all valid surrounding Coordinates*/
 std::vector<std::pair<int, int>> GameBoard::getSurroundingCoordinatesAsVector(int row, int col) const
 {
 	std::vector<std::pair<int, int>> surroundingCoordinates;
 
 	//iterate through all surrounding Coordinates and if valid -> add to return vector
-	for (int tempRow = row - 1; tempRow <= row + 1; ++tempRow) {
-		for (int tempCol = col - 1; tempCol <= col + 1; ++tempCol) {
+	for (int tempRow = row - 1; tempRow <= row + 1; ++tempRow)
+	{
+		for (int tempCol = col - 1; tempCol <= col + 1; ++tempCol)
+		{
 			if (tempCol == col && tempRow == row)
 			{
 				continue;
@@ -379,9 +395,7 @@ std::vector<std::pair<int, int>> GameBoard::getSurroundingCoordinatesAsVector(in
 			}
 		}
 	}
-
 	return surroundingCoordinates;
-	
 }
 
 /*returns a vector of all adjacent Coordinates (does not include diagonal Coordinates)*/
@@ -398,6 +412,5 @@ std::vector<std::pair<int, int>> GameBoard::getAdjacentCoordinatesAsVector(int r
 			adjacentCoordinates.push_back(std::pair<int, int>(r, c));
 		}
 	}
-
 	return adjacentCoordinates;
 }

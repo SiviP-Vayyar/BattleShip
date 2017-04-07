@@ -4,21 +4,22 @@
 #include <vector>
 
 /*Player Macros*/
-#define PLAYER_NOT_YET_KNOWN -1
-#define PLAYER_A 0
-#define PLAYER_B 1
-#define ATTACK_END std::pair<int, int>(INFINITY, INFINITY) // To mark the end of the moves list
+#define PLAYER_NOT_YET_KNOWN	-1
+#define PLAYER_A				0
+#define PLAYER_B				1
+#define ATTACK_END				std::pair<int, int>(INFINITY, INFINITY) // To mark the end of the moves list
 
 /*Board Macros*/
-#define HIT 'H'
-#define MISS 'O'
-#define SINK 'S'
-#define MAX_SHIPS 5
+#define HIT						'H'
+#define MISS 					'O'
+#define SINK 					'S'
+#define MAX_SHIPS 				5
 
 class Player : public IBattleshipGameAlgo
 {
 public:
-	Player() {};
+	Player() : _player(PLAYER_NOT_YET_KNOWN)
+	{};
 	~Player() {};
 
 	/* Will be called once from outside the class, to init the board*/
@@ -35,7 +36,7 @@ public:
 
 
 private:
-	int _player = PLAYER_NOT_YET_KNOWN; // figure out which player I am according to first attack()/notifyOnAttackResult() call
+	int _player; // figure out which player I am according to first attack()/notifyOnAttackResult() call
 	GameBoard _myBoard;
 	GameBoard _opponentBoard;
 	std::vector<std::pair<int,int>> _myMoves;

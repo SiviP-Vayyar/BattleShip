@@ -5,30 +5,29 @@
 #include <sstream>
 #include <windows.h>
 #include <tchar.h>
-//#include <stdio.h>
 #include <strsafe.h>
 #include <winapifamily.h>
 
 GameMaker::GameMaker(int argc, char* argv[])
 {
-	/*Validate input & Set input arguments*/
+	// Validate input & Set input arguments
 	std::string inputPath;
-	if(!ParseInput(argc, argv, inputPath))
+	if (!ParseInput(argc, argv, inputPath))
 	{
 		throw GameException("");
 	}
 
-	/*Set local Boards & Validate them*/
-	if(!SetAndValidateBoards())
+	// Set local Boards & Validate them
+	if (!SetAndValidateBoards())
 	{
 		throw GameException("");
 	}
 	
-	/*Init players (algorithms)*/
+	// Init players (algorithms)
 	_playerA = Player();
 	_playerB = Player();
 	
-	/*Set boards for both players*/
+	// Set boards for both players
 	char** rawBoardA = _boardA.getBoard();
 	char** rawBoardB = _boardB.getBoard();
 	_playerA.setBoard(const_cast<const char**>(rawBoardA), _boardA.rows(), _boardA.cols());
@@ -36,13 +35,9 @@ GameMaker::GameMaker(int argc, char* argv[])
 	GameBoard::deleteRawBoard(rawBoardA, _boardA.rows(), _boardA.cols());
 	GameBoard::deleteRawBoard(rawBoardB, _boardB.rows(), _boardB.cols());
 	
-	/*Set algorithm moves for both players*/
+	// Set algorithm moves for both players
 	_playerA.SetMoves(getMovesFromFile(_attackFilePathA,_boardB));
 	_playerB.SetMoves(getMovesFromFile(_attackFilePathB,_boardA));
-}
-
-GameMaker::~GameMaker()
-{
 }
 
 /*@pre: assume players and board were set and validated*/
@@ -94,7 +89,9 @@ void GameMaker::RunGame()
 
 	// print end game results
 	if (remainingShipsA == 0 || remainingShipsB == 0)
+	{
 		std::cout << "Player " << (remainingShipsA == 0 ? 'B' : 'A') << " won" << std::endl;
+	}
 	std::cout << "Points:" << std::endl;
 	std::cout << "Player A: " << _boardB.getScore() << std::endl;
 	std::cout << "Player B: " << _boardA.getScore() << std::endl;
@@ -115,7 +112,6 @@ bool isDirectory(const std::string& path)
 	{
 		return true;
 	}
-
 	return false;
 }
 
@@ -193,29 +189,28 @@ bool GameMaker::ParseInput(int argc, char* argv[], std::string& path)
 	}	
 
 	/*Validate input by an exact order*/
-	if(badPath || misBoard || misFileA || misFileB)
+	if (badPath || misBoard || misFileA || misFileB)
 	{
 		std::cout << "Wrong path: " << path.c_str() << std::endl;
 		
-		if(badPath)
+		if (badPath)
 		{
 			return false;
 		}
-		if(misBoard)
+		if (misBoard)
 		{
 			std::cout << "Missing board file (*.sboard) looking in path: " << path.c_str() << std::endl;
 		}
-		if(misFileA)
+		if (misFileA)
 		{
 			std::cout << "Missing attack file for player A (*.attack-a) looking in path: " << path.c_str() << std::endl;
 		}
-		if(misFileB)
+		if (misFileB)
 		{
 			std::cout << "Missing attack file for player B (*.attack-b) looking in path: " << path.c_str() << std::endl;
 		}
 		return false;
 	}
-
 	return true;
 }
 
@@ -309,7 +304,7 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 	int row, col;
 
 	// check if file failed to open
-	if(!fin)
+	if (!fin)
 	{
 		std::string err("Failed to open file in path: ");
 		err += movesFilePath;
@@ -328,11 +323,11 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 			skipSpaces(lineStream);
 
 			// read first parameter
-			lineStream >> row; //TODO: make sure it reads the whole number and not single digits
+			lineStream >> row;
 
 			// skip spaces and comma between parameters
 			skipSpaces(lineStream);
-			if(lineStream.peek() != ',') // illegal line - skip
+			if (lineStream.peek() != ',') // illegal line - skip
 			{
 				continue;
 			}
@@ -340,10 +335,10 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 			skipSpaces(lineStream);
 
 			// read second parameter
-			lineStream >> col; //TODO: make sure it reads the whole number and not single digits
+			lineStream >> col;
 
 			// verify legal position
-			if(!opponentBoard.isInBoard(row, col))
+			if (!opponentBoard.isInBoard(row, col))
 			{
 				continue;
 			}
@@ -353,10 +348,7 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 		}
 
 		// if line has illegal format - skip
-		catch (std::exception e)
-		{
-			continue;
-		}
+		catch (std::exception e){ }
 	}
 
 	fin.close();

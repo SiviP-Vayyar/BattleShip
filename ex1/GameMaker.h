@@ -7,7 +7,7 @@ class GameMaker
 public:
 	GameMaker(int argc, char* argv[]);
 	GameMaker(const GameMaker& other) = delete; // We intend to instantiate only once
-	~GameMaker();
+	~GameMaker(){};
 
 	GameMaker& operator=(const GameMaker& otheBoard) = delete; // We intend to instantiate only once
 

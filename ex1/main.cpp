@@ -24,9 +24,9 @@ int main(int argc, char* argv[])
 	}
 	catch (std::exception ex)
 	{
+		// For every undefined error
 		print_error(ex.what());
 		return -1;
 	}
-	
 	return 0;
 }

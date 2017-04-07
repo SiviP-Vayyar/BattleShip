@@ -34,33 +34,37 @@ public:
 	GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols) {} // copy c'tor
 	explicit GameBoard(const std::string& path);
 	~GameBoard();
-	static void deleteRawBoard(char** board, int rows, int cols);
 
+	/*Using 1-based matrix call on vector*/
+	char& operator()(int row, int col);			// used as setter, e.g. board(1,2) = 'M'
+	char operator()(int row, int col) const;	// used as getter, e.g. char piece = board(1,2)
+	GameBoard& operator=(const GameBoard& other);
+	AttackResult attack(std::pair<int, int> attackPosition);
+
+	/*Board info methods*/
+	char** getBoard() const;
+	char** getBoardForPlayer(int player) const;
 	int rows() const { return _rows; }
 	int cols() const { return _cols; }
 	bool isSet() const { return _isSet; }
-	char** getBoard() const;
-	char** getBoardForPlayer(int player) const;
-	AttackResult attack(std::pair<int, int> attackPosition);
 	int getScore() const { return _score; } /*calculate how well the opponent scored on this board at the end of the game*/
 	bool isInBoard(int row, int col) const { return 0 < row && row <= _rows && 0 < col && col <= _cols; }
 	bool isShipSunk(int row, int col);
+	bool isAdjacent() const;
+
+	/*Board validation methods*/
+	std::pair<int, std::set<char>> analyseShips(int player);
 	std::pair<int, int> getShipDimensions(const std::set<std::pair<int, int>>& coords) const;
 	void getShipCoordinates(int row, int col, std::set<std::pair<int, int>>& coords) const;
-	std::pair<int, std::set<char>> analyseShips(int player);
-	bool isAdjacent() const;
 	std::vector<std::pair<int, int>> getSurroundingCoordinatesAsVector(int row, int col) const;
 	std::vector<std::pair<int, int>> getAdjacentCoordinatesAsVector(int row, int col) const;
 
+	/*Board static methods*/
 	static int getShipScore(char piece);
 	static int getShipLength(char piece);
 	static bool isShip(char piece);
 	static char playerShipType(int player, char piece);
-
-	/*Using 1-based matrix call on vector*/
-	char& operator()(int row, int col);
-	char operator()(int row, int col) const;
-	GameBoard& operator=(const GameBoard& other) { setBoard(other._board, other._rows, other._cols); return *this; };
+	static void deleteRawBoard(char** board, int rows, int cols);
 	
 private:
 	char** _board;
@@ -70,5 +74,4 @@ private:
 	int _score;
 
 	void setBoard(const char* const* board, int numRows, int numCols);
-
 };

@@ -27,14 +27,14 @@ void Player::SetMoves(std::vector<std::pair<int, int>> moves)
 
 std::pair<int, int> Player::attack()
 {
-	if(_player == PLAYER_NOT_YET_KNOWN)
+	if (_player == PLAYER_NOT_YET_KNOWN)
 	{
 		// If attack() was called first, I am player A
 		_player = PLAYER_A;
 	}
 
 	/*Return next move, and advance the iterator*/
-	if(_movesIterator != _myMoves.end())
+	if (_movesIterator != _myMoves.end())
 	{
 		return *_movesIterator++;
 	}
@@ -43,13 +43,13 @@ std::pair<int, int> Player::attack()
 
 void Player::notifyOnAttackResult(int player, int row, int col, AttackResult result)
 {
-	if(_player == PLAYER_NOT_YET_KNOWN)
+	if (_player == PLAYER_NOT_YET_KNOWN)
 	{
 		// If notifyOnAttackResult() was called first, I am player B
 		_player = PLAYER_B;
 	}
 	/*Getting feedback for my attack (while ignoring ATTACK_END and all positions outside the board)*/
-	if(player == _player &&  _opponentBoard.isInBoard(row, col))
+	if (player == _player &&  _opponentBoard.isInBoard(row, col))
 	{
 		_opponentBoard(row, col) = attackResultToChar(result);
 		updateOpponentBoardAfterAttack(row, col, attackResultToChar(result));
@@ -58,7 +58,7 @@ void Player::notifyOnAttackResult(int player, int row, int col, AttackResult res
 
 char Player::attackResultToChar(AttackResult result)
 {
-	switch(result)
+	switch (result)
 	{
 	case AttackResult::Hit:
 	{
@@ -73,7 +73,9 @@ char Player::attackResultToChar(AttackResult result)
 		return SINK;
 	}
 	default:
+	{
 		return 'X'; // Just so all paths has return values
+	}	
 	}
 }
 
@@ -97,7 +99,9 @@ void Player::updateOpponentBoardAfterAttack(int row, int col, char attackChar)
 			return ;
 		}
 		default:
-			return; 
+		{
+			return;
+		}
 	}
 }
 
