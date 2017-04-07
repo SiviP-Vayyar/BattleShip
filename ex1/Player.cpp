@@ -22,7 +22,7 @@ void Player::setBoard(const char** board, int numRows, int numCols)
 void Player::SetMoves(std::vector<std::pair<int, int>> moves)
 {
 	_myMoves = moves;
-	_movesIterator = moves.begin();
+	_movesIterator = _myMoves.begin();
 }
 
 std::pair<int, int> Player::attack()
@@ -32,8 +32,7 @@ std::pair<int, int> Player::attack()
 		// If attack() was called first, I am player A
 		_player = PLAYER_A;
 	}
-	
-	//TODO: test for: not missing first move, giving back right move, finishing right
+
 	/*Return next move, and advance the iterator*/
 	if(_movesIterator != _myMoves.end())
 	{
