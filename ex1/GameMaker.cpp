@@ -147,7 +147,7 @@ bool GameMaker::ParseInput(int argc, char* argv[], std::string& path)
 	}
 	else //In case more that 1 argument was given - we choose to stop the program
 	{
-		throw GameException("Program takes at most 1 argument!");
+		throw std::exception("Program takes at most 1 argument!");
 	}
 
 	// iterate over files in path
@@ -222,7 +222,6 @@ bool GameMaker::ParseInput(int argc, char* argv[], std::string& path)
 bool GameMaker::SetAndValidateBoards()
 {
 	bool wrongSizeA, wrongSizeB, fewA, fewB, manyA, manyB, adjacent;
-	wrongSizeA = wrongSizeB = fewA = fewB = manyA = manyB = adjacent = false;
 	GameBoard fullBoard(_boardFilePath);
 	GameBoard copyBoard(fullBoard);
 
@@ -312,7 +311,9 @@ std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
 	// check if file failed to open
 	if(!fin)
 	{
-		throw GameException("Failed to open file in path: " + movesFilePath);
+		std::string err("Failed to open file in path: ");
+		err += movesFilePath;
+		throw std::exception(err.c_str());
 	}
 
 	// parse the file line by line

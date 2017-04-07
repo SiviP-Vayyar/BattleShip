@@ -126,7 +126,7 @@ AttackResult GameBoard::attack(std::pair<int, int> attackPosition)
 		return AttackResult::Miss;
 
 	int row = attackPosition.first, col = attackPosition.second;
-	char piece = thisBoard(row, col); //TODO: make sure this a COPY, not a reference
+	char piece = thisBoard(row, col);
 	
 	if (isShip(piece))
 	{
@@ -243,9 +243,9 @@ void GameBoard::getShipCoordinates(int row, int col, std::set<std::pair<int, int
 }
 
 /*returns: legalShipsCount, illegalShips*/
-std::pair<int, std::set<char>> GameBoard::analyseShips(int player) const
+std::pair<int, std::set<char>> GameBoard::analyseShips(int player)
 {
-	const GameBoard& thisBoard = *this;
+	GameBoard& thisBoard = *this;
 	int legalShipsCount = 0;
 	std::set<char> illegalShips;
 
@@ -351,7 +351,12 @@ int GameBoard::getShipLength(char piece)
 	return 0;
 }
 
-char& GameBoard::operator()(int row, int col) const
+char& GameBoard::operator()(int row, int col)
+{
+	return _board[row - 1][col - 1];
+}
+
+char GameBoard::operator()(int row, int col) const
 {
 	return _board[row - 1][col - 1];
 }

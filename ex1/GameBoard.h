@@ -29,8 +29,8 @@
 class GameBoard
 {
 public:
-	GameBoard() : _board(nullptr), _rows(0), _cols(0), _isSet(false){}
-	GameBoard(const char* const* board, int numRows, int numCols) { setBoard(board, numRows, numCols); }
+	GameBoard() : _board(nullptr), _rows(0), _cols(0), _isSet(false), _score(0) {}
+	GameBoard(const char* const* board, int numRows, int numCols) : GameBoard() { setBoard(board, numRows, numCols); }
 	GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols) {} // copy c'tor
 	explicit GameBoard(const std::string& path);
 	~GameBoard();
@@ -47,7 +47,7 @@ public:
 	bool isShipSunk(int row, int col);
 	std::pair<int, int> getShipDimensions(const std::set<std::pair<int, int>>& coords) const;
 	void getShipCoordinates(int row, int col, std::set<std::pair<int, int>>& coords) const;
-	std::pair<int, std::set<char>> analyseShips(int player) const;
+	std::pair<int, std::set<char>> analyseShips(int player);
 	bool isAdjacent() const;
 	std::vector<std::pair<int, int>> getSurroundingCoordinatesAsVector(int row, int col) const;
 	std::vector<std::pair<int, int>> getAdjacentCoordinatesAsVector(int row, int col) const;
@@ -58,7 +58,8 @@ public:
 	static char playerShipType(int player, char piece);
 
 	/*Using 1-based matrix call on vector*/
-	char& operator()(int row, int col) const;
+	char& operator()(int row, int col);
+	char operator()(int row, int col) const;
 	GameBoard& operator=(const GameBoard& other) { setBoard(other._board, other._rows, other._cols); return *this; };
 	
 private:
@@ -66,7 +67,7 @@ private:
 	int _rows;
 	int _cols;
 	bool _isSet;
-	int _score = 0;
+	int _score;
 
 	void setBoard(const char* const* board, int numRows, int numCols);
 

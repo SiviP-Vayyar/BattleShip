@@ -56,7 +56,7 @@ void Player::notifyOnAttackResult(int player, int row, int col, AttackResult res
 	}
 }
 
-char Player::attackResultToChar(AttackResult result) const
+char Player::attackResultToChar(AttackResult result)
 {
 	switch(result)
 	{

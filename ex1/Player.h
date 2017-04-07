@@ -41,7 +41,7 @@ private:
 	std::vector<std::pair<int,int>> _myMoves;
 	std::vector<std::pair<int, int>>::iterator _movesIterator;
 
-	char attackResultToChar(AttackResult result) const;
+	static char attackResultToChar(AttackResult result);
 	void updateOpponentBoardAfterAttack(int row, int col, char attackChar);
 	void updateOpponentBoardAfterMiss(int row, int col);
 	void updateOpponentBoardAfterSink(int row, int col);
