@@ -7,7 +7,7 @@
 #define PLAYER_NOT_YET_KNOWN	-1
 #define PLAYER_A				0
 #define PLAYER_B				1
-#define ATTACK_END				std::pair<int, int>(INFINITY, INFINITY) // To mark the end of the moves list
+#define ATTACK_END				std::pair<int, int>(INT32_MAX, INT32_MAX) // To mark the end of the moves list
 
 /*Board Macros*/
 #define HIT						'H'
