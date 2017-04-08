@@ -70,6 +70,9 @@ void GameMaker::RunGame()
 		int row = attackPosition.first, col = attackPosition.second;
 
 		// notify the players
+		// TODO: check if this still works now that a player can shoot himself
+		// TODO: (cont) should this notify opponent on my location?
+		// TODO: (cont) should this notify to me as Miss or as Hit/Sink?
 		_playerA.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 		_playerB.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 
