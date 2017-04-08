@@ -19,8 +19,7 @@ public:
 private:
 	Player _playerA;
 	Player _playerB;
-	GameBoard _boardA;
-	GameBoard _boardB;
+	GameBoard _board;
 
 	std::string _inputFolder;
 	std::string _boardFilePath;

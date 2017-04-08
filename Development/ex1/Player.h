@@ -34,6 +34,8 @@ public:
 	/*Hard coded algorithm*/
 	void SetMoves(std::vector<std::pair<int, int>> moves);
 
+	/*check if ship belongs to this player*/
+	bool isPlayerShip(char shipType) const { return GameBoard::playerShipType(_player, shipType) == shipType; }
 
 private:
 	int _player; // figure out which player I am according to first attack()/notifyOnAttackResult() call

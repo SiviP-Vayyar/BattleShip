@@ -28,22 +28,23 @@ GameMaker::GameMaker(int argc, char* argv[])
 	_playerB = Player();
 	
 	// Set boards for both players
-	char** rawBoardA = _boardA.getBoard();
-	char** rawBoardB = _boardB.getBoard();
-	_playerA.setBoard(const_cast<const char**>(rawBoardA), _boardA.rows(), _boardA.cols());
-	_playerB.setBoard(const_cast<const char**>(rawBoardB), _boardB.rows(), _boardB.cols());
-	GameBoard::deleteRawBoard(rawBoardA, _boardA.rows(), _boardA.cols());
-	GameBoard::deleteRawBoard(rawBoardB, _boardB.rows(), _boardB.cols());
+	char** rawBoardA = _board.getBoardForPlayer(PLAYER_A);
+	char** rawBoardB = _board.getBoardForPlayer(PLAYER_B);
+	_playerA.setBoard(const_cast<const char**>(rawBoardA), _board.rows(), _board.cols());
+	_playerB.setBoard(const_cast<const char**>(rawBoardB), _board.rows(), _board.cols());
+	GameBoard::deleteRawBoard(rawBoardA, _board.rows(), _board.cols());
+	GameBoard::deleteRawBoard(rawBoardB, _board.rows(), _board.cols());
 	
 	// Set algorithm moves for both players
-	_playerA.SetMoves(getMovesFromFile(_attackFilePathA,_boardB));
-	_playerB.SetMoves(getMovesFromFile(_attackFilePathB,_boardA));
+	_playerA.SetMoves(getMovesFromFile(_attackFilePathA,_board));
+	_playerB.SetMoves(getMovesFromFile(_attackFilePathB,_board));
 }
 
 /*@pre: assume players and board were set and validated*/
 void GameMaker::RunGame()
 {
 	// counters and flags
+	int scorePlayerA = 0, scorePlayerB = 0;
 	int remainingShipsA = MAX_SHIPS, remainingShipsB = MAX_SHIPS;
 	bool movesRemainingA = true, movesRemainingB = true;
 
@@ -51,8 +52,10 @@ void GameMaker::RunGame()
 	auto currentPlayerDef = PLAYER_A;
 	auto currentPlayer = &_playerA;
 	auto currentPlayerMovesRemaining = &movesRemainingA;
-	auto opponentBoard = &_boardB;
+	auto currentShipsCntr = &remainingShipsA;
 	auto opponentShipsCntr = &remainingShipsB;
+	auto currentScore = &scorePlayerA;
+	auto opponentScore = &scorePlayerB;
 
 	// game loop
 	while (remainingShipsA > 0 && remainingShipsB > 0 && (movesRemainingA || movesRemainingB))
@@ -60,31 +63,38 @@ void GameMaker::RunGame()
 		// get attack from player and play it on the board
 		auto attackPosition = currentPlayer->attack();
 		*currentPlayerMovesRemaining = (attackPosition != ATTACK_END);
-		auto attackResult = opponentBoard->attack(attackPosition);
+		auto attackResultInfo = _board.attack(attackPosition);
+		auto attackResult = attackResultInfo.first;
+		char attackedPiece = attackResultInfo.second;
+		bool selfHit = currentPlayer->isPlayerShip(attackedPiece);
 		int row = attackPosition.first, col = attackPosition.second;
 
 		// notify the players
 		_playerA.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 		_playerB.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 
-		// upon hit player gets another turn
-		if (attackResult == AttackResult::Hit)
+		// upon hit player gets another turn (if he didn't shoot himself)
+		if (attackResult == AttackResult::Hit && !selfHit)
 		{
 			continue;
 		}
-		// upon sink player gets another turn + update ships counter
+		// upon sink player gets another turn (if he didn't shoot himself) + update ships counter and score
 		if (attackResult == AttackResult::Sink)
 		{
-			*opponentShipsCntr = *opponentShipsCntr - 1;
-			continue;
+			auto shipsCntr = selfHit ? currentShipsCntr : opponentShipsCntr;
+			auto score = selfHit ? opponentScore : currentScore;
+			*shipsCntr = *shipsCntr - 1;
+			*score = *score + GameBoard::getShipScore(attackedPiece);
+			if (!selfHit)
+				continue;
 		}
 
 		// switch players for next round
 		currentPlayerDef = currentPlayerDef == PLAYER_A ? PLAYER_B : PLAYER_A;
 		currentPlayer = currentPlayer == &_playerA ? &_playerB : &_playerA;
 		currentPlayerMovesRemaining = currentPlayerMovesRemaining == &movesRemainingA ? &movesRemainingB : &movesRemainingA;
-		opponentBoard = opponentBoard == &_boardA ? &_boardB : &_boardA;
-		opponentShipsCntr = opponentShipsCntr == &remainingShipsA ? &remainingShipsB : &remainingShipsA;
+		std::swap(currentShipsCntr, opponentShipsCntr);
+		std::swap(currentScore, opponentScore);
 	}
 
 	// print end game results
@@ -93,8 +103,8 @@ void GameMaker::RunGame()
 		std::cout << "Player " << (remainingShipsA == 0 ? 'B' : 'A') << " won" << std::endl;
 	}
 	std::cout << "Points:" << std::endl;
-	std::cout << "Player A: " << _boardB.getScore() << std::endl;
-	std::cout << "Player B: " << _boardA.getScore() << std::endl;
+	std::cout << "Player A: " << scorePlayerA << std::endl;
+	std::cout << "Player B: " << scorePlayerB << std::endl;
 }
 
 /*chek if the path is a valid directory*/
@@ -283,13 +293,10 @@ bool GameMaker::SetAndValidateBoards()
 		return false;
 	}
 
-	// set local boards
-	char** rawBoardA = fullBoard.getBoardForPlayer(PLAYER_A);
-	char** rawBoardB = fullBoard.getBoardForPlayer(PLAYER_B);
-	_boardA = GameBoard(rawBoardA, fullBoard.rows(), fullBoard.cols());
-	_boardB = GameBoard(rawBoardB, fullBoard.rows(), fullBoard.cols());
-	GameBoard::deleteRawBoard(rawBoardA, fullBoard.rows(), fullBoard.cols());
-	GameBoard::deleteRawBoard(rawBoardB, fullBoard.rows(), fullBoard.cols());
+	// set local board
+	char** rawBoard = fullBoard.getBoard();
+	_board = GameBoard(rawBoard, fullBoard.rows(), fullBoard.cols());
+	GameBoard::deleteRawBoard(rawBoard, fullBoard.rows(), fullBoard.cols());
 
 	return true;
 }

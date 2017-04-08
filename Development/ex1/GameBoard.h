@@ -29,7 +29,7 @@
 class GameBoard
 {
 public:
-	GameBoard() : _board(nullptr), _rows(0), _cols(0), _isSet(false), _score(0) {}
+	GameBoard() : _board(nullptr), _rows(0), _cols(0), _isSet(false) {}
 	GameBoard(const char* const* board, int numRows, int numCols) : GameBoard() { setBoard(board, numRows, numCols); }
 	GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols) {} // copy c'tor
 	explicit GameBoard(const std::string& path);
@@ -39,7 +39,7 @@ public:
 	char& operator()(int row, int col);			// used as setter, e.g. board(1,2) = 'M'
 	char operator()(int row, int col) const;	// used as getter, e.g. char piece = board(1,2)
 	GameBoard& operator=(const GameBoard& other);
-	AttackResult attack(std::pair<int, int> attackPosition);
+	std::pair<AttackResult, char> attack(std::pair<int, int> attackPosition);
 
 	/*Board info methods*/
 	char** getBoard() const;
@@ -47,7 +47,6 @@ public:
 	int rows() const { return _rows; }
 	int cols() const { return _cols; }
 	bool isSet() const { return _isSet; }
-	int getScore() const { return _score; } /*calculate how well the opponent scored on this board at the end of the game*/
 	bool isInBoard(int row, int col) const { return 0 < row && row <= _rows && 0 < col && col <= _cols; }
 	bool isShipSunk(int row, int col);
 	bool isAdjacent() const;
@@ -71,7 +70,6 @@ private:
 	int _rows;
 	int _cols;
 	bool _isSet;
-	int _score;
 
 	void setBoard(const char* const* board, int numRows, int numCols);
 };

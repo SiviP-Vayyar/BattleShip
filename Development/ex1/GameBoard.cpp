@@ -114,14 +114,14 @@ char** GameBoard::getBoardForPlayer(int player) const
 	return board;
 }
 
-/*update the board to reflect an attack, and notify on the result*/
-AttackResult GameBoard::attack(std::pair<int, int> attackPosition)
+/*update the board to reflect an attack, and notify on the result and what was hit*/
+std::pair<AttackResult, char> GameBoard::attack(std::pair<int, int> attackPosition)
 {
 	GameBoard& thisBoard = *this;
 
 	// ignore ATTACK_END
 	if (attackPosition == ATTACK_END)
-		return AttackResult::Miss;
+		return std::make_pair(AttackResult::Miss, EMPTY);
 
 	int row = attackPosition.first, col = attackPosition.second;
 	char piece = thisBoard(row, col);
@@ -134,12 +134,11 @@ AttackResult GameBoard::attack(std::pair<int, int> attackPosition)
 		// determine if just hit or sink, and add to score if needed
 		if (isShipSunk(row, col))
 		{
-			_score += getShipScore(piece);
-			return AttackResult::Sink;
+			return std::make_pair(AttackResult::Sink, piece);
 		}
-		return AttackResult::Hit;
+		return std::make_pair(AttackResult::Hit, piece);
 	}
-	return AttackResult::Miss;
+	return std::make_pair(AttackResult::Miss, piece);
 }
 
 bool GameBoard::isShip(char piece)
