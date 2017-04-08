@@ -1,16 +1,21 @@
 ### YOU SHOULD EDIT THE BELOW WITH YOUR DETAILS AND FILES ###
 
-set(user1 itzikkobra)
-set(user2 heizenberg)
-set(user3 nevuhadnetzer)
-set(id1 "123456789")
-set(id2 "123456789")
-set(id3 "123456789")
+set(user1 sivanschick)
+set(user2 zoharmeir1)
+set(user3 noamhadad)
+set(id1 "301753018")
+set(id2 "303091003")
+set(id3 "305462939")
 set (SOURCE_FILES
-	file1.h
-	file1.cpp
-	file2.h
-	file2.cpp
+	GameBoard.h
+	GameBoard.cpp
+	GameException.h
+	main.cpp
+	GameMaker.h
+	GameMaker.cpp
+	Player.h
+	Player.cpp
+	IBattleshipGameAlgo.h
 )
 
 ### DO NOT CHANGE FROM HERE ON ###
