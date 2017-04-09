@@ -69,10 +69,7 @@ void GameMaker::RunGame()
 		bool selfHit = currentPlayer->isPlayerShip(attackedPiece);
 		int row = attackPosition.first, col = attackPosition.second;
 
-		// notify the players
-		// TODO: check if this still works now that a player can shoot himself
-		// TODO: (cont) should this notify opponent on my location?
-		// TODO: (cont) should this notify to me as Miss or as Hit/Sink?
+		// notify the players:
 		_playerA.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 		_playerB.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 
@@ -204,11 +201,9 @@ bool GameMaker::ParseInput(int argc, char* argv[], std::string& path)
 	/*Validate input by an exact order*/
 	if (badPath || misBoard || misFileA || misFileB)
 	{
-		std::cout << "Wrong path: " << path.c_str() << std::endl;
-		
 		if (badPath)
 		{
-			return false;
+			std::cout << "Wrong path: " << path.c_str() << std::endl;
 		}
 		if (misBoard)
 		{

@@ -48,11 +48,22 @@ void Player::notifyOnAttackResult(int player, int row, int col, AttackResult res
 		// If notifyOnAttackResult() was called first, I am player B
 		_player = PLAYER_B;
 	}
-	/*Getting feedback for my attack (while ignoring ATTACK_END and all positions outside the board)*/
-	if (player == _player &&  _opponentBoard.isInBoard(row, col))
+
+	/*Getting feedback for an attack (while ignoring ATTACK_END and all positions outside the board)*/
+	if (_opponentBoard.isInBoard(row, col))
 	{
-		_opponentBoard(row, col) = attackResultToChar(result);
-		updateOpponentBoardAfterAttack(row, col, attackResultToChar(result));
+		bool myAttack = player == _player;
+		bool myShip = isPlayerShip(_myBoard(row, col)); // If not self attack - Assuming one square can be occupied by one player only
+		if (myAttack && !myShip) // The common case
+		{
+			_opponentBoard(row, col) = attackResultToChar(result);
+			updateOpponentBoardAfterAttack(row, col, attackResultToChar(result));
+		}
+		else if (!myAttack && !myShip) // if opponent attackted his own ship
+		{
+			_opponentBoard(row, col) = attackResultToChar(result);
+			updateOpponentBoardAfterAttack(row, col, attackResultToChar(result));
+		}
 	}
 }
 
