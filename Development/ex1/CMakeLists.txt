@@ -26,10 +26,8 @@ message("user: ${user3}, id: ${id3}")
 
 set(EXE_NAME "ex1.${user1}")
 add_executable( ${EXE_NAME}
-	SOURCE_FILES
+	${SOURCE_FILES}
 )
-
+#BUILD_BINARY_OUTPUT_DIRECTORY
 set_property(TARGET ${EXE_NAME} PROPERTY FOLDER "ex1/${user1}")
-set_property(TARGET ${EXE_NAME} PROPERTY OUTPUT_NAME "ex1.${user1})
-
-install (TARGETS ${EXE_NAME} DESTINATION ${INSTALL_BINARY_DIR})
+set_property(TARGET ${EXE_NAME} PROPERTY OUTPUT_NAME "${user1}")
