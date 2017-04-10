@@ -7,8 +7,8 @@ void Player::setBoard(const char** board, int numRows, int numCols)
 	_myBoard = GameBoard(board, numRows, numCols);
 	
 	// init blank opponent board - placeholder for future algorithm usage
-	char** opponentBoard = new char*[numRows];
-	for (int row = 0; row < numRows; row++)
+	char** opponentBoard = new char*[numRows]; // Local empty board allocation
+	for (int row = 0; row < numRows; row++) // Copy board
 	{
 		opponentBoard[row] = new char[numCols];
 		for (int col = 0; col < numCols; col++)
@@ -16,7 +16,8 @@ void Player::setBoard(const char** board, int numRows, int numCols)
 			opponentBoard[row][col] = EMPTY;
 		}
 	}
-	_opponentBoard = GameBoard(opponentBoard, numRows, numCols);
+	_opponentBoard = GameBoard(opponentBoard, numRows, numCols); // set board
+	_opponentBoard.deleteRawBoard(opponentBoard, numRows, numCols); // delete local allocation
 }
 
 void Player::SetMoves(std::vector<std::pair<int, int>> moves)
