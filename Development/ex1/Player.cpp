@@ -17,7 +17,7 @@ void Player::setBoard(const char** board, int numRows, int numCols)
 		}
 	}
 	_opponentBoard = GameBoard(opponentBoard, numRows, numCols); // set board
-	_opponentBoard.deleteRawBoard(opponentBoard, numRows, numCols); // delete local allocation
+	GameBoard::deleteRawBoard(opponentBoard, numRows, numCols); // delete local allocation
 }
 
 void Player::SetMoves(std::vector<std::pair<int, int>> moves)
