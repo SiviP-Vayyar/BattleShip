@@ -11,12 +11,14 @@ GameBoard::GameBoard(const std::string& path) : GameBoard()
 {
 	GameBoard& thisBoard = *this;
 
-	//allocate an empty board for setBoard - for now, use static 10x10 board allocation
-	const char emptyLine[10] = { EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY };
-	const char *emptyBoard[10] = { emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine, emptyLine };
-	
+	//allocate local empty board for setBoard
+	char ** emptyBoard = newEmptyRawBoard(BOARD_ROWS, BOARD_COLS);
+
 	//call setBoard to allocate a board
-	setBoard(emptyBoard, 10, 10);
+	setBoard(emptyBoard, BOARD_ROWS, BOARD_COLS);
+
+	//delete local empty board
+	deleteRawBoard(emptyBoard, BOARD_ROWS, BOARD_COLS);
 
 	//start reading from file
 	std::ifstream inputFileStream(path);
@@ -24,7 +26,7 @@ GameBoard::GameBoard(const std::string& path) : GameBoard()
 
 	int linesReadCount = 1;
 	int charInLineCount;
-	while (std::getline(inputFileStream, line) && linesReadCount <= 10 )
+	while (std::getline(inputFileStream, line) && linesReadCount <= BOARD_ROWS )
 	{
 		charInLineCount = 1;
 		for (char pieceChar : line)
@@ -35,13 +37,28 @@ GameBoard::GameBoard(const std::string& path) : GameBoard()
 		//if not a full line - the board is already filled with EMPTY slots
 		linesReadCount++;
 	}
-	//if under 10 lines - the board is already filled with EMPTY slots
+	//if under BOARD_ROWS lines - the board is already filled with EMPTY slots
 	inputFileStream.close();
 }
 
 GameBoard::~GameBoard()
 {
 	deleteRawBoard(_board, _rows, _cols);
+}
+
+/*Caller of this method if resposible for allocation - must call deleteRawBoard()*/
+char** GameBoard::newEmptyRawBoard(int rows, int cols)
+{
+	char** newBoard = new char*[rows]; // Local empty board allocation
+	for(int row = 0; row < rows; row++) // Copy board
+	{
+		newBoard[row] = new char[cols];
+		for(int col = 0; col < cols; col++)
+		{
+			newBoard[row][col] = EMPTY;
+		}
+	}
+	return newBoard;
 }
 
 void GameBoard::deleteRawBoard(char** board, int rows, int cols)

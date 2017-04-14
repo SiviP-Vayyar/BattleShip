@@ -26,6 +26,10 @@
 #define SUB_LEN			3
 #define DESTROYER_LEN	4
 
+/*board dimentions for ex1*/
+#define BOARD_ROWS		10
+#define BOARD_COLS		10
+
 class GameBoard
 {
 public:
@@ -63,6 +67,7 @@ public:
 	static int getShipLength(char piece);
 	static bool isShip(char piece);
 	static char playerShipType(int player, char piece);
+	static char** newEmptyRawBoard(int rows, int cols);
 	static void deleteRawBoard(char** board, int rows, int cols);
 	
 private:

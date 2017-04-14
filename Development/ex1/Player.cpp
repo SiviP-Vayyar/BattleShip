@@ -3,20 +3,10 @@
 
 void Player::setBoard(const char** board, int numRows, int numCols)
 {
-	// init my board from given board
-	_myBoard = GameBoard(board, numRows, numCols);
 	
-	// init blank opponent board - placeholder for future algorithm usage
-	char** opponentBoard = new char*[numRows]; // Local empty board allocation
-	for (int row = 0; row < numRows; row++) // Copy board
-	{
-		opponentBoard[row] = new char[numCols];
-		for (int col = 0; col < numCols; col++)
-		{
-			opponentBoard[row][col] = EMPTY;
-		}
-	}
-	_opponentBoard = GameBoard(opponentBoard, numRows, numCols); // set board
+	_myBoard = GameBoard(board, numRows, numCols); // init my board from given board
+	char** opponentBoard = GameBoard::newEmptyRawBoard(numRows, numCols); // local empty board allocation
+	_opponentBoard = GameBoard(opponentBoard, numRows, numCols); // set empty opponent board
 	GameBoard::deleteRawBoard(opponentBoard, numRows, numCols); // delete local allocation
 }
 
