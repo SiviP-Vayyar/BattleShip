@@ -20,7 +20,7 @@ std::pair<int, int> Player::attack()
 {
 	if (_player == PLAYER_NOT_YET_KNOWN)
 	{
-		// If attack() was called first, I am player A
+		/* If attack() was called first, I am player A*/
 		_player = PLAYER_A;
 	}
 
@@ -36,7 +36,7 @@ void Player::notifyOnAttackResult(int player, int row, int col, AttackResult res
 {
 	if (_player == PLAYER_NOT_YET_KNOWN)
 	{
-		// If notifyOnAttackResult() was called first, I am player B
+		/* If notifyOnAttackResult() was called first, I am player B*/
 		_player = PLAYER_B;
 	}
 

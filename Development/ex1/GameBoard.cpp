@@ -97,7 +97,7 @@ void GameBoard::setBoard(const char* const* board, int numRows, int numCols)
 
 /*return a new raw board*/
 /*@post: the returned board is dynamically allocated and must be freed*/
-char** GameBoard::getBoard() const //ZOHAR + SIVAN
+char** GameBoard::getBoard() const
 {
 	char** board = new char*[_rows];
 

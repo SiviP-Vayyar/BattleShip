@@ -7,7 +7,7 @@
     </LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>C:\Temp\ex1_tests\T11_Game2</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>C:\BattleshipScripts\ex1_tests\T11_Game2</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
