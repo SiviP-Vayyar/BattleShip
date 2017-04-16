@@ -2,8 +2,6 @@
 
 #include "IBattleshipGameAlgo.h"
 #include "GameBoard.h"
-#include <vector>
-#include <windows.h>
 #include <functional>
 
 typedef IBattleshipGameAlgo IAlgo;

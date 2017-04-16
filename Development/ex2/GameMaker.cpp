@@ -1,8 +1,6 @@
 #include "GameMaker.h"
 #include "GameException.h"
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <windows.h>
 #include <tchar.h>
 #include <strsafe.h>
