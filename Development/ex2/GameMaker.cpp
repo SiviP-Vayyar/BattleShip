@@ -7,14 +7,13 @@
 #include <tchar.h>
 #include <strsafe.h>
 #include <winapifamily.h>
+#include <algorithm>
 
-#include "PlayerFile.h"
 
 GameMaker::GameMaker(int argc, char* argv[])
 {
 	// Validate input & Set input arguments
-	std::string inputPath;
-	if (!ParseInput(argc, argv, inputPath))
+	if (!ParseInput(argc, argv))
 	{
 		throw GameException("");
 	}
@@ -25,9 +24,6 @@ GameMaker::GameMaker(int argc, char* argv[])
 		throw GameException("");
 	}
 	
-	// Init players (algorithms)
-	_playerA = new PlayerFile(); //TODO: generalize
-	_playerB = new PlayerFile(); //TODO: generalize
 	// Set boards for both players
 	char** rawBoardA = _board.getBoardForPlayer(PLAYER_A);
 	char** rawBoardB = _board.getBoardForPlayer(PLAYER_B);
@@ -35,14 +31,14 @@ GameMaker::GameMaker(int argc, char* argv[])
 	_playerB->setBoard(PLAYER_B, const_cast<const char**>(rawBoardB), _board.rows(), _board.cols());
 	GameBoard::deleteRawBoard(rawBoardA, _board.rows(), _board.cols());
 	GameBoard::deleteRawBoard(rawBoardB, _board.rows(), _board.cols());
-	
-	// Set algorithm moves for both players //TODO: init instead
-	//// _playerA.SetMoves(getMovesFromFile(_attackFilePathA,_board));
-	//// _playerB.SetMoves(getMovesFromFile(_attackFilePathB,_board));
+
+	// Init Algorithms
+	_playerA->init(_inputFolder);
+	_playerB->init(_inputFolder);
 }
 
 /*@pre: assume players and board were set and validated*/
-void GameMaker::RunGame()
+void GameMaker::RunGame() //TODO: ZOHAR
 {
 	// counters and flags
 	int scorePlayerA = 0, scorePlayerB = 0;
@@ -67,7 +63,7 @@ void GameMaker::RunGame()
 		auto attackResultInfo = _board.attack(attackPosition);
 		auto attackResult = attackResultInfo.first;
 		char attackedPiece = attackResultInfo.second;
-		bool selfHit = currentPlayer->isPlayerShip(attackedPiece);
+		bool selfHit = false;// currentPlayer->isPlayerShip(attackedPiece); //TODO: should work with Interface IBattle only!!
 		int row = attackPosition.first, col = attackPosition.second;
 
 		// notify the players:
@@ -138,88 +134,133 @@ inline bool endsWith(std::string const & str, std::string const & suffix)
 }
 
 /*Validate input, parse it, and set all needed local variables*/
-bool GameMaker::ParseInput(int argc, char* argv[], std::string& path)
+bool GameMaker::ParseInput(int argc, char* argv[]) //TODO: SIVAN
 {
-	//bool badPath, misBoard, misFileA, misFileB;
-	//badPath = misBoard = misFileA = misFileB = true;
+	bool badPath, misBoard, misAlgo, loadDllA, loadDllB, algoInitA, algoInitB;
+	badPath = misBoard = misAlgo = loadDllA = loadDllB  = algoInitA = algoInitB = true;
+	std::string path, pathLoadFailedA, pathLoadFailedB, pathInitFailedA, pathInitFailedB;
+	std::string fileNameA, fileNameB, fullFileNameA, fullFileNameB;
+	path = pathInitFailedA = pathInitFailedB = pathLoadFailedA = pathLoadFailedB = fileNameA = fileNameB = fullFileNameA = fullFileNameB = "";
+	
+	HANDLE dir;
+	WIN32_FIND_DATAA fileData;
+	HINSTANCE hDll;
+	std::vector<std::string> dllNamesVec;
 
-	//// set path according to argv
-	//if(argc == 1)
-	//{
-	//	path = ".";
-	//}
-	//else if(argc == 2)
-	//{
-	//	path = argv[1];
-	//}
-	//else //In case more that 1 argument was given - we choose to stop the program
-	//{
-	//	throw std::exception("Program takes at most 1 argument!");
-	//}
+	// set path according to argv
+	if(argc == 1) //TODO: support prints to console
+	{
+		path = ".";
+	}
+	else if(argc == 2)
+	{
+		path = argv[1];
+	}
+	else //In case more that 1 argument was given - we choose to stop the program
+	{
+		throw std::exception("Program takes at most 1 argument!");
+	}
 
-	//// iterate over files in path
-	//if (isDirectory(path))
-	//{
-	//	HANDLE dir;
-	//	WIN32_FIND_DATA fileData;
-	//	badPath = false;
-	//	_inputFolder = path;
+	// iterate over files in path
+	if (isDirectory(path))
+	{
+		badPath = false;
+		_inputFolder = path;
 
-	//	// test for empty directory
-	//	std::string s = path + "\\*";
-	//	std::wstring wpath(s.begin(), s.end());
-	//	dir = FindFirstFile(wpath.c_str(), &fileData);
-	//	if (dir != INVALID_HANDLE_VALUE)
-	//	{
-	//		// test each file suffix and set variables as needed
-	//		do
-	//		{
-	//			std::wstring wfileName = fileData.cFileName;
-	//			std::string fileName(wfileName.begin(), wfileName.end());
-	//			std::string fullFileName = path + "\\" + fileName;
+		// test for empty directory
+		std::string s = path + "\\*";
 
-	//			// In case there are multiple possibilities - we choose to take the last one
-	//			if (endsWith(fileName, ".sboard"))
-	//			{
-	//				_boardFilePath = fullFileName;
-	//				misBoard = false;
-	//			}
-	//			else if (endsWith(fileName, ".attack-a"))
-	//			{
-	//				_attackFilePathA = fullFileName;
-	//				misFileA = false;
-	//			}
-	//			else if (endsWith(fileName, ".attack-b"))
-	//			{
-	//				_attackFilePathB = fullFileName;
-	//				misFileB = false;
-	//			}
+		dir = FindFirstFileA(s.c_str(), &fileData);
+		if (dir != INVALID_HANDLE_VALUE)
+		{
+			// test each file suffix and set variables as needed
+			do
+			{
+				std::string fileName(fileData.cFileName);
+				std::string fullFileName = path + "\\" + fileName;
 
-	//		} while (FindNextFile(dir, &fileData));
-	//	}
-	//}	
+				// In case there are multiple possibilities - we choose to take the last one
+				if (endsWith(fileName, ".sboard"))
+				{
+					_boardFilePath = fullFileName;
+					misBoard = false;
+				}
+				else if (endsWith(fileName, ".dll"))
+				{
+					dllNamesVec.push_back(fileName);
+				}
 
-	///*Validate input by an exact order*/
-	//if (badPath || misBoard || misFileA || misFileB)
-	//{
-	//	if (badPath)
-	//	{
-	//		std::cout << "Wrong path: " << path.c_str() << std::endl;
-	//	}
-	//	if (misBoard)
-	//	{
-	//		std::cout << "Missing board file (*.sboard) looking in path: " << path.c_str() << std::endl;
-	//	}
-	//	if (misFileA)
-	//	{
-	//		std::cout << "Missing attack file for player A (*.attack-a) looking in path: " << path.c_str() << std::endl;
-	//	}
-	//	if (misFileB)
-	//	{
-	//		std::cout << "Missing attack file for player B (*.attack-b) looking in path: " << path.c_str() << std::endl;
-	//	}
-	//	return false;
-	//}
+			} while (FindNextFileA(dir, &fileData));
+		}
+
+		/*Sort dll names and take only first 2*/
+		std::sort(dllNamesVec.begin(), dllNamesVec.end());
+
+		//TODO: complete!!!
+		// Print all errors relevant by order
+
+		//TODO: take from vector
+		// = fileData.cFileName;
+		//fullFileNameA = path + "\\" + fileName;
+		//fullFileNameB = path + "\\" + fileName;
+		
+		// Load dynamic library
+		hDll = LoadLibraryA(fullFileNameA.c_str()); // Notice: Unicode compatible version of LoadLibrary
+		if(!hDll)
+		{
+			loadDllA = false;
+			algoInitA = false;
+		}
+
+		// Init players (algorithms)
+		_playerA;// = new PlayerFile(); //TODO: generalize
+		_playerB;// = new PlayerFile(); //TODO: generalize
+		
+		// Get function pointer
+		getShapeFunc = (GetShapeFuncType)GetProcAddress(hDll, "GetShape");
+		if(!getShapeFunc)
+		{
+			std::cout << "could not load function GetShape()" << std::endl;
+			return EXIT_FAILURE;
+		}
+
+
+
+	}	
+
+	/*Validate input by an exact order*/
+	if (badPath || misBoard || misAlgo || loadDllA || loadDllB || algoInitA || algoInitB)
+	{
+		if (badPath)
+		{
+			std::cout << "Wrong path: " << path.c_str() << std::endl;
+		}
+		if (misBoard)
+		{
+			std::cout << "Missing board file (*.sboard) looking in path: " << path.c_str() << std::endl;
+		}
+		if (misAlgo)
+		{
+			std::cout << "Missing an algorithm (dll) file looking in path: " << path.c_str() << std::endl;
+		}
+		if (loadDllA)
+		{
+			std::cout << "Cannot load dll: " << fullFileNameA << std::endl;
+		}
+		if (loadDllB)
+		{
+			std::cout << "Cannot load dll: " << "" << std::endl;
+		}
+		if (algoInitA)
+		{
+			std::cout << "Algorithm initialization failed for dll: " << "" << std::endl;
+		}
+		if (algoInitB)
+		{
+			std::cout << "Algorithm initialization failed for dll: " << "" << std::endl;
+		}
+		return false;
+	}
 	return true; //TODO: implement with FindFirstFileA()
 }
 
@@ -298,74 +339,4 @@ bool GameMaker::SetAndValidateBoards()
 	GameBoard::deleteRawBoard(rawBoard, fullBoard.rows(), fullBoard.cols());
 
 	return true;
-}
-
-/*@pre: assume opponent's board was loaded and set. required for GameBoard::isInBoard method*/
-std::vector<std::pair<int, int>> GameMaker::getMovesFromFile(
-	const std::string& movesFilePath, const GameBoard& opponentBoard) const
-{
-	std::vector<std::pair<int, int>> moves;
-	std::ifstream fin(movesFilePath);
-	std::string line;
-	int row, col;
-
-	// check if file failed to open
-	if (!fin)
-	{
-		std::string err("Failed to open file in path: ");
-		err += movesFilePath;
-		throw std::exception(err.c_str());
-	}
-
-	// parse the file line by line
-	while (std::getline(fin, line))
-	{
-		std::stringstream lineStream(line);
-
-		// try parsing assuming legal line
-		try
-		{
-			// skip leading spaces
-			skipSpaces(lineStream);
-
-			// read first parameter
-			lineStream >> row;
-
-			// skip spaces and comma between parameters
-			skipSpaces(lineStream);
-			if (lineStream.peek() != ',') // illegal line - skip
-			{
-				continue;
-			}
-			lineStream.ignore();
-			skipSpaces(lineStream);
-
-			// read second parameter
-			lineStream >> col;
-
-			// verify legal position
-			if (!opponentBoard.isInBoard(row, col))
-			{
-				continue;
-			}
-
-			// add values to vector
-			moves.push_back(std::pair<int, int>(row, col));
-		}
-
-		// if line has illegal format - skip
-		catch (std::exception e){ }
-	}
-
-	fin.close();
-	return moves;
-}
-
-std::stringstream& GameMaker::skipSpaces(std::stringstream& s)
-{
-	while (s.peek() == ' ')
-	{
-		s.ignore();
-	}
-	return s;
 }

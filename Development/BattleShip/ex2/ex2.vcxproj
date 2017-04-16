@@ -123,6 +123,17 @@
     <ClInclude Include="..\..\ex2\IBattleshipGameAlgo.h" />
     <ClInclude Include="..\..\ex2\PlayerBase.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ex2_FileAlgo\ex2_FileAlgo.vcxproj">
+      <Project>{e4a6dfee-706b-4c14-a3ae-16d762b86bd5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ex2_NaiveAlgo\ex2_NaiveAlgo.vcxproj">
+      <Project>{241cfb94-8159-4301-997b-b1dd66e735b8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ex2_SmartAlgo\ex2_SmartAlgo.vcxproj">
+      <Project>{35387f87-a10e-40cf-ba2b-b3787d7811bf}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

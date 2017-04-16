@@ -30,6 +30,19 @@
 #define BOARD_ROWS		10
 #define BOARD_COLS		10
 
+/*Player Macros*/
+#define PLAYER_NOT_YET_KNOWN	-1
+#define PLAYER_A				0
+#define PLAYER_B				1
+#define ATTACK_END				std::pair<int, int>(INT32_MAX, INT32_MAX) // To mark the end of the moves list
+
+/*Board Macros*/
+#define HIT						'H'
+#define MISS 					'O'
+#define SINK 					'S'
+#define MAX_SHIPS 				5
+
+
 class GameBoard
 {
 public:

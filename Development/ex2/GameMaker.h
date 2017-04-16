@@ -1,6 +1,19 @@
 #pragma once
 
-#include "PlayerBase.h"
+#include "IBattleshipGameAlgo.h"
+#include "GameBoard.h"
+#include <vector>
+#include <windows.h>
+#include <functional>
+
+typedef IBattleshipGameAlgo IAlgo;
+typedef IAlgo *(*GetAlgoFuncType)();
+//struct LibData
+//{
+//	std::string name;
+//	HINSTANCE handle;
+//	std::function<GetAlgoFuncType> GetAlgorithm;
+//};
 
 class GameMaker
 {
@@ -12,13 +25,10 @@ public:
 	GameMaker& operator=(const GameMaker& otheBoard) = delete; // We intend to instantiate only once
 
 	void RunGame();
-	std::vector<std::pair<int, int>> getMovesFromFile(const std::string& movesFilePath, const GameBoard& opponentBoard) const;
-	static std::stringstream& GameMaker::skipSpaces(std::stringstream& s);
-
 
 private:
-	PlayerBase* _playerA; //TODO: make unique
-	PlayerBase* _playerB; //TODO: make unique
+	IAlgo* _playerA; //TODO: make unique
+	IAlgo* _playerB; //TODO: make unique
 	GameBoard _board;
 	
 	std::string _inputFolder;
@@ -26,6 +36,6 @@ private:
 	std::string _attackFilePathA;
 	std::string _attackFilePathB;
 
-	bool ParseInput(int argc, char* argv[], std::string& path);
+	bool ParseInput(int argc, char* argv[]);
 	bool SetAndValidateBoards();
 };
