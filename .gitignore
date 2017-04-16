@@ -3,10 +3,14 @@ Development/BattleShip/BattleShip_ex1/Debug/
 Development/BattleShip/.vs/BattleShip/v14/.suo
 Development/BattleShip/BattleShip.VC.db
 Development/BattleShip/BattleShip.VC.VC.opendb
-Development/BattleShip/BattleShip_ex1/x64/Debug/
-Development/BattleShip/x64/Debug/
+Development/BattleShip/BattleShip_ex1/x64/
+Development/BattleShip/x64/
 Development/Testing
 build
 Development/CMakeLists.txt
-Development/BattleShip/BattleShip_ex1/x64/
+Development/BattleShip/ex1/x64/
+Development/BattleShip/ex2/x64/
 Development/BattleShip/x64/
+Development/BattleShip/ex2_FileAlgo/x64/
+Development/BattleShip/ex2_NaiveAlgo/x64/
+Development/BattleShip/ex2_SmartAlgo/x64/
