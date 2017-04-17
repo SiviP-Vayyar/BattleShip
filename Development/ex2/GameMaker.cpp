@@ -103,34 +103,7 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 	std::cout << "Player B: " << scorePlayerB << std::endl;
 }
 
-/*chek if the path is a valid directory*/
-bool isDirectory(const std::string& path)
-{
-	DWORD ftyp = GetFileAttributesA(path.c_str());
-	
-	// test for invalid path
-	if(ftyp == INVALID_FILE_ATTRIBUTES)
-	{
-		return false;
-	}
-	// test if path is a directory
-	if(ftyp & FILE_ATTRIBUTE_DIRECTORY)
-	{
-		return true;
-	}
-	return false;
-}
 
-/*test if str ends with suffix*/
-inline bool endsWith(std::string const & str, std::string const & suffix)
-{
-	if(suffix.size() > str.size())
-	{
-		return false;
-	}
-
-	return std::equal(suffix.rbegin(), suffix.rend(), str.rbegin());
-}
 
 /*Validate input, parse it, and set all needed local variables*/
 bool GameMaker::ParseInput(int argc, char* argv[]) //TODO: make sure order of prints after change!!!
