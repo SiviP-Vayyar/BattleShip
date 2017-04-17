@@ -1,6 +1,8 @@
 #pragma once
+
 #include "GameBoard.h"
 #include <vector>
+
 
 static std::vector<IBattleshipGameAlgo *> _instancesVec; // A static vector to hold all instances of algo in the dll
 

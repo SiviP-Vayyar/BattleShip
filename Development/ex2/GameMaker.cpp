@@ -6,18 +6,19 @@
 #include <strsafe.h>
 #include <winapifamily.h>
 #include <algorithm>
+#include "GameUtils.h"
 
 
 GameMaker::GameMaker(int argc, char* argv[])
 {
 	// Validate input & Set input arguments
-	if (!ParseInput(argc, argv))
+	if (!ParseInput(argc, argv)) //TODO: order
 	{
 		throw GameException("");
 	}
 
 	// Set local Boards & Validate them
-	if (!SetAndValidateBoards())
+	if (!SetAndValidateBoards()) //TODO: order
 	{
 		throw GameException("");
 	}
@@ -31,8 +32,8 @@ GameMaker::GameMaker(int argc, char* argv[])
 	GameBoard::deleteRawBoard(rawBoardB, _board.rows(), _board.cols());
 
 	// Init Algorithms
-	_playerA->init(_inputFolder);
-	_playerB->init(_inputFolder);
+	_playerA->init(_inputFolder); //TODO: remove?
+	_playerB->init(_inputFolder); //TODO: remove?
 }
 
 /*@pre: assume players and board were set and validated*/
@@ -132,12 +133,12 @@ inline bool endsWith(std::string const & str, std::string const & suffix)
 }
 
 /*Validate input, parse it, and set all needed local variables*/
-bool GameMaker::ParseInput(int argc, char* argv[])
+bool GameMaker::ParseInput(int argc, char* argv[]) //TODO: make sure order of prints after change!!!
 {
 	bool badPath, misBoard, misAlgo, failedLoadA, failedLoadB, failedInitA, failedInitB;
 	badPath = misBoard = misAlgo = failedLoadA = failedLoadB  = failedInitA = failedInitB = true;
 	std::string path, fullFileNameA, fullFileNameB;
-	path = fullFileNameA = fullFileNameB = "";
+	fullFileNameA = fullFileNameB = path = "";
 	
 	HANDLE dir;
 	WIN32_FIND_DATAA fileData;
@@ -208,7 +209,7 @@ bool GameMaker::ParseInput(int argc, char* argv[])
 				{
 					failedLoadA = false;
 					_playerA = GetAlgorithm();
-					failedInitA = !_playerA->init(path);
+					failedInitA = !_playerA->init(path); //TODO: remove?
 				}
 			}
 		}
@@ -229,7 +230,7 @@ bool GameMaker::ParseInput(int argc, char* argv[])
 				{
 					failedLoadB = false;
 					_playerB = GetAlgorithm();
-					failedInitB = !_playerB->init(path);
+					failedInitB = !_playerB->init(path); //TODO: remove?
 				}
 			}
 		}

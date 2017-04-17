@@ -2,6 +2,7 @@
 
 #include "PlayerBase.h"
 
+
 class PlayerSmart : public PlayerBase
 {
 public:

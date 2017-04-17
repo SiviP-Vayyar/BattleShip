@@ -1,6 +1,7 @@
-#include "GameMaker.h"
 #include "GameException.h"
+#include "GameMaker.h"
 #include <iostream>
+
 
 void print_error(const std::string& s)
 {

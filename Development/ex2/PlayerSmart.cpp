@@ -1,5 +1,6 @@
 #include "PlayerSmart.h"
 
+
 std::pair<int, int> PlayerSmart::attack()
 {
 	if (_player == PLAYER_NOT_YET_KNOWN)

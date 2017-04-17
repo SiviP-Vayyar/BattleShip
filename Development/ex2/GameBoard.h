@@ -4,6 +4,7 @@
 #include <set>
 #include <vector>
 
+
 /*ship types definitions*/
 #define RUBBER			'B'
 #define MISSILE			'P'

@@ -2,6 +2,7 @@
 
 #include "PlayerBase.h"
 
+
 class PlayerNaive : public PlayerBase
 {
 public:
