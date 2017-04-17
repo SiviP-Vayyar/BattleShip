@@ -1,0 +1,4 @@
+Player A won
+Points:
+Player A: 24
+Player B: 17
