@@ -132,13 +132,12 @@ inline bool endsWith(std::string const & str, std::string const & suffix)
 }
 
 /*Validate input, parse it, and set all needed local variables*/
-bool GameMaker::ParseInput(int argc, char* argv[]) //TODO: SIVAN
+bool GameMaker::ParseInput(int argc, char* argv[])
 {
-	bool badPath, misBoard, misAlgo, loadDllA, loadDllB, algoInitA, algoInitB;
-	badPath = misBoard = misAlgo = loadDllA = loadDllB  = algoInitA = algoInitB = true;
-	std::string path, pathLoadFailedA, pathLoadFailedB, pathInitFailedA, pathInitFailedB;
-	std::string fileNameA, fileNameB, fullFileNameA, fullFileNameB;
-	path = pathInitFailedA = pathInitFailedB = pathLoadFailedA = pathLoadFailedB = fileNameA = fileNameB = fullFileNameA = fullFileNameB = "";
+	bool badPath, misBoard, misAlgo, failedLoadA, failedLoadB, failedInitA, failedInitB;
+	badPath = misBoard = misAlgo = failedLoadA = failedLoadB  = failedInitA = failedInitB = true;
+	std::string path, fullFileNameA, fullFileNameB;
+	path = fullFileNameA = fullFileNameB = "";
 	
 	HANDLE dir;
 	WIN32_FIND_DATAA fileData;
@@ -169,65 +168,75 @@ bool GameMaker::ParseInput(int argc, char* argv[]) //TODO: SIVAN
 		std::string s = path + "\\*";
 
 		dir = FindFirstFileA(s.c_str(), &fileData);
-		if (dir != INVALID_HANDLE_VALUE)
+		if(dir != INVALID_HANDLE_VALUE)
 		{
 			// test each file suffix and set variables as needed
 			do
 			{
 				std::string fileName(fileData.cFileName);
-				std::string fullFileName = path + "\\" + fileName;
 
 				// In case there are multiple possibilities - we choose to take the last one
-				if (endsWith(fileName, ".sboard"))
+				if(endsWith(fileName, ".sboard"))
 				{
+					std::string fullFileName = path + "\\" + fileName;
 					_boardFilePath = fullFileName;
 					misBoard = false;
 				}
-				else if (endsWith(fileName, ".dll"))
+				else if(endsWith(fileName, ".dll"))
 				{
 					dllNamesVec.push_back(fileName);
 				}
 
-			} while (FindNextFileA(dir, &fileData));
+			} while(FindNextFileA(dir, &fileData));
 		}
-
+		
 		/*Sort dll names and take only first 2*/
 		std::sort(dllNamesVec.begin(), dllNamesVec.end());
 
-		//TODO: complete!!!
-		// Print all errors relevant by order
-
-		//TODO: take from vector
-		// = fileData.cFileName;
-		//fullFileNameA = path + "\\" + fileName;
-		//fullFileNameB = path + "\\" + fileName;
-		
-		// Load dynamic library
-		hDll = LoadLibraryA(fullFileNameA.c_str()); // Notice: Unicode compatible version of LoadLibrary
-		if(!hDll)
+		// Set Player A
+		if (dllNamesVec.size() > 0)
 		{
-			loadDllA = false;
-			algoInitA = false;
+			fullFileNameA = path + "\\" + dllNamesVec[0];
+			// Load dynamic library
+			hDll = LoadLibraryA(fullFileNameA.c_str()); // Notice: Unicode compatible version of LoadLibrary
+			if(hDll)
+			{
+				failedLoadA = false;
+				// GetAlgorithm function
+				auto GetAlgorithm = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(hDll, GET_ALGORITHM_STR));
+				if(GetAlgorithm)
+				{
+					failedLoadA = false;
+					_playerA = GetAlgorithm();
+					failedInitA = !_playerA->init(path);
+				}
+			}
 		}
 
-		// Init players (algorithms)
-		_playerA;// = new PlayerFile(); //TODO: generalize
-		_playerB;// = new PlayerFile(); //TODO: generalize
-		
-		// Get function pointer
-		getShapeFunc = (GetShapeFuncType)GetProcAddress(hDll, "GetShape");
-		if(!getShapeFunc)
+		// Set Player B
+		if(dllNamesVec.size() > 1)
 		{
-			std::cout << "could not load function GetShape()" << std::endl;
-			return EXIT_FAILURE;
+			misAlgo = false;
+			fullFileNameB = path + "\\" + dllNamesVec[1];
+			// Load dynamic library
+			hDll = LoadLibraryA(fullFileNameB.c_str()); // Notice: Unicode compatible version of LoadLibrary
+			if(hDll)
+			{
+				failedLoadB = false;
+				// GetAlgorithm function
+				auto GetAlgorithm = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(hDll, GET_ALGORITHM_STR));
+				if(GetAlgorithm)
+				{
+					failedLoadB = false;
+					_playerB = GetAlgorithm();
+					failedInitB = !_playerB->init(path);
+				}
+			}
 		}
-
-
-
 	}	
 
 	/*Validate input by an exact order*/
-	if (badPath || misBoard || misAlgo || loadDllA || loadDllB || algoInitA || algoInitB)
+	if (badPath || misBoard || misAlgo || failedLoadA || failedLoadB || failedInitA || failedInitB)
 	{
 		if (badPath)
 		{
@@ -241,25 +250,25 @@ bool GameMaker::ParseInput(int argc, char* argv[]) //TODO: SIVAN
 		{
 			std::cout << "Missing an algorithm (dll) file looking in path: " << path.c_str() << std::endl;
 		}
-		if (loadDllA)
+		if (failedLoadA)
 		{
 			std::cout << "Cannot load dll: " << fullFileNameA << std::endl;
 		}
-		if (loadDllB)
+		if (failedLoadB)
 		{
-			std::cout << "Cannot load dll: " << "" << std::endl;
+			std::cout << "Cannot load dll: " << fullFileNameB << std::endl;
 		}
-		if (algoInitA)
+		if (failedInitA)
 		{
-			std::cout << "Algorithm initialization failed for dll: " << "" << std::endl;
+			std::cout << "Algorithm initialization failed for dll: " << fullFileNameA << std::endl;
 		}
-		if (algoInitB)
+		if (failedInitB)
 		{
-			std::cout << "Algorithm initialization failed for dll: " << "" << std::endl;
+			std::cout << "Algorithm initialization failed for dll: " << fullFileNameB << std::endl;
 		}
 		return false;
 	}
-	return true; //TODO: implement with FindFirstFileA()
+	return true;
 }
 
 bool GameMaker::SetAndValidateBoards()

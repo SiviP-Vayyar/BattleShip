@@ -6,6 +6,8 @@
 
 typedef IBattleshipGameAlgo IAlgo;
 typedef IAlgo *(*GetAlgoFuncType)();
+
+#define GET_ALGORITHM_STR "GetAlgorithm"
 //struct LibData
 //{
 //	std::string name;
