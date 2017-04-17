@@ -36,7 +36,7 @@ GameMaker::GameMaker(int argc, char* argv[])
 }
 
 /*@pre: assume players and board were set and validated*/
-void GameMaker::RunGame() //TODO: ZOHAR
+void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. all I did was change Player& to IAlgo*
 {
 	// counters and flags
 	int scorePlayerA = 0, scorePlayerB = 0;
