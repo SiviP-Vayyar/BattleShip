@@ -26,15 +26,24 @@ std::pair<int, int> PlayerFile::attack()
 	return ATTACK_END;
 }
 
-bool PlayerFile::init(const std::string& path) //TODO: SIVAN
+bool PlayerFile::init(const std::string& path)
 {
-	_algoMovesFolder = path;
-	std::string attackFilePath = "";//getSortedFiles(path, endsWith = null);
-	//TODO: utils for all static funcs of files & stuff
-	// Set algorithm moves for both players
-	//TODO: get file according to sorted attack files
+	int lexOrder;
+	auto allFiles = GetAllFilesSorted(path, ".attack");
 
-	//SetMoves(getMovesFromFile(_algoMovesFolder));
+	switch (allFiles.size())
+	{
+	case 0:
+		return false;
+	case 1:
+		lexOrder = 0;
+		break;
+	default:
+		lexOrder = (_player == PLAYER_A) ? 0 : 1;
+	}
+	
+	_algoMovesFile = path + "\\" + allFiles[lexOrder];
+	SetMoves(getMovesFromFile(_algoMovesFile));
 
 	return true;
 }

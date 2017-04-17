@@ -20,7 +20,7 @@ private:
 	void SetMoves(std::vector<std::pair<int, int>> moves);
 	std::vector<std::pair<int, int>> getMovesFromFile(const std::string& movesFilePath) const;
 
-	std::string _algoMovesFolder;
+	std::string _algoMovesFile;
 	std::vector<std::pair<int,int>> _myMoves;
 	std::vector<std::pair<int, int>>::iterator _movesIterator;
 };
