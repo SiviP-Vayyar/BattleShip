@@ -115,6 +115,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\ex2\GameBoard.h" />
     <ClInclude Include="..\..\ex2\GameException.h" />
+    <ClInclude Include="..\..\ex2\GameUtils.h" />
     <ClInclude Include="..\..\ex2\IBattleshipGameAlgo.h" />
     <ClInclude Include="..\..\ex2\PlayerBase.h" />
     <ClInclude Include="..\..\ex2\PlayerFile.h" />

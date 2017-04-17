@@ -19,7 +19,6 @@ private:
 	/*Hard coded algorithm*/
 	void SetMoves(std::vector<std::pair<int, int>> moves);
 	std::vector<std::pair<int, int>> getMovesFromFile(const std::string& movesFilePath) const;
-	static std::stringstream& skipSpaces(std::stringstream& s);
 
 	std::string _algoMovesFolder;
 	std::vector<std::pair<int,int>> _myMoves;

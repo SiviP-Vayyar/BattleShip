@@ -1,3 +1,4 @@
+#include "GameUtils.h"
 #include "PlayerFile.h"
 #include <sstream>
 #include <fstream>
@@ -33,7 +34,7 @@ bool PlayerFile::init(const std::string& path) //TODO: SIVAN
 	// Set algorithm moves for both players
 	//TODO: get file according to sorted attack files
 
-	SetMoves(getMovesFromFile(_algoMovesFolder));
+	//SetMoves(getMovesFromFile(_algoMovesFolder));
 
 	return true;
 }
@@ -98,15 +99,6 @@ std::vector<std::pair<int, int>> PlayerFile::getMovesFromFile(const std::string&
 
 	fin.close();
 	return moves;
-}
-
-std::stringstream& PlayerFile::skipSpaces(std::stringstream& s)
-{
-	while(s.peek() == ' ')
-	{
-		s.ignore();
-	}
-	return s;
 }
 
 
