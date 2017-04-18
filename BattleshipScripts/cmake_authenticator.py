@@ -34,8 +34,3 @@ def authenticate_cmake_files(root_folder):
                 bad_files.append(team_name)
 
     return bad_files
-
-
-if __name__ == '__main__':
-    bad_teams = authenticate_cmake_files(root_folder)
-    print('\n'.join(bad_teams))

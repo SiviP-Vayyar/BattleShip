@@ -60,11 +60,11 @@ def copy_extra_files(source_dir, build_dir):
 if __name__ == '__main__':
 
     # Hard Coded Paths
-    tests_path = 'C:/BattleshipScripts/ex1_tests'
-    my_dir = 'C:/BattleshipScripts/ex1_tests'
+    tests_path = 'C:/Git/BattleShip/BattleshipScripts/ex1_tests'
+    my_dir = 'C:/Git/BattleShip/BattleshipScripts/ex1_tests'
     teams_parent_dir = "C:/Git/BattleShip/build/Windows-x64-Release/output"
     teams_source_dir = "C:/Git/BattleShip/Development/Testing/ex1"
-    students_xlsx = "C:/BattleshipScripts/AllStudents.xlsx"
+    students_xlsx = "C:/Git/BattleShip/BattleshipScripts/AllStudents.xlsx"
 
     # Generate Results Excell:
     parser = excel_parser.Parser()
@@ -89,11 +89,17 @@ if __name__ == '__main__':
 
     # Generate teams' test result:
     students_with_grades = []
+    ignore_teams_list = ['mattanserry', 'ohadglass', 'yuvalkaspi', 'Tamarsardas', 'perifishgold', 'ronnysivan']
     for idx, team_to_test in enumerate(teams):
+        if team_to_test.name in ignore_teams_list:
+            continue
+        print('Started team: {}\t\t{}/{}'.format(team_to_test.name, idx + 1, len(teams)))
         output_diff = test.test_team(team_to_test)
+        if len(output_diff) > 30000:
+            a = 1;
         parser.parse_team(team_to_test, output_diff)
         students_with_grades.extend([name for name in team_to_test.members])
-        print('Finished team: {}\t\t{}/{}'.format(team_to_test.name, idx + 1, len(teams)))
+
 
     # Lists of special cases for the end:
     student_file_missing_list = [t.name for t in teams if not t.has_students_file]

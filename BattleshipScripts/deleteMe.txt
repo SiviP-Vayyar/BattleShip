@@ -1,12 +1,12 @@
  Volume in drive C is System
  Volume Serial Number is 72A7-4227
 
- Directory of C:\BattleshipScripts\ex1_tests\T9_TieGame
+ Directory of C:\Git\BattleShip\BattleshipScripts\ex1_tests\T9_TieGame
 
-04/07/2017  11:31 AM    <DIR>          .
-04/07/2017  11:31 AM    <DIR>          ..
+04/17/2017  09:28 PM    <DIR>          .
+04/17/2017  09:28 PM    <DIR>          ..
 04/07/2017  11:36 AM               120 board_9.sboard
 04/07/2017  11:37 AM                43 few_movesA.attack-a
 04/07/2017  11:37 AM                63 few_movesB.attack-b
                3 File(s)            226 bytes
-               2 Dir(s)  23,591,608,320 bytes free
+               2 Dir(s)  23,140,352,000 bytes free
