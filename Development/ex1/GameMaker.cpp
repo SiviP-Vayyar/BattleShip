@@ -1,5 +1,6 @@
 #include "GameMaker.h"
 #include "GameException.h"
+#include "PrintHandler.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -57,9 +58,13 @@ void GameMaker::RunGame()
 	auto currentScore = &scorePlayerA;
 	auto opponentScore = &scorePlayerB;
 
+	PrintHandler::printInitialBoard(_board);
+
 	// game loop
 	while (remainingShipsA > 0 && remainingShipsB > 0 && (movesRemainingA || movesRemainingB))
 	{
+		PrintHandler::delay();
+
 		// get attack from player and play it on the board
 		auto attackPosition = currentPlayer->attack();
 		*currentPlayerMovesRemaining = (attackPosition != ATTACK_END);
@@ -72,6 +77,8 @@ void GameMaker::RunGame()
 		// notify the players:
 		_playerA.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 		_playerB.notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+
+		PrintHandler::printAttackResult(attackPosition, attackResult);
 
 		// upon hit player gets another turn (if he didn't shoot himself)
 		if (attackResult == AttackResult::Hit && !selfHit)
@@ -105,6 +112,11 @@ void GameMaker::RunGame()
 	std::cout << "Points:" << std::endl;
 	std::cout << "Player A: " << scorePlayerA << std::endl;
 	std::cout << "Player B: " << scorePlayerB << std::endl;
+}
+
+void printInitialBoard()
+{
+		
 }
 
 /*chek if the path is a valid directory*/

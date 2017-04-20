@@ -5,6 +5,7 @@
     <ClCompile Include="..\..\ex1\GameMaker.cpp" />
     <ClCompile Include="..\..\ex1\main.cpp" />
     <ClCompile Include="..\..\ex1\Player.cpp" />
+    <ClCompile Include="..\..\ex1\PrintHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ex1\GameBoard.h" />
@@ -12,5 +13,6 @@
     <ClInclude Include="..\..\ex1\GameMaker.h" />
     <ClInclude Include="..\..\ex1\IBattleshipGameAlgo.h" />
     <ClInclude Include="..\..\ex1\Player.h" />
+    <ClInclude Include="..\..\ex1\PrintHandler.h" />
   </ItemGroup>
 </Project>
