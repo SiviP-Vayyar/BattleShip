@@ -107,6 +107,7 @@ void GameMaker::RunGame()
 	}
 
 	// print end game results
+	PrintHandler::cleanOutput();
 	if (remainingShipsA == 0 || remainingShipsB == 0)
 	{
 		std::cout << "Player " << (remainingShipsA == 0 ? 'B' : 'A') << " won" << std::endl;
