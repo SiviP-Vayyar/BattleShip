@@ -14,15 +14,14 @@
 class PrintHandler
 {
 public:
-	//static void setPrintEnabled(const bool printEnabled) { _printEnabled = printEnabled; }
-	//static void setDelaySeconds(const int delaySeconds) { _delaySeconds = delaySeconds; }
+	static void init(bool printEnabled) { _printEnabled = printEnabled; hideCursor(); }
 	static void printInitialBoard(const GameBoard& board);
 	static void printAttackResult(const std::pair<int, int> attackPosition, const AttackResult attackResult);
 	static void delay(const int seconds = DELAY_TURNS) { Sleep(seconds * 1000);  }
 	
 private:
-	// TODO: remove const and initializer once setters are used
-	static const bool _printEnabled = true;
+	static bool _printEnabled;
 
 	static void gotoxy(const int x, const int y);
+	static void hideCursor();
 };

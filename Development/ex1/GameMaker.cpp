@@ -39,6 +39,8 @@ GameMaker::GameMaker(int argc, char* argv[])
 	// Set algorithm moves for both players
 	_playerA.SetMoves(getMovesFromFile(_attackFilePathA,_board));
 	_playerB.SetMoves(getMovesFromFile(_attackFilePathB,_board));
+
+	PrintHandler::init(true);
 }
 
 /*@pre: assume players and board were set and validated*/
@@ -112,11 +114,6 @@ void GameMaker::RunGame()
 	std::cout << "Points:" << std::endl;
 	std::cout << "Player A: " << scorePlayerA << std::endl;
 	std::cout << "Player B: " << scorePlayerB << std::endl;
-}
-
-void printInitialBoard()
-{
-		
 }
 
 /*chek if the path is a valid directory*/

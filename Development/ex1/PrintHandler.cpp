@@ -1,5 +1,7 @@
 #include "PrintHandler.h"
 
+bool PrintHandler::_printEnabled;
+
 void PrintHandler::printInitialBoard(const GameBoard& board)
 {
 	for (int row = 1; row <= board.rows(); row++)
@@ -36,4 +38,14 @@ void PrintHandler::gotoxy(int x, int y)
 		h = GetStdHandle(STD_OUTPUT_HANDLE);
 	COORD c = { x, y };
 	SetConsoleCursorPosition(h, c);
+}
+
+void PrintHandler::hideCursor()
+{
+	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
+	CONSOLE_CURSOR_INFO cursorInfo;
+
+	GetConsoleCursorInfo(out, &cursorInfo);
+	cursorInfo.bVisible = false; // set the cursor visibility
+	SetConsoleCursorInfo(out, &cursorInfo);
 }
