@@ -3,6 +3,7 @@
 #include "IBattleshipGameAlgo.h"
 #include "GameBoard.h"
 #include <functional>
+#include <memory>
 
 typedef IBattleshipGameAlgo IAlgo;
 typedef IAlgo *(*GetAlgoFuncType)();
@@ -21,15 +22,16 @@ public:
 	void RunGame();
 
 private:
-	IAlgo* _playerA; //TODO: make unique
-	IAlgo* _playerB; //TODO: make unique
+	std::shared_ptr<IAlgo> _playerA;
+	std::shared_ptr<IAlgo> _playerB;
 	GameBoard _board;
 	
-	std::string _inputFolder;
-	std::string _boardFilePath;
-	std::string _attackFilePathA;
-	std::string _attackFilePathB;
+	std::string _inputFolder = nullptr;
+	std::string _boardFilePath = nullptr;
+	std::string _algoFileA = nullptr;
+	std::string _algoFileB = nullptr;
 
 	bool ParseInput(int argc, char* argv[]);
-	bool SetAndValidateBoards();
+	bool SetAndValidateBoardsAndAlgos();
+	bool LoadAndInitAlgos();
 };

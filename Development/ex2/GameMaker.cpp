@@ -5,20 +5,25 @@
 #include <tchar.h>
 #include <strsafe.h>
 #include <winapifamily.h>
-#include <algorithm>
 #include "GameUtils.h"
 
 
 GameMaker::GameMaker(int argc, char* argv[])
 {
-	// Validate input & Set input arguments
-	if (!ParseInput(argc, argv)) //TODO: order
+	// (1) Validate input & Set input arguments
+	if (!ParseInput(argc, argv))
 	{
 		throw GameException("");
 	}
 
-	// Set local Boards & Validate them
-	if (!SetAndValidateBoards()) //TODO: order
+	// (2) Set local Boards & Validate them + Validate algorithm files
+	if (!SetAndValidateBoardsAndAlgos())
+	{
+		throw GameException("");
+	}
+
+	// (3-6) Load and Init dll
+	if (!LoadAndInitAlgos())
 	{
 		throw GameException("");
 	}
@@ -30,10 +35,6 @@ GameMaker::GameMaker(int argc, char* argv[])
 	_playerB->setBoard(PLAYER_B, const_cast<const char**>(rawBoardB), _board.rows(), _board.cols());
 	GameBoard::deleteRawBoard(rawBoardA, _board.rows(), _board.cols());
 	GameBoard::deleteRawBoard(rawBoardB, _board.rows(), _board.cols());
-
-	// Init Algorithms
-	_playerA->init(_inputFolder); //TODO: remove?
-	_playerB->init(_inputFolder); //TODO: remove?
 }
 
 /*@pre: assume players and board were set and validated*/
@@ -62,7 +63,7 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 		auto attackResultInfo = _board.attack(attackPosition);
 		auto attackResult = attackResultInfo.first;
 		char attackedPiece = attackResultInfo.second;
-		bool selfHit = false;// currentPlayer->isPlayerShip(attackedPiece); //TODO: should work with Interface IBattle only!!
+		bool selfHit = false;// currentPlayer->isPlayerShip(attackedPiece); //TODO: should work with Interface IAlgo only!!
 		int row = attackPosition.first, col = attackPosition.second;
 
 		// notify the players:
@@ -108,208 +109,219 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 /*Validate input, parse it, and set all needed local variables*/
 bool GameMaker::ParseInput(int argc, char* argv[]) //TODO: make sure order of prints after change!!!
 {
-	bool badPath, misBoard, misAlgo, failedLoadA, failedLoadB, failedInitA, failedInitB;
-	badPath = misBoard = misAlgo = failedLoadA = failedLoadB  = failedInitA = failedInitB = true;
-	std::string path, fullFileNameA, fullFileNameB;
-	fullFileNameA = fullFileNameB = path = "";
+	std::string path = "";
 	
-	HANDLE dir;
-	WIN32_FIND_DATAA fileData;
-	HINSTANCE hDll;
-	std::vector<std::string> dllNamesVec;
-
 	// set path according to argv
-	if(argc == 1) //TODO: support prints to console
+	if (argc == 1) //TODO: support prints to console
 	{
 		path = ".";
 	}
-	else if(argc == 2)
+	else if (argc == 2)
 	{
 		path = argv[1];
 	}
-	else //In case more that 1 argument was given - we choose to stop the program
+	else //In too many argument were given - we choose to ignore
 	{
-		throw std::exception("Program takes at most 1 argument!");
+		//TODO: -quiet
 	}
 
-	// iterate over files in path
+	// Check if wrong path
 	if (isDirectory(path))
 	{
-		badPath = false;
 		_inputFolder = path;
+		return true;
+	}
 
-		// test for empty directory
-		std::string s = path + "\\*";
+	std::cout << "Wrong path: " << path.c_str() << std::endl;
+	return false;	
+}
 
-		dir = FindFirstFileA(s.c_str(), &fileData);
-		if(dir != INVALID_HANDLE_VALUE)
-		{
-			// test each file suffix and set variables as needed
-			do
-			{
-				std::string fileName(fileData.cFileName);
+bool GameMaker::LoadAndInitAlgos()
+{
+	bool failedLoadA, failedLoadB, failedInitA, failedInitB;
+	failedLoadA = failedLoadB = failedInitA = failedInitB = true;
 
-				// In case there are multiple possibilities - we choose to take the last one
-				if(endsWith(fileName, ".sboard"))
-				{
-					std::string fullFileName = path + "\\" + fileName;
-					_boardFilePath = fullFileName;
-					misBoard = false;
-				}
-				else if(endsWith(fileName, ".dll"))
-				{
-					dllNamesVec.push_back(fileName);
-				}
+	HINSTANCE hDll;
 
-			} while(FindNextFileA(dir, &fileData));
-		}
-		
-		/*Sort dll names and take only first 2*/
-		std::sort(dllNamesVec.begin(), dllNamesVec.end());
-
-		// Set Player A
-		if (dllNamesVec.size() > 0)
-		{
-			fullFileNameA = path + "\\" + dllNamesVec[0];
-			// Load dynamic library
-			hDll = LoadLibraryA(fullFileNameA.c_str()); // Notice: Unicode compatible version of LoadLibrary
-			if(hDll)
-			{
-				failedLoadA = false;
-				// GetAlgorithm function
-				auto GetAlgorithm = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(hDll, GET_ALGORITHM_STR));
-				if(GetAlgorithm)
-				{
-					failedLoadA = false;
-					_playerA = GetAlgorithm();
-					failedInitA = !_playerA->init(path); //TODO: remove?
-				}
-			}
-		}
-
-		// Set Player B
-		if(dllNamesVec.size() > 1)
-		{
-			misAlgo = false;
-			fullFileNameB = path + "\\" + dllNamesVec[1];
-			// Load dynamic library
-			hDll = LoadLibraryA(fullFileNameB.c_str()); // Notice: Unicode compatible version of LoadLibrary
-			if(hDll)
-			{
-				failedLoadB = false;
-				// GetAlgorithm function
-				auto GetAlgorithm = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(hDll, GET_ALGORITHM_STR));
-				if(GetAlgorithm)
-				{
-					failedLoadB = false;
-					_playerB = GetAlgorithm();
-					failedInitB = !_playerB->init(path); //TODO: remove?
-				}
-			}
-		}
-	}	
-
-	/*Validate input by an exact order*/
-	if (badPath || misBoard || misAlgo || failedLoadA || failedLoadB || failedInitA || failedInitB)
+	// Load dynamic library - Algo A
+	hDll = LoadLibraryA(_algoFileA.c_str()); // Notice: Unicode compatible version of LoadLibrary
+	if (hDll)
 	{
-		if (badPath)
+		// GetAlgorithm function
+		auto GetAlgorithm = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(hDll, GET_ALGORITHM_STR));
+		if (GetAlgorithm)
 		{
-			std::cout << "Wrong path: " << path.c_str() << std::endl;
+			failedLoadA = false;
+			_playerA = std::shared_ptr<IAlgo>(GetAlgorithm());
+			failedInitA = !_playerA->init(_inputFolder);
 		}
-		if (misBoard)
+	}
+
+	// Load dynamic library - Algo B
+	hDll = LoadLibraryA(_algoFileB.c_str()); // Notice: Unicode compatible version of LoadLibrary
+	if (hDll)
+	{
+		// GetAlgorithm function
+		auto GetAlgorithm = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(hDll, GET_ALGORITHM_STR));
+		if (GetAlgorithm)
 		{
-			std::cout << "Missing board file (*.sboard) looking in path: " << path.c_str() << std::endl;
+			failedLoadB = false;
+			_playerB = std::shared_ptr<IAlgo>(GetAlgorithm());
+			failedInitB = !_playerB->init(_inputFolder);
 		}
-		if (misAlgo)
-		{
-			std::cout << "Missing an algorithm (dll) file looking in path: " << path.c_str() << std::endl;
-		}
+	}
+	
+	if (failedLoadA || failedLoadB || failedInitA || failedInitB)
+	{
 		if (failedLoadA)
 		{
-			std::cout << "Cannot load dll: " << fullFileNameA << std::endl;
+			std::cout << "Cannot load dll: " << _algoFileA << std::endl;
 		}
 		if (failedLoadB)
 		{
-			std::cout << "Cannot load dll: " << fullFileNameB << std::endl;
+			std::cout << "Cannot load dll: " << _algoFileB << std::endl;
 		}
 		if (failedInitA)
 		{
-			std::cout << "Algorithm initialization failed for dll: " << fullFileNameA << std::endl;
+			std::cout << "Algorithm initialization failed for dll: " << _algoFileA << std::endl;
 		}
 		if (failedInitB)
 		{
-			std::cout << "Algorithm initialization failed for dll: " << fullFileNameB << std::endl;
+			std::cout << "Algorithm initialization failed for dll: " << _algoFileB << std::endl;
 		}
 		return false;
 	}
 	return true;
 }
 
-bool GameMaker::SetAndValidateBoards()
+bool GameMaker::SetAndValidateBoardsAndAlgos()
 {
-	bool wrongSizeA, wrongSizeB, fewA, fewB, manyA, manyB, adjacent;
-	GameBoard fullBoard(_boardFilePath);
-	GameBoard copyBoard(fullBoard);
+	bool misBoard, misAlgo, wrongSizeA, wrongSizeB, fewA, fewB, manyA, manyB, adjacent;
+	misBoard = misAlgo = wrongSizeA = wrongSizeB = fewA = fewB = manyA = manyB = adjacent = true;
+	std::set<char> illegalShipsA, illegalShipsB;
 
-	// shipsData = pair<int, set<char>>
-	auto shipsDataA = copyBoard.analyseShips(PLAYER_A);
-	auto shipsDataB = copyBoard.analyseShips(PLAYER_B);
+	HANDLE dir;
+	WIN32_FIND_DATAA fileData;
+	std::vector<std::string> dllNamesVec;
+	GameBoard fullBoard;
 
-	// find out if there are ships with wrong size on the board
-	auto illegalShipsA = shipsDataA.second;
-	auto illegalShipsB = shipsDataB.second;
-	wrongSizeA = !illegalShipsA.empty();
-	wrongSizeB = !illegalShipsB.empty();
+	// test for empty directory
+	std::string s = _inputFolder + "\\*";
 
-	// count number of ships for each player
-	int numShipsA = shipsDataA.first;
-	int numShipsB = shipsDataB.first;
-	manyA = (numShipsA > MAX_SHIPS);
-	fewA = (numShipsA < MAX_SHIPS);
-	manyB = (numShipsB > MAX_SHIPS);
-	fewB = (numShipsB < MAX_SHIPS);
+	dir = FindFirstFileA(s.c_str(), &fileData);
+	if(dir != INVALID_HANDLE_VALUE)
+	{
+		// test each file suffix and set variables as needed
+		do
+		{
+			std::string fileName(fileData.cFileName);
 
-	// detect illegal ship placement (adjacent ships) - work on full board
-	adjacent = fullBoard.isAdjacent();
+			// In case there are multiple possibilities - we choose to take the last one
+			if(endsWith(fileName, ".sboard"))
+			{
+				std::string fullFileName = _inputFolder + "\\" + fileName;
+				_boardFilePath = fullFileName;
+				misBoard = false;
+			}
+			else if(endsWith(fileName, ".dll"))
+			{
+				dllNamesVec.push_back(fileName);
+			}
+
+		} while(FindNextFileA(dir, &fileData));
+	}
+
+	// Set Player A
+	if(dllNamesVec.size() > 0)
+	{
+		_algoFileA = _inputFolder + "\\" + dllNamesVec[0];
+	}
+
+	// Set Player B
+	if(dllNamesVec.size() > 1)
+	{
+		misAlgo = false;
+		_algoFileB = _inputFolder + "\\" + dllNamesVec[1];
+	}
+
+	if(!misBoard)
+	{
+		fullBoard = GameBoard(_boardFilePath);
+		GameBoard copyBoard(fullBoard);
+
+		// shipsData = pair<int, set<char>>
+		auto shipsDataA = copyBoard.analyseShips(PLAYER_A);
+		auto shipsDataB = copyBoard.analyseShips(PLAYER_B);
+
+		// find out if there are ships with wrong size on the board
+		illegalShipsA = shipsDataA.second;
+		illegalShipsB = shipsDataB.second;
+		wrongSizeA = !illegalShipsA.empty();
+		wrongSizeB = !illegalShipsB.empty();
+
+		// count number of ships for each player
+		int numShipsA = shipsDataA.first;
+		int numShipsB = shipsDataB.first;
+		manyA = (numShipsA > MAX_SHIPS);
+		fewA = (numShipsA < MAX_SHIPS);
+		manyB = (numShipsB > MAX_SHIPS);
+		fewB = (numShipsB < MAX_SHIPS);
+
+		// detect illegal ship placement (adjacent ships) - work on full board
+		adjacent = fullBoard.isAdjacent();
+	}
+
+	
 
 	/*Validate input by an exact order*/
 	if (wrongSizeA || wrongSizeB || fewA || fewB || manyA || manyB || adjacent)
 	{
-		if (wrongSizeA)
+		if(misBoard)
 		{
-			//print a line for each wrong size type
-			for (char shipType : illegalShipsA)
+			std::cout << "Missing board file (*.sboard) looking in path: " << _inputFolder.c_str() << std::endl;
+		}
+		else // only if board exists
+		{
+			if(wrongSizeA)
 			{
-				std::cout << "Wrong size or shape for ship " << shipType << " for player A" << std::endl;
+				//print a line for each wrong size type
+				for(char shipType : illegalShipsA)
+				{
+					std::cout << "Wrong size or shape for ship " << shipType << " for player A" << std::endl;
+				}
+			}
+			if(wrongSizeB)
+			{
+				//print a line for each wrong size type
+				for(char shipType : illegalShipsB)
+				{
+					std::cout << "Wrong size or shape for ship " << shipType << " for player B" << std::endl;
+				}
+			}
+			if(manyA)
+			{
+				std::cout << "Too many ships for player A" << std::endl;
+			}
+			if(fewA)
+			{
+				std::cout << "Too few ships for player A" << std::endl;
+			}
+			if(manyB)
+			{
+				std::cout << "Too many ships for player B" << std::endl;
+			}
+			if(fewB)
+			{
+				std::cout << "Too few ships for player B" << std::endl;
+			}
+			if(adjacent)
+			{
+				std::cout << "Adjacent Ships on Board" << std::endl;
 			}
 		}
-		if (wrongSizeB)
+		if (misAlgo)
 		{
-			//print a line for each wrong size type
-			for (char shipType : illegalShipsB)
-			{
-				std::cout << "Wrong size or shape for ship " << shipType << " for player B" << std::endl;
-			}
-		}
-		if (manyA)
-		{
-			std::cout << "Too many ships for player A" << std::endl;
-		}
-		if (fewA)
-		{
-			std::cout << "Too few ships for player A" << std::endl;
-		}
-		if (manyB)
-		{
-			std::cout << "Too many ships for player B" << std::endl;
-		}
-		if (fewB)
-		{
-			std::cout << "Too few ships for player B" << std::endl;
-		}
-		if (adjacent)
-		{
-			std::cout << "Adjacent Ships on Board" << std::endl;
+			std::cout << "Missing an algorithm (dll) file looking in path: " << _inputFolder.c_str() << std::endl;
 		}
 		return false;
 	}
