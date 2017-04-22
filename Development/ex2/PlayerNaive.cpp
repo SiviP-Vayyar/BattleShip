@@ -1,6 +1,21 @@
 #include "PlayerNaive.h"
 
 
+bool PlayerNaive::init(const std::string& path)
+{
+	std::vector<std::pair<int, int>> moves;
+	for (int row = 1; row <= BOARD_ROWS; row++) {
+		for (int col = 1; col <= BOARD_COLS; col++) {
+			moves.push_back(std::pair<int, int>(row, col));
+		}
+	}
+	
+	_possibleMoves = moves;
+	_possibleMovesIterator = _possibleMoves.begin();
+
+	return true;
+}
+
 std::pair<int, int> PlayerNaive::attack()
 {
 	if (_player == PLAYER_NOT_YET_KNOWN)
@@ -8,8 +23,19 @@ std::pair<int, int> PlayerNaive::attack()
 		throw std::exception("attack() was called before setBoard was called!");
 	}
 
-	//TODO: implement
-	return std::make_pair(0, 0);
+	if (_possibleMovesIterator == _possibleMoves.end())
+	{
+		return ATTACK_END;
+	}
+	std::pair<int, int> retCoord = *_possibleMovesIterator++;
+	while (_opponentBoard(retCoord.first, retCoord.second) == MISS && _possibleMovesIterator != _possibleMoves.end()) {
+		retCoord = *_possibleMovesIterator++;
+	}
+	if (_possibleMovesIterator == _possibleMoves.end())
+	{
+		return ATTACK_END;
+	}
+	return retCoord;
 }
 
 IBattleshipGameAlgo* GetAlgorithm()

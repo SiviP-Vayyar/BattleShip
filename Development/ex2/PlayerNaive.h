@@ -14,8 +14,10 @@ public:
 	std::pair<int, int> attack() override;
 
 	/* Called once to allow init from files if needed returns whether the init succeeded or failed*/
-	bool init(const std::string& path) override { return true; }
+	bool init(const std::string& path) override;
 
 private:
 
+	std::vector<std::pair<int, int>> _possibleMoves;
+	std::vector<std::pair<int, int>>::iterator _possibleMovesIterator;
 };
