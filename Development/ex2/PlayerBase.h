@@ -29,6 +29,7 @@ protected:
 
 	/*Same for every player*/
 	static char attackResultToChar(AttackResult result);
+	void updateOpponentBoardAfterBoardInit();
 	void updateOpponentBoardAfterAttack(int row, int col, char attackChar);
 	void updateOpponentBoardAfterMiss(int row, int col);
 	void updateOpponentBoardAfterSink(int row, int col);
