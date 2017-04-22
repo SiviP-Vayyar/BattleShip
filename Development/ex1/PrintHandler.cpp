@@ -51,8 +51,11 @@ void PrintHandler::printInitialBoard(const GameBoard& board)
 	setTextColor(savedColor);
 }
 
-void PrintHandler::printAttackResult(const std::pair<int, int> attackPosition, const AttackResult attackResult)
+void PrintHandler::printAttackResult(const std::pair<int, int> attackPosition, const AttackResult attackResult, const char attackedPiece)
 {
+	if (attackPosition == ATTACK_END)
+		return;
+	
 	int row = attackPosition.first, col = attackPosition.second;
 	WORD savedColor = getTextColor();
 
@@ -62,13 +65,12 @@ void PrintHandler::printAttackResult(const std::pair<int, int> attackPosition, c
 	delay(DELAY_ATTACK);
 
 	gotoxy(col, row);
-	if (attackResult == AttackResult::Miss)
+	if (attackResult == AttackResult::Miss && !GameBoard::isShip(attackedPiece))
 	{
-		// TODO: get what was in this spot (char and color) and print that - in case of second hit in same spot
 		setTextColor(MISS_COLOR);
 		putchar(PRINT_MISS);
 	}
-	else
+	else // either hit, or "miss" that is actually a second hit on the same position
 	{
 		setTextColor(HIT_COLOR);
 		putchar(PRINT_HIT);

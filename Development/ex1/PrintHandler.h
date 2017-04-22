@@ -33,7 +33,7 @@ public:
 	static void init(bool printEnabled) { _printEnabled = printEnabled; hideCursor(); }
 	static void cleanOutput();
 	static void printInitialBoard(const GameBoard& board);
-	static void printAttackResult(const std::pair<int, int> attackPosition, const AttackResult attackResult);
+	static void printAttackResult(const std::pair<int, int> attackPosition, const AttackResult attackResult, const char attackedPiece);
 	static void delay(const int seconds = DELAY_TURNS) { Sleep(seconds * 1000);  }
 	
 private:
