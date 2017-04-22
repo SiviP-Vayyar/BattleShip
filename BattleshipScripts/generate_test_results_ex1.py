@@ -65,6 +65,8 @@ if __name__ == '__main__':
     teams_parent_dir = "C:/Git/BattleShip/build/Windows-x64-Release/output"
     teams_source_dir = "C:/Git/BattleShip/Development/Testing/ex1"
     students_xlsx = "C:/Git/BattleShip/BattleshipScripts/AllStudents.xlsx"
+    ignore_teams_list = []
+    test_only_teams = []
 
     # Generate Results Excell:
     parser = excel_parser.Parser()
@@ -89,28 +91,34 @@ if __name__ == '__main__':
 
     # Generate teams' test result:
     students_with_grades = []
-    ignore_teams_list = ['mattanserry', 'ohadglass', 'yuvalkaspi', 'Tamarsardas', 'perifishgold', 'ronnysivan']
+    error_parsing_diff = []
+
+    # figure out which teams to test:
+    if len(test_only_teams) is not 0:
+        teams = [t for t in teams if t.name in test_only_teams]
+    else:
+        teams = [t for t in teams if t.name not in ignore_teams_list]
+
     for idx, team_to_test in enumerate(teams):
-        if team_to_test.name in ignore_teams_list:
-            continue
         print('Started team: {}\t\t{}/{}'.format(team_to_test.name, idx + 1, len(teams)))
         output_diff = test.test_team(team_to_test)
         if len(output_diff) > 30000:
-            a = 1;
+            output_diff = 'PROGRAM OUTPUT TOO LONG!!!'
+            error_parsing_diff.append(team_to_test.name)
         parser.parse_team(team_to_test, output_diff)
-        students_with_grades.extend([name for name in team_to_test.members])
+        students_with_grades.extend([s for s in team_to_test.students])
 
 
     # Lists of special cases for the end:
-    student_file_missing_list = [t.name for t in teams if not t.has_students_file]
-    parser.add_worksheet("Missing Students File", student_file_missing_list)
-    not_compiled_list = [t.name for t in teams if not t.is_compiled]
-    parser.add_worksheet("Did Not Compile", not_compiled_list)
+    team_students_file_missing_list = [t.name for t in teams if not t.has_students_file]
+    parser.add_worksheet("Missing Students File", team_students_file_missing_list)
+    team_not_compiled_list = [t.name for t in teams if not t.is_compiled]
+    parser.add_worksheet("Did Not Compile", team_not_compiled_list)
     is_bonus_teams_list = [t.name for t in teams if t.is_bonus]
     parser.add_worksheet("Did The Bonus", is_bonus_teams_list)
-    missing_student_ids = [s for s in students_parser.get_student_ids_from_xml() if s not in students_with_grades]
-    missing_students = students_parser.get_student_names_from_ids(missing_student_ids)
-    parser.add_worksheet("Missing Students", missing_students)
+    missing_students = [s for s in students_parser.get_students_from_excel() if s not in students_with_grades]
+    parser.add_missing_students(missing_students)
+    parser.add_worksheet("Output Too Long", error_parsing_diff)
 
     # Make report of results:
     parser.save_report(os.path.join(my_dir, 'ex1.xls'))

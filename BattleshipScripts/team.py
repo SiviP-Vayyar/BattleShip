@@ -1,12 +1,21 @@
 import os
 
-
 def get_file_ends_with(from_dir, ends_with):
     for root, dirnames, filenames in os.walk(from_dir):
         for filename in filenames:
             if filename.endswith(ends_with):
                 return os.path.join(root, filename)
     return ''
+
+
+class Student:
+
+    def __init__(self, name, id):
+        self.name = name
+        self.id = id
+
+    def __eq__(self, other):
+        return self.id == other.id
 
 
 class Team:
@@ -17,9 +26,8 @@ class Team:
         self.is_compiled = False
         self.exe_path = ''
         self.is_bonus = False
-        self.members = []
+        self.students = []
         self.has_students_file = False
-        self.grade = 100
         self.out_dir = os.path.join(self.team_dir, 'results')
         self.test_results = {}  # <name : [result lines]>
         if not os.path.isdir(self.out_dir):
@@ -43,7 +51,13 @@ class Team:
             with open(students_file, 'r') as fd:
                 lines = fd.readlines()
                 for line in lines:
+                    name = ""
+                    s_id = ""
                     tokens = line.split(' ')
                     for token in tokens:
-                        if token.strip().isdigit():
-                            self.members.append(str(token.strip()))
+                        if len(token) > 1:
+                            if token.strip().isdigit():
+                                s_id = str(token.strip())
+                            else:
+                                name = token.strip()
+                    self.students.append(Student(name, s_id))

@@ -1,2 +1,0 @@
-Wrong size or shape for ship p for player B
-Too few ships for player A

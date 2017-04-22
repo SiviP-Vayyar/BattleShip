@@ -1,3 +1,0 @@
-Points:
-Player A: 5
-Player B: 5

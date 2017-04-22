@@ -1,1 +1,0 @@
-Missing attack file for player B (*.attack-b) looking in path: C:/BattleshipScripts/ex1_tests\T7_MissingFiles

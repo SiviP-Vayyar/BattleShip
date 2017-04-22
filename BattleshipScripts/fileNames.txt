@@ -1,3 +1,0 @@
-board_9.sboard
-few_movesA.attack-a
-few_movesB.attack-b

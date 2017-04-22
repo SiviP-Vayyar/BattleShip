@@ -3,6 +3,12 @@ import my_utils
 import os
 import difflib
 
+DEBUG = False
+AUTO_QUIET = False
+BACKSLASH = True
+test_only = ['T4']
+ignore_tests = []
+
 
 class Test:
 
@@ -18,13 +24,24 @@ class Test:
             return ''
 
         output_diff = ''
-        for d in self.test_dirs:
+        if len(test_only) is not 0:
+            to_test = [t for t in self.test_dirs if os.path.basename(t).split('_')[0] in test_only]
+        else:
+            to_test = [t for t in self.test_dirs if os.path.basename(t).split('_')[0] not in ignore_tests]
+        for d in to_test:
             test_name = os.path.basename(d).split('_')[1]
             output_file = os.path.join(team_to_test.out_dir, '{}.txt'.format(test_name))
             arguments = ''
-            if team_to_test.is_bonus:  # Bonus run with -quiet
+            if AUTO_QUIET or team_to_test.is_bonus:  # Bonus run with -quiet
                 arguments = ' -quiet'
-            os.system('{} {}{} > {}'.format(team_to_test.exe_path, d, arguments, output_file))
+            if BACKSLASH:
+                output_file = output_file.replace("\\", "/")
+                d = d.replace("\\", "/")
+            execute_line = '{} {}{} > {}'.format(team_to_test.exe_path, d, arguments, output_file)
+            if DEBUG:
+                print(execute_line)
+                print()
+            os.system(execute_line)
 
             # Read test results
             with open(output_file) as fd:
@@ -49,6 +66,9 @@ class Test:
         for d in self.test_dirs:
             test_name = os.path.basename(d).split('_')[1]
             output_file = os.path.join(self.tests_path, '{}.txt'.format(test_name))
+            if BACKSLASH:
+                output_file = output_file.replace("\\", "/")
+                d = d.replace("\\", "/")
             os.system('{} {} > {}'.format(golden_team.exe_path, d, output_file))
             with open(output_file) as fd:
                 self.test_results[test_name] = fd.readlines()
