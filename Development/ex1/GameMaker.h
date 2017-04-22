@@ -26,6 +26,6 @@ private:
 	std::string _attackFilePathA;
 	std::string _attackFilePathB;
 
-	bool ParseInput(int argc, char* argv[], std::string& path);
+	bool ParseInput(int argc, char* argv[], std::string& path, bool& printEnabled, int& printDelay);
 	bool SetAndValidateBoards();
 };

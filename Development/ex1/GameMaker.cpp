@@ -13,7 +13,9 @@ GameMaker::GameMaker(int argc, char* argv[])
 {
 	// Validate input & Set input arguments
 	std::string inputPath;
-	if (!ParseInput(argc, argv, inputPath))
+	bool printEnabled = PRINT_ENABLED_DEFAULT;
+	int printDelay = PRINT_DELAY_DEFAULT;
+	if (!ParseInput(argc, argv, inputPath, printEnabled, printDelay))
 	{
 		throw GameException("");
 	}
@@ -40,7 +42,7 @@ GameMaker::GameMaker(int argc, char* argv[])
 	_playerA.SetMoves(getMovesFromFile(_attackFilePathA,_board));
 	_playerB.SetMoves(getMovesFromFile(_attackFilePathB,_board));
 
-	PrintHandler::init(true);
+	PrintHandler::init(printEnabled, printDelay);
 }
 
 /*@pre: assume players and board were set and validated*/
@@ -147,10 +149,14 @@ inline bool endsWith(std::string const & str, std::string const & suffix)
 }
 
 /*Validate input, parse it, and set all needed local variables*/
-bool GameMaker::ParseInput(int argc, char* argv[], std::string& path)
+bool GameMaker::ParseInput(int argc, char* argv[], std::string& path, bool& printEnabled, int& printDelay)
 {
 	bool badPath, misBoard, misFileA, misFileB;
 	badPath = misBoard = misFileA = misFileB = true;
+
+	// TODO: placeholder for actual parsing
+	printEnabled = PRINT_ENABLED_DEFAULT;
+	printDelay = PRINT_DELAY_DEFAULT;
 
 	// set path according to argv
 	if(argc == 1)

@@ -4,6 +4,7 @@
 #include <iostream>
 
 bool PrintHandler::_printEnabled;
+int PrintHandler::_delayMS;
 
 void PrintHandler::cleanOutput()
 {
@@ -62,7 +63,7 @@ void PrintHandler::printAttackResult(const std::pair<int, int> attackPosition, c
 	gotoxy(col, row);
 	setTextColor(ATTACK_COLOR);
 	putchar(PRINT_ATTACK);
-	delay(DELAY_ATTACK);
+	delay();
 
 	gotoxy(col, row);
 	if (attackResult == AttackResult::Miss && !GameBoard::isShip(attackedPiece))
@@ -70,7 +71,7 @@ void PrintHandler::printAttackResult(const std::pair<int, int> attackPosition, c
 		setTextColor(MISS_COLOR);
 		putchar(PRINT_MISS);
 	}
-	else // either hit, or "miss" that is actually a second hit on the same position
+	else // either hit, or "miss" that is actually a second hit on the same position+
 	{
 		setTextColor(HIT_COLOR);
 		putchar(PRINT_HIT);
