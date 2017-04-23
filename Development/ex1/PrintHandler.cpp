@@ -10,7 +10,7 @@ void PrintHandler::cleanOutput()
 {
 	if (!_printEnabled)
 		return;
-
+	delay(_delayMS);
 	for (int x = 0; x < 80; x++)
 	{
 		for (int y = 0; y < 80; y++)
@@ -75,7 +75,7 @@ void PrintHandler::printAttackResult(const std::pair<int, int> attackPosition, c
 	delay();
 
 	gotoxy(col, row);
-	if (attackResult == AttackResult::Miss && !GameBoard::isShip(attackedPiece))
+	if (attackResult == AttackResult::Miss && attackedPiece != SHIP_HIT)
 	{
 		setTextColor(MISS_COLOR);
 		putchar(PRINT_MISS);
