@@ -153,23 +153,41 @@ bool GameMaker::ParseInput(int argc, char* argv[], std::string& path, bool& prin
 {
 	bool badPath, misBoard, misFileA, misFileB;
 	badPath = misBoard = misFileA = misFileB = true;
-
-	// TODO: placeholder for actual parsing
 	printEnabled = PRINT_ENABLED_DEFAULT;
 	printDelay = PRINT_DELAY_DEFAULT;
+	path = ".";
 
-	// set path according to argv
-	if(argc == 1)
+	if (argc > 5) // at most 5 args - name, path, -quiet, -delay + amount
 	{
-		path = ".";
+		//In case more that 1 argument was given - we choose to stop the program
+		throw std::exception("Program takes at most 4 arguments!");
 	}
-	else if(argc == 2)
+
+	// set path and print parameters according to argv
+	for (int i = 1 ; i < argc ; i++)
 	{
-		path = argv[1];
-	}
-	else //In case more that 1 argument was given - we choose to stop the program
-	{
-		throw std::exception("Program takes at most 1 argument!");
+		if (strcmp(argv[i], "-quiet") == 0)
+		{
+			printEnabled = false;
+		}
+		else if (strcmp(argv[i], "-delay") == 0)
+		{
+			i++;
+			if (i == argc)
+			{
+				throw std::exception("Missing delay amount argument!");
+			}
+			char* endPtr;
+			printDelay = int(strtol(argv[i], &endPtr, 10));
+			if (*endPtr)
+			{
+				throw std::exception("Delay argument must be an integer!");
+			}
+		}
+		else
+		{
+			path = argv[i];
+		}
 	}
 
 	// iterate over files in path

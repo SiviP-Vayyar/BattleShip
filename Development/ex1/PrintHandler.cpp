@@ -8,6 +8,9 @@ int PrintHandler::_delayMS;
 
 void PrintHandler::cleanOutput()
 {
+	if (!_printEnabled)
+		return;
+
 	for (int x = 0; x < 80; x++)
 	{
 		for (int y = 0; y < 80; y++)
@@ -21,6 +24,9 @@ void PrintHandler::cleanOutput()
 
 void PrintHandler::printInitialBoard(const GameBoard& board)
 {
+	if (!_printEnabled)
+		return;
+
 	WORD savedColor = getTextColor();
 
 	for (int row = 1; row <= board.rows(); row++)
@@ -54,6 +60,9 @@ void PrintHandler::printInitialBoard(const GameBoard& board)
 
 void PrintHandler::printAttackResult(const std::pair<int, int> attackPosition, const AttackResult attackResult, const char attackedPiece)
 {
+	if (!_printEnabled)
+		return;
+
 	if (attackPosition == ATTACK_END)
 		return;
 	
@@ -91,6 +100,9 @@ void PrintHandler::gotoxy(int x, int y)
 
 void PrintHandler::hideCursor()
 {
+	if (!_printEnabled)
+		return;
+
 	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO cursorInfo;
 

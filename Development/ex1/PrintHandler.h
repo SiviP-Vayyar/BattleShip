@@ -34,7 +34,7 @@ public:
 	static void cleanOutput();
 	static void printInitialBoard(const GameBoard& board);
 	static void printAttackResult(const std::pair<int, int> attackPosition, const AttackResult attackResult, const char attackedPiece);
-	static void delay(const int millis = _delayMS / 2) { Sleep(millis);  }
+	static void delay(const int millis = _delayMS / 2) { if (_printEnabled) Sleep(millis);  }
 	
 private:
 	static bool _printEnabled;
