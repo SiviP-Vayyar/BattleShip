@@ -28,7 +28,7 @@ std::pair<int, int> PlayerNaive::attack()
 		return ATTACK_END;
 	}
 	std::pair<int, int> retCoord = *_possibleMovesIterator++;
-	while (_opponentBoard(retCoord.first, retCoord.second) == MISS && _possibleMovesIterator != _possibleMoves.end()) {
+	while (_opponentBoard(retCoord.first, retCoord.second) != EMPTY && _possibleMovesIterator != _possibleMoves.end()) {
 		retCoord = *_possibleMovesIterator++;
 	}
 	if (_possibleMovesIterator == _possibleMoves.end())
