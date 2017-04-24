@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IBattleshipGameAlgo.h"
 #include "GameBoard.h"
 #include <vector>
 
@@ -18,9 +19,6 @@ public:
 
 	/* The algorithm is telling us what was the last move of the game*/
 	void notifyOnAttackResult(int player, int row, int col, AttackResult result) override;
-
-	/* check if ship belongs to this player*/
-	bool isPlayerShip(char shipType) const { return (shipType != EMPTY && GameBoard::playerShipType(_player, shipType) == shipType); }
 
 protected:
 	int _player;

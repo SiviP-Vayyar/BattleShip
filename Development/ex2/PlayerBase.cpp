@@ -30,7 +30,7 @@ void PlayerBase::notifyOnAttackResult(int player, int row, int col, AttackResult
 	if (_opponentBoard.isInBoard(row, col)) //TODO: make sure rules of shooting myself hasen't changed!
 	{
 		bool myAttack = player == _player;
-		bool myShip = isPlayerShip(_myBoard(row, col)); // If not self attack - Assuming one square can be occupied by one player only
+		bool myShip = GameBoard::isPlayerShip(_player, _myBoard(row, col)); // If not self attack - Assuming one square can be occupied by one player only
 		if (myAttack && !myShip) // The common case
 		{
 			_opponentBoard(row, col) = attackResultToChar(result);

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <sstream>
 #include <vector>
+#include <windows.h>
 
 
 inline std::stringstream& skipSpaces(std::stringstream& s)

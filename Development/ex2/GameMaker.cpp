@@ -63,7 +63,7 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 		auto attackResultInfo = _board.attack(attackPosition);
 		auto attackResult = attackResultInfo.first;
 		char attackedPiece = attackResultInfo.second;
-		bool selfHit = false;// currentPlayer->isPlayerShip(attackedPiece); //TODO: should work with Interface IAlgo only!!
+		bool selfHit = GameBoard::isPlayerShip(currentPlayerDef, attackedPiece);
 		int row = attackPosition.first, col = attackPosition.second;
 
 		// notify the players:
@@ -88,7 +88,7 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 
 		// switch players for next round
 		currentPlayerDef = currentPlayerDef == PLAYER_A ? PLAYER_B : PLAYER_A;
-		currentPlayer = currentPlayer == _playerA ? _playerB : _playerA;
+		currentPlayer = currentPlayer == _playerA ? std::move(_playerB) : std::move(_playerA); //TODO: make sure move works
 		currentPlayerMovesRemaining = currentPlayerMovesRemaining == &movesRemainingA ? &movesRemainingB : &movesRemainingA;
 		std::swap(currentShipsCntr, opponentShipsCntr);
 		std::swap(currentScore, opponentScore);

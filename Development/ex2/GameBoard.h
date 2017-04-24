@@ -84,6 +84,9 @@ public:
 	static char** newEmptyRawBoard(int rows, int cols);
 	static void deleteRawBoard(char** board, int rows, int cols);
 	
+	/* check if ship belongs to this player*/
+	static bool isPlayerShip(int player, char shipType) { return (shipType != EMPTY && playerShipType(player, shipType) == shipType); }
+	
 private:
 	char** _board;
 	int _rows;
