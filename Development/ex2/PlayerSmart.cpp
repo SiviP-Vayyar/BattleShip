@@ -37,7 +37,7 @@ std::pair<int, int> PlayerSmart::attack()
 
 std::vector<std::pair<int, int>> PlayerSmart::getAllPositions(char type) const
 {
-	std::vector<std::pair<int, int>> hitPositions;
+	std::vector<std::pair<int, int>> positions;
 	const GameBoard& opponentBoard = _opponentBoard;
 
 	for (int row = 1 ; row <= opponentBoard.rows() ; row++)
@@ -46,12 +46,12 @@ std::vector<std::pair<int, int>> PlayerSmart::getAllPositions(char type) const
 		{
 			if (opponentBoard(row, col) == type)
 			{
-				hitPositions.push_back(std::make_pair(row, col));
+				positions.push_back(std::make_pair(row, col));
 			}
 		}
 	}
 
-	return std::vector<std::pair<int, int>>();
+	return positions;
 }
 
 std::pair<int, int> PlayerSmart::selectAttackPositionFromEmptyPositions(std::vector<std::pair<int, int>>& emptyPositions)
