@@ -142,7 +142,9 @@ void PlayerBase::markOpponentBoardAfterSink(int row, int col)
 void PlayerBase::deduceOpponentBoardAfterHit(int row, int col)
 {
 	auto adjCoordinates = _opponentBoard.getAdjacentCoordinatesAsVector(row, col);
+	auto diagCoordinates = _opponentBoard.getDiagonalCoordinatesAsVector(row, col);
 	std::vector<std::pair<int, int>> possibleCoordinatesToMark;
+
 	for (auto adjCoord : adjCoordinates) {
 		if (_opponentBoard(adjCoord.first, adjCoord.second) == HIT) {
 			if (adjCoord.first == row) {
@@ -160,8 +162,16 @@ void PlayerBase::deduceOpponentBoardAfterHit(int row, int col)
 		}
 	}
 
+	for (auto diagCoord : diagCoordinates) {
+		if (_opponentBoard(diagCoord.first, diagCoord.second) == HIT) {
+			possibleCoordinatesToMark.push_back(std::pair<int, int>(diagCoord.first, col));
+			possibleCoordinatesToMark.push_back(std::pair<int, int>(row, diagCoord.second));
+		}
+	}
+
 	for (auto possibleCoord : possibleCoordinatesToMark) {
-		if (_opponentBoard.isInBoard(possibleCoord.first, possibleCoord.second)) {
+		if (_opponentBoard.isInBoard(possibleCoord.first, possibleCoord.second)
+			&& _opponentBoard(possibleCoord.first, possibleCoord.second) == EMPTY) {
 			_opponentBoard(possibleCoord.first, possibleCoord.second) = MISS;
 		}
 	}
