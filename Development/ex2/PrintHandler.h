@@ -22,8 +22,10 @@
 #define PLAYER_A_COLOR	(BG_INT | FG_RED | FG_BLU)
 #define PLAYER_B_COLOR	(BG_INT | FG_GRN)
 #define EMPTY_COLOR		(BG_BLU)
-#define ATTACK_COLOR	(BG_INT | FG_RED | FG_INT)
-#define HIT_COLOR		(ATTACK_COLOR ^ FG_INT)
+#define ATTACK_COLOR_A	(BG_INT | FG_RED | FG_INT)
+#define ATTACK_COLOR_B	(BG_INT | FG_GRN | FG_INT)
+#define HIT_COLOR_A		(ATTACK_COLOR_A ^ FG_INT)
+#define HIT_COLOR_B		(ATTACK_COLOR_B ^ FG_INT)
 #define MISS_COLOR		(EMPTY_COLOR)
 
 // TODO: can we just make the whole class static?
@@ -33,7 +35,7 @@ public:
 	static void init(bool printEnabled, int delayMS) { _printEnabled = printEnabled; _delayMS = delayMS; hideCursor(); }
 	static void cleanOutput();
 	static void printInitialBoard(const GameBoard& board);
-	static void printAttackResult(const std::pair<int, int> attackPosition, const AttackResult attackResult, const char attackedPiece);
+	static void printAttackResult(std::pair<int, int> attackPosition, AttackResult attackResult, char attackedPiece, int player);
 	static void delay(const int millis = _delayMS / 2) { if (_printEnabled) Sleep(millis);  }
 	
 private:

@@ -72,7 +72,7 @@ void GameMaker::RunGame()
 		_playerA->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 		_playerB->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 
-		PrintHandler::printAttackResult(attackPosition, attackResult, attackedPiece);
+		PrintHandler::printAttackResult(attackPosition, attackResult, attackedPiece, currentPlayerDef);
 
 		// upon hit player gets another turn (if he didn't shoot himself)
 		if (attackResult == AttackResult::Hit && !selfHit)
