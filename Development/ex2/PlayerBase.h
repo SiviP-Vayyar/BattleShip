@@ -12,7 +12,7 @@ class PlayerBase : public IBattleshipGameAlgo
 public:
 	PlayerBase() : _player(PLAYER_NOT_YET_KNOWN)
 	{};
-	~PlayerBase();
+	virtual ~PlayerBase();
 
 	/* Will be called once from outside the class, to init the board*/
 	void setBoard(int player, const char** board, int numRows, int numCols) override;

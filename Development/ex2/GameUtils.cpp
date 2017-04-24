@@ -64,10 +64,10 @@ std::vector<std::string> GameUtils::GetAllFilesSorted(std::string path, std::str
 
 		/*Sort dll names and take only first 2*/
 		std::sort(allFiles.begin(), allFiles.end());
+		FindClose(dir);
 	}
 	return allFiles;
 }
-
 template <typename I>
 I GameUtils::randomElement(I begin, I end)
 {

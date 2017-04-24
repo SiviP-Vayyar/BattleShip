@@ -1,10 +1,9 @@
 #include "GameMaker.h"
 #include "GameException.h"
 #include <iostream>
-#include <windows.h>
-#include <tchar.h>
-#include <strsafe.h>
-#include <winapifamily.h>
+//#include <tchar.h>
+//#include <strsafe.h>
+//#include <winapifamily.h>
 #include "GameUtils.h"
 #include "PrintHandler.h"
 
@@ -38,8 +37,14 @@ GameMaker::GameMaker(int argc, char* argv[])
 	GameBoard::deleteRawBoard(rawBoardB, _board.rows(), _board.cols());
 }
 
+GameMaker::~GameMaker()
+{
+	FreeLibrary(_algoDataA.handle);
+	FreeLibrary(_algoDataB.handle);
+}
+
 /*@pre: assume players and board were set and validated*/
-void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. all I did was change Player& to IAlgo*
+void GameMaker::RunGame()
 {
 	// counters and flags
 	int scorePlayerA = 0, scorePlayerB = 0;
@@ -171,32 +176,30 @@ bool GameMaker::LoadAndInitAlgos()
 	bool failedLoadA, failedLoadB, failedInitA, failedInitB;
 	failedLoadA = failedLoadB = failedInitA = failedInitB = true;
 
-	HINSTANCE hDll;
-
 	// Load dynamic library - Algo A
-	hDll = LoadLibraryA(_algoFileA.c_str()); // Notice: Unicode compatible version of LoadLibrary
-	if (hDll)
+	_algoDataA.handle = LoadLibraryA(_algoDataA.algoFile.c_str()); // Notice: Unicode compatible version of LoadLibrary
+	if (_algoDataA.handle)
 	{
 		// GetAlgorithm function
-		auto GetAlgorithm = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(hDll, GET_ALGORITHM_STR));
+		auto GetAlgorithm = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(_algoDataA.handle, GET_ALGORITHM_STR));
 		if (GetAlgorithm)
 		{
 			failedLoadA = false;
-			_playerA = std::shared_ptr<IAlgo>(GetAlgorithm());
+			_playerA = GetAlgorithm();
 			failedInitA = !_playerA->init(_inputFolder);
 		}
 	}
 
 	// Load dynamic library - Algo B
-	hDll = LoadLibraryA(_algoFileB.c_str()); // Notice: Unicode compatible version of LoadLibrary
-	if (hDll)
+	_algoDataB.handle = LoadLibraryA(_algoDataB.algoFile.c_str()); // Notice: Unicode compatible version of LoadLibrary
+	if (_algoDataB.handle)
 	{
 		// GetAlgorithm function
-		auto GetAlgorithm = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(hDll, GET_ALGORITHM_STR));
+		auto GetAlgorithm = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(_algoDataB.handle, GET_ALGORITHM_STR));
 		if (GetAlgorithm)
 		{
 			failedLoadB = false;
-			_playerB = std::shared_ptr<IAlgo>(GetAlgorithm());
+			_playerB = GetAlgorithm();
 			failedInitB = !_playerB->init(_inputFolder);
 		}
 	}
@@ -205,19 +208,19 @@ bool GameMaker::LoadAndInitAlgos()
 	{
 		if (failedLoadA)
 		{
-			std::cout << "Cannot load dll: " << _algoFileA << std::endl;
+			std::cout << "Cannot load dll: " << _algoDataA.algoFile << std::endl;
 		}
 		if (failedLoadB)
 		{
-			std::cout << "Cannot load dll: " << _algoFileB << std::endl;
+			std::cout << "Cannot load dll: " << _algoDataB.algoFile << std::endl;
 		}
 		if (failedInitA)
 		{
-			std::cout << "Algorithm initialization failed for dll: " << _algoFileA << std::endl;
+			std::cout << "Algorithm initialization failed for dll: " << _algoDataA.algoFile << std::endl;
 		}
 		if (failedInitB)
 		{
-			std::cout << "Algorithm initialization failed for dll: " << _algoFileB << std::endl;
+			std::cout << "Algorithm initialization failed for dll: " << _algoDataB.algoFile << std::endl;
 		}
 		return false;
 	}
@@ -236,7 +239,7 @@ bool GameMaker::SetAndValidateBoardsAndAlgos()
 	GameBoard fullBoard;
 
 	// test for empty directory
-	std::string s = _inputFolder + "\\*";
+	std::string s = _inputFolder + "/*";
 
 	dir = FindFirstFileA(s.c_str(), &fileData);
 	if(dir != INVALID_HANDLE_VALUE)
@@ -249,7 +252,7 @@ bool GameMaker::SetAndValidateBoardsAndAlgos()
 			// In case there are multiple possibilities - we choose to take the last one
 			if(GameUtils::endsWith(fileName, ".sboard"))
 			{
-				std::string fullFileName = _inputFolder + "\\" + fileName;
+				std::string fullFileName = _inputFolder + "/" + fileName;
 				_boardFilePath = fullFileName;
 				misBoard = false;
 			}
@@ -260,18 +263,19 @@ bool GameMaker::SetAndValidateBoardsAndAlgos()
 
 		} while(FindNextFileA(dir, &fileData));
 	}
+	FindClose(dir);
 
 	// Set Player A
 	if(dllNamesVec.size() > 0)
 	{
-		_algoFileA = _inputFolder + "\\" + dllNamesVec[0];
+		_algoDataA.algoFile = _inputFolder + "/" + dllNamesVec[0];
 	}
 
 	// Set Player B
 	if(dllNamesVec.size() > 1)
 	{
 		misAlgo = false;
-		_algoFileB = _inputFolder + "\\" + dllNamesVec[1];
+		_algoDataB.algoFile = _inputFolder + "/" + dllNamesVec[1];
 	}
 
 	if(!misBoard)
