@@ -26,10 +26,10 @@ private:
 	std::shared_ptr<IAlgo> _playerB;
 	GameBoard _board;
 	
-	std::string _inputFolder = nullptr;
-	std::string _boardFilePath = nullptr;
-	std::string _algoFileA = nullptr;
-	std::string _algoFileB = nullptr;
+	std::string _inputFolder;
+	std::string _boardFilePath;
+	std::string _algoFileA;
+	std::string _algoFileB;
 
 	bool ParseInput(int argc, char* argv[]);
 	bool SetAndValidateBoardsAndAlgos();

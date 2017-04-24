@@ -6,6 +6,7 @@
 #include <strsafe.h>
 #include <winapifamily.h>
 #include "GameUtils.h"
+#include "PrintHandler.h"
 
 
 GameMaker::GameMaker(int argc, char* argv[])
@@ -54,9 +55,13 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 	auto currentScore = &scorePlayerA;
 	auto opponentScore = &scorePlayerB;
 
+	PrintHandler::printInitialBoard(_board);
+
 	// game loop
 	while (remainingShipsA > 0 && remainingShipsB > 0 && (movesRemainingA || movesRemainingB))
 	{
+		PrintHandler::delay();
+
 		// get attack from player and play it on the board
 		auto attackPosition = currentPlayer->attack();
 		*currentPlayerMovesRemaining = (attackPosition != ATTACK_END);
@@ -69,6 +74,8 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 		// notify the players:
 		_playerA->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 		_playerB->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+
+		PrintHandler::printAttackResult(attackPosition, attackResult, attackedPiece);
 
 		// upon hit player gets another turn (if he didn't shoot himself)
 		if (attackResult == AttackResult::Hit && !selfHit)
@@ -95,6 +102,7 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 	}
 
 	// print end game results
+	PrintHandler::cleanOutput();
 	if (remainingShipsA == 0 || remainingShipsB == 0)
 	{
 		std::cout << "Player " << (remainingShipsA == 0 ? 'B' : 'A') << " won" << std::endl;
@@ -109,26 +117,48 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 /*Validate input, parse it, and set all needed local variables*/
 bool GameMaker::ParseInput(int argc, char* argv[])
 {
-	std::string path = "";
-	
-	// set path according to argv
-	if (argc == 1) //TODO: support prints to console
+	std::string path = ".";
+	bool printEnabled = PRINT_ENABLED_DEFAULT;
+	int printDelay = PRINT_DELAY_DEFAULT;
+
+	if(argc > 5) // at most 5 args - name, path, -quiet, -delay + amount
 	{
-		path = ".";
+		//In case more that 1 argument was given - we choose to stop the program
+		throw std::exception("Program takes at most 4 arguments!");
 	}
-	else if (argc == 2)
+
+	// set path and print parameters according to argv
+	for(int i = 1; i < argc; i++)
 	{
-		path = argv[1];
-	}
-	else //In too many argument were given - we choose to ignore
-	{
-		//TODO: -quiet
+		if(strcmp(argv[i], "-quiet") == 0)
+		{
+			printEnabled = false;
+		}
+		else if(strcmp(argv[i], "-delay") == 0)
+		{
+			i++;
+			if(i == argc)
+			{
+				throw std::exception("Missing delay amount argument!");
+			}
+			char* endPtr;
+			printDelay = int(strtol(argv[i], &endPtr, 10));
+			if(*endPtr)
+			{
+				throw std::exception("Delay argument must be an integer!");
+			}
+		}
+		else
+		{
+			path = argv[i];
+		}
 	}
 
 	// Check if wrong path
 	if (GameUtils::isDirectory(path))
 	{
 		_inputFolder = path;
+		PrintHandler::init(printEnabled, printDelay);
 		return true;
 	}
 
