@@ -72,7 +72,7 @@ void PlayerBase::updateOpponentBoardAfterBoardInit() {
 	{
 		for (int col = 1; col <= _myBoard.cols(); col++)
 		{
-			if (isPlayerShip(_myBoard(row, col))) {//check if the coordinates are of this player's ship
+			if (GameBoard::isPlayerShip(_player, _myBoard(row, col))) {//check if the coordinates are of this player's ship
 				updateOpponentBoardAfterMiss(row, col);
 				for (auto adjCoord : _myBoard.getAdjacentCoordinatesAsVector(row, col)) {
 					updateOpponentBoardAfterMiss(adjCoord.first, adjCoord.second);
