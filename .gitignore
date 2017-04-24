@@ -24,3 +24,5 @@ Development/BattleShip/x64/
 Development/BattleShip/ex2_FileAlgo/x64/
 Development/BattleShip/ex2_NaiveAlgo/x64/
 Development/BattleShip/ex2_SmartAlgo/x64/
+
+*.orig
