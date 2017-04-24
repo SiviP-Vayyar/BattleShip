@@ -12,4 +12,8 @@ public:
 	static bool endsWith(std::string const & str, std::string const & suffix);
 	/*Using for lexicographic precedence*/
 	static std::vector<std::string> GetAllFilesSorted(std::string path, std::string endsWith = "");
+
+	/*Used to select an element uniformly at random from a container*/
+	template <typename I>
+	static I randomElement(I begin, I end);
 };

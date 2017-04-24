@@ -67,3 +67,16 @@ std::vector<std::string> GameUtils::GetAllFilesSorted(std::string path, std::str
 	}
 	return allFiles;
 }
+
+template <typename I>
+I GameUtils::randomElement(I begin, I end)
+{
+	const unsigned long n = std::distance(begin, end);
+	const unsigned long divisor = (RAND_MAX + 1) / n;
+
+	unsigned long k;
+	do { k = std::rand() / divisor; } while (k >= n);
+
+	std::advance(begin, k);
+	return begin;
+}
