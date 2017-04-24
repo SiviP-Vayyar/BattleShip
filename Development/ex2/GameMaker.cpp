@@ -95,7 +95,7 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 
 		// switch players for next round
 		currentPlayerDef = currentPlayerDef == PLAYER_A ? PLAYER_B : PLAYER_A;
-		currentPlayer = currentPlayer == _playerA ? std::move(_playerB) : std::move(_playerA); //TODO: make sure move works
+		currentPlayer = currentPlayer == _playerA ? _playerB : _playerA; //TODO: make sure move works
 		currentPlayerMovesRemaining = currentPlayerMovesRemaining == &movesRemainingA ? &movesRemainingB : &movesRemainingA;
 		std::swap(currentShipsCntr, opponentShipsCntr);
 		std::swap(currentScore, opponentScore);

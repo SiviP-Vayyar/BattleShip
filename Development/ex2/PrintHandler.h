@@ -4,7 +4,7 @@
 #include <windows.h>
 
 #define PRINT_ENABLED_DEFAULT	true
-#define PRINT_DELAY_DEFAULT		2000
+#define PRINT_DELAY_DEFAULT		500
 
 #define PRINT_MISS		' '
 #define PRINT_ATTACK	'@'

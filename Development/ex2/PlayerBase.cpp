@@ -169,16 +169,18 @@ void PlayerBase::deduceOpponentBoardAfterHit(int row, int col)
 
 void PlayerBase::deduceOpponentBoardAfterSink(int row, int col)
 {
-	auto surroundingCoordinates = _opponentBoard.getAdjacentCoordinatesAsVector(row, col);
+	std::set<std::pair<int, int>> sunkShipCoordinates;
+	_opponentBoard.getShipCoordinates(row, col, sunkShipCoordinates);
 
-	for (auto Coordinates : surroundingCoordinates)
+	for(auto sunkCoords : sunkShipCoordinates)
 	{
-		if (_opponentBoard(Coordinates.first, Coordinates.second) == SINK)
+		auto surroundingCoordinates = _opponentBoard.getAdjacentCoordinatesAsVector(sunkCoords.first, sunkCoords.second);
+		for(auto Coordinates : surroundingCoordinates)
 		{
-			deduceOpponentBoardAfterSink(Coordinates.first, Coordinates.second);
-		}
-		else {
-			_opponentBoard(Coordinates.first, Coordinates.second) = MISS;
+			if(_opponentBoard(Coordinates.first, Coordinates.second) == EMPTY)
+			{
+				_opponentBoard(sunkCoords.first, sunkCoords.second) = MISS;
+			}
 		}
 	}
 }
