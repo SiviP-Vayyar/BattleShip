@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\ex2\GameBoard.cpp" />
+    <ClCompile Include="..\..\ex2\GameUtils.cpp" />
     <ClCompile Include="..\..\ex2\PlayerBase.cpp" />
     <ClCompile Include="..\..\ex2\PlayerFile.cpp" />
   </ItemGroup>

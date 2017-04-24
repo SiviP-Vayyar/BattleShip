@@ -24,6 +24,9 @@
     <ClCompile Include="..\..\ex2\PlayerBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\ex2\GameUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ex2\PlayerNaive.h">
