@@ -27,14 +27,6 @@ GameMaker::GameMaker(int argc, char* argv[])
 	{
 		throw GameException("");
 	}
-	
-	// Set boards for both players
-	char** rawBoardA = _board.getBoardForPlayer(PLAYER_A);
-	char** rawBoardB = _board.getBoardForPlayer(PLAYER_B);
-	_playerA->setBoard(PLAYER_A ,const_cast<const char**>(rawBoardA), _board.rows(), _board.cols());
-	_playerB->setBoard(PLAYER_B, const_cast<const char**>(rawBoardB), _board.rows(), _board.cols());
-	GameBoard::deleteRawBoard(rawBoardA, _board.rows(), _board.cols());
-	GameBoard::deleteRawBoard(rawBoardB, _board.rows(), _board.cols());
 }
 
 GameMaker::~GameMaker()
@@ -186,6 +178,12 @@ bool GameMaker::LoadAndInitAlgos()
 		{
 			failedLoadA = false;
 			_playerA = GetAlgorithm();
+
+			// Set boards for player A
+			char** rawBoardA = _board.getBoardForPlayer(PLAYER_A);
+			_playerA->setBoard(PLAYER_A, const_cast<const char**>(rawBoardA), _board.rows(), _board.cols());
+			GameBoard::deleteRawBoard(rawBoardA, _board.rows(), _board.cols());
+			// Init player A
 			failedInitA = !_playerA->init(_inputFolder);
 		}
 	}
@@ -200,6 +198,12 @@ bool GameMaker::LoadAndInitAlgos()
 		{
 			failedLoadB = false;
 			_playerB = GetAlgorithm();
+
+			// Set boards for player B
+			char** rawBoardB = _board.getBoardForPlayer(PLAYER_B);
+			_playerB->setBoard(PLAYER_B, const_cast<const char**>(rawBoardB), _board.rows(), _board.cols());
+			GameBoard::deleteRawBoard(rawBoardB, _board.rows(), _board.cols());
+			// Init player B
 			failedInitB = !_playerB->init(_inputFolder);
 		}
 	}
@@ -304,8 +308,6 @@ bool GameMaker::SetAndValidateBoardsAndAlgos()
 		// detect illegal ship placement (adjacent ships) - work on full board
 		adjacent = fullBoard.isAdjacent();
 	}
-
-	
 
 	/*Validate input by an exact order*/
 	if (wrongSizeA || wrongSizeB || fewA || fewB || manyA || manyB || adjacent)
