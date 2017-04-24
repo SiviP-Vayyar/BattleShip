@@ -52,9 +52,9 @@ std::vector<std::pair<int, int>> PlayerSmart::getAllPositions(char type)
 	return std::vector<std::pair<int, int>>();
 }
 
-std::pair<int, int> PlayerSmart::selectAttackPositionFromEmptyPositions(const std::vector<std::pair<int, int>>& emptyPositions)
+std::pair<int, int> PlayerSmart::selectAttackPositionFromEmptyPositions(std::vector<std::pair<int, int>>& emptyPositions)
 {
-	return *GameUtils::randomElement(emptyPositions.cbegin(), emptyPositions.cend());
+	return *GameUtils::randomElement(emptyPositions.begin(), emptyPositions.end());
 }
 
 IBattleshipGameAlgo* GetAlgorithm()

@@ -17,3 +17,16 @@ public:
 	template <typename I>
 	static I randomElement(I begin, I end);
 };
+
+template <typename I>
+I GameUtils::randomElement(I begin, I end)
+{
+	auto n = std::distance(begin, end);
+	auto divisor = (RAND_MAX + 1) / n;
+
+	auto k = n;
+	do { k = std::rand() / divisor; } while (k >= n);
+
+	std::advance(begin, k);
+	return begin;
+}

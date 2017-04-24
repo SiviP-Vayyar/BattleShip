@@ -17,5 +17,5 @@ public:
 
 private:
 	std::vector<std::pair<int, int>> getAllPositions(char type);
-	std::pair<int, int> selectAttackPositionFromEmptyPositions(const std::vector<std::pair<int, int>>& emptyPositions);
+	std::pair<int, int> selectAttackPositionFromEmptyPositions(std::vector<std::pair<int, int>>& emptyPositions);
 };
