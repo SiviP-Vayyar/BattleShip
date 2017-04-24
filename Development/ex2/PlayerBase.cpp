@@ -32,14 +32,8 @@ void PlayerBase::notifyOnAttackResult(int player, int row, int col, AttackResult
 	{
 		bool myAttack = player == _player;
 		bool myShip = GameBoard::isPlayerShip(_player, _myBoard(row, col)); // If not self attack - Assuming one square can be occupied by one player only
-		if (myAttack && !myShip) // The common case
+		if (!myShip) // The common case
 		{
-			_opponentBoard(row, col) = attackResultToChar(result);
-			updateOpponentBoardAfterAttack(row, col, attackResultToChar(result));
-		}
-		else if (!myAttack && !myShip) // if opponent attackted his own ship
-		{
-			_opponentBoard(row, col) = attackResultToChar(result);
 			updateOpponentBoardAfterAttack(row, col, attackResultToChar(result));
 		}
 	}
@@ -69,10 +63,6 @@ char PlayerBase::attackResultToChar(AttackResult result)
 }
 
 void PlayerBase::updateOpponentBoardAfterBoardInit() {
-	//TODO: remove debug prints
-	//printf("in updateOpponentBoardAfterBoardInit printing opponent board");
-	//GameUtils::printRawBoard(_opponentBoard);
-	//end debug prints
 	for (int row = 1; row <= _myBoard.rows() ; row++)
 	{
 		for (int col = 1; col <= _myBoard.cols(); col++)
@@ -85,10 +75,6 @@ void PlayerBase::updateOpponentBoardAfterBoardInit() {
 			}
 		}
 	}
-	//TODO: remove debug prints
-	//printf("done updateOpponentBoardAfterBoardInit printing opponent board");
-	//GameUtils::printRawBoard(_opponentBoard);
-	//end debug prints
 }
 
 void PlayerBase::updateOpponentBoardAfterAttack(int row, int col, char attackChar)
@@ -119,13 +105,17 @@ void PlayerBase::updateOpponentBoardAfterAttack(int row, int col, char attackCha
 
 void PlayerBase::updateOpponentBoardAfterMiss(int row, int col)
 {
-	_opponentBoard(row, col) = MISS;
+	if (_opponentBoard(row, col) == EMPTY) {
+		_opponentBoard(row, col) = MISS;
+	}
 }
 
 void PlayerBase::updateOpponentBoardAfterHit(int row, int col)
 {
-	_opponentBoard(row, col) = HIT;
-	deduceOpponentBoardAfterHit(row, col);
+	if (_opponentBoard(row, col) == EMPTY) {
+		_opponentBoard(row, col) = HIT;
+		deduceOpponentBoardAfterHit(row, col);
+	}
 }
 
 void PlayerBase::updateOpponentBoardAfterSink(int row, int col)
@@ -150,10 +140,6 @@ void PlayerBase::markOpponentBoardAfterSink(int row, int col)
 
 void PlayerBase::deduceOpponentBoardAfterHit(int row, int col)
 {
-	//TODO: remove debug prints
-	printf("in deduceOpponentBoardAfterHit printing opponent board");
-	GameUtils::printRawBoard(_opponentBoard);
-	//end debug prints
 	auto adjCoordinates = _opponentBoard.getAdjacentCoordinatesAsVector(row, col);
 	auto diagCoordinates = _opponentBoard.getDiagonalCoordinatesAsVector(row, col);
 	std::vector<std::pair<int, int>> possibleCoordinatesToMark;
@@ -188,20 +174,10 @@ void PlayerBase::deduceOpponentBoardAfterHit(int row, int col)
 			_opponentBoard(possibleCoord.first, possibleCoord.second) = MISS;
 		}
 	}
-
-	//TODO: remove debug prints
-	printf("done deduceOpponentBoardAfterHit printing opponent board");
-	GameUtils::printRawBoard(_opponentBoard);
-	//end debug prints
 }
 
 void PlayerBase::deduceOpponentBoardAfterSink(int row, int col)
 {
-	//TODO: remove debug prints
-	printf("in deduceOpponentBoardAfterSink printing opponent board");
-	GameUtils::printRawBoard(_opponentBoard);
-	//end debug prints
-
 	std::set<std::pair<int, int>> sunkShipCoordinates;
 	_opponentBoard.getShipCoordinates(row, col, sunkShipCoordinates);
 
@@ -216,9 +192,4 @@ void PlayerBase::deduceOpponentBoardAfterSink(int row, int col)
 			}
 		}
 	}
-
-	//TODO: remove debug prints
-	printf("done deduceOpponentBoardAfterSink printing opponent board");
-	GameUtils::printRawBoard(_opponentBoard);
-	//end debug prints
 }
