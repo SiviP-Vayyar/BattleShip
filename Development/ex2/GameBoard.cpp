@@ -430,3 +430,20 @@ std::vector<std::pair<int, int>> GameBoard::getAdjacentCoordinatesAsVector(int r
 	}
 	return adjacentCoordinates;
 }
+
+/*returns a vector of all diagonal Coordinates (does not include diagonal Coordinates)*/
+std::vector<std::pair<int, int>> GameBoard::getDiagonalCoordinatesAsVector(int row, int col) const
+{
+	std::vector<std::pair<int, int>> diagonalCoordinates;
+
+	auto increments = { std::pair<int,int>(1,1), std::pair<int,int>(1,-1), std::pair<int,int>(-1,1), std::pair<int,int>(-1,-1) };
+	for (auto inc : increments)
+	{
+		int r = row + inc.first, c = col + inc.second;
+		if (isInBoard(r, c))
+		{
+			diagonalCoordinates.push_back(std::pair<int, int>(r, c));
+		}
+	}
+	return diagonalCoordinates;
+}

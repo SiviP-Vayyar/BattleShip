@@ -75,6 +75,7 @@ public:
 	void getShipCoordinates(int row, int col, std::set<std::pair<int, int>>& coords) const;
 	std::vector<std::pair<int, int>> getSurroundingCoordinatesAsVector(int row, int col) const;
 	std::vector<std::pair<int, int>> getAdjacentCoordinatesAsVector(int row, int col) const;
+	std::vector<std::pair<int, int>> getDiagonalCoordinatesAsVector(int row, int col) const;
 
 	/*Board static methods*/
 	static int getShipScore(char piece);
