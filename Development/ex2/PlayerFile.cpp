@@ -29,7 +29,7 @@ std::pair<int, int> PlayerFile::attack()
 bool PlayerFile::init(const std::string& path)
 {
 	int lexOrder;
-	auto allFiles = GetAllFilesSorted(path, ".attack");
+	auto allFiles = GameUtils::GetAllFilesSorted(path, ".attack");
 
 	switch (allFiles.size())
 	{
@@ -73,19 +73,19 @@ std::vector<std::pair<int, int>> PlayerFile::getMovesFromFile(const std::string&
 		try
 		{
 			// skip leading spaces
-			skipSpaces(lineStream);
+			GameUtils::skipSpaces(lineStream);
 
 			// read first parameter
 			lineStream >> row;
 
 			// skip spaces and comma between parameters
-			skipSpaces(lineStream);
+			GameUtils::skipSpaces(lineStream);
 			if(lineStream.peek() != ',') // illegal line - skip
 			{
 				continue;
 			}
 			lineStream.ignore();
-			skipSpaces(lineStream);
+			GameUtils::skipSpaces(lineStream);
 
 			// read second parameter
 			lineStream >> col;

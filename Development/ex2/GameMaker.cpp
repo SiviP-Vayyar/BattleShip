@@ -126,7 +126,7 @@ bool GameMaker::ParseInput(int argc, char* argv[]) //TODO: make sure order of pr
 	}
 
 	// Check if wrong path
-	if (isDirectory(path))
+	if (GameUtils::isDirectory(path))
 	{
 		_inputFolder = path;
 		return true;
@@ -217,13 +217,13 @@ bool GameMaker::SetAndValidateBoardsAndAlgos()
 			std::string fileName(fileData.cFileName);
 
 			// In case there are multiple possibilities - we choose to take the last one
-			if(endsWith(fileName, ".sboard"))
+			if(GameUtils::endsWith(fileName, ".sboard"))
 			{
 				std::string fullFileName = _inputFolder + "\\" + fileName;
 				_boardFilePath = fullFileName;
 				misBoard = false;
 			}
-			else if(endsWith(fileName, ".dll"))
+			else if(GameUtils::endsWith(fileName, ".dll"))
 			{
 				dllNamesVec.push_back(fileName);
 			}
