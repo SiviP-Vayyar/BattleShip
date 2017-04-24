@@ -22,10 +22,10 @@
 #define PLAYER_A_COLOR	(BG_INT | FG_RED | FG_BLU)
 #define PLAYER_B_COLOR	(BG_INT | FG_GRN)
 #define EMPTY_COLOR		(BG_BLU)
-#define ATTACK_COLOR_A	(BG_INT | FG_RED | FG_INT)
-#define ATTACK_COLOR_B	(BG_INT | FG_GRN | FG_INT)
-#define HIT_COLOR_A		(ATTACK_COLOR_A ^ FG_INT)
-#define HIT_COLOR_B		(ATTACK_COLOR_B ^ FG_INT)
+#define ATTACK_COLOR_A	(PLAYER_A_COLOR | FG_INT)
+#define ATTACK_COLOR_B	(PLAYER_B_COLOR | FG_INT)
+#define HIT_COLOR_A		(PLAYER_B_COLOR)
+#define HIT_COLOR_B		(PLAYER_A_COLOR)
 #define MISS_COLOR		(EMPTY_COLOR)
 
 // TODO: can we just make the whole class static?
