@@ -1,4 +1,5 @@
 #include "PlayerBase.h"
+#include "GameUtils.h"
 
 
 PlayerBase::~PlayerBase()
@@ -68,6 +69,10 @@ char PlayerBase::attackResultToChar(AttackResult result)
 }
 
 void PlayerBase::updateOpponentBoardAfterBoardInit() {
+	//TODO: remove debug prints
+	//printf("in updateOpponentBoardAfterBoardInit printing opponent board");
+	//GameUtils::printRawBoard(_opponentBoard);
+	//end debug prints
 	for (int row = 1; row <= _myBoard.rows() ; row++)
 	{
 		for (int col = 1; col <= _myBoard.cols(); col++)
@@ -80,6 +85,10 @@ void PlayerBase::updateOpponentBoardAfterBoardInit() {
 			}
 		}
 	}
+	//TODO: remove debug prints
+	//printf("done updateOpponentBoardAfterBoardInit printing opponent board");
+	//GameUtils::printRawBoard(_opponentBoard);
+	//end debug prints
 }
 
 void PlayerBase::updateOpponentBoardAfterAttack(int row, int col, char attackChar)
@@ -141,6 +150,10 @@ void PlayerBase::markOpponentBoardAfterSink(int row, int col)
 
 void PlayerBase::deduceOpponentBoardAfterHit(int row, int col)
 {
+	//TODO: remove debug prints
+	printf("in deduceOpponentBoardAfterHit printing opponent board");
+	GameUtils::printRawBoard(_opponentBoard);
+	//end debug prints
 	auto adjCoordinates = _opponentBoard.getAdjacentCoordinatesAsVector(row, col);
 	auto diagCoordinates = _opponentBoard.getDiagonalCoordinatesAsVector(row, col);
 	std::vector<std::pair<int, int>> possibleCoordinatesToMark;
@@ -175,10 +188,20 @@ void PlayerBase::deduceOpponentBoardAfterHit(int row, int col)
 			_opponentBoard(possibleCoord.first, possibleCoord.second) = MISS;
 		}
 	}
+
+	//TODO: remove debug prints
+	printf("done deduceOpponentBoardAfterHit printing opponent board");
+	GameUtils::printRawBoard(_opponentBoard);
+	//end debug prints
 }
 
 void PlayerBase::deduceOpponentBoardAfterSink(int row, int col)
 {
+	//TODO: remove debug prints
+	printf("in deduceOpponentBoardAfterSink printing opponent board");
+	GameUtils::printRawBoard(_opponentBoard);
+	//end debug prints
+
 	std::set<std::pair<int, int>> sunkShipCoordinates;
 	_opponentBoard.getShipCoordinates(row, col, sunkShipCoordinates);
 
@@ -189,8 +212,13 @@ void PlayerBase::deduceOpponentBoardAfterSink(int row, int col)
 		{
 			if(_opponentBoard(Coordinates.first, Coordinates.second) == EMPTY)
 			{
-				_opponentBoard(sunkCoords.first, sunkCoords.second) = MISS;
+				_opponentBoard(Coordinates.first, Coordinates.second) = MISS;
 			}
 		}
 	}
+
+	//TODO: remove debug prints
+	printf("done deduceOpponentBoardAfterSink printing opponent board");
+	GameUtils::printRawBoard(_opponentBoard);
+	//end debug prints
 }
