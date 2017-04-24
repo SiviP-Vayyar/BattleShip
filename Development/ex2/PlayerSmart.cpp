@@ -10,13 +10,14 @@ std::pair<int, int> PlayerSmart::attack()
 	}
 
 	// first search for hit on the board and try to expand it
+	const GameBoard& opponentBoard = _opponentBoard;
 	auto hitPositions = getAllPositions(HIT);
 	for (auto hitPosition : hitPositions)
 	{
-		auto adjPositions = _opponentBoard.getAdjacentCoordinatesAsVector(hitPosition.first, hitPosition.second);
+		auto adjPositions = opponentBoard.getAdjacentCoordinatesAsVector(hitPosition.first, hitPosition.second);
 		for (auto adjPosition : adjPositions)
 		{
-			if (_opponentBoard(adjPosition.first, adjPosition.second) == EMPTY)
+			if (opponentBoard(adjPosition.first, adjPosition.second) == EMPTY)
 			{
 				return adjPosition;
 			}
@@ -34,22 +35,23 @@ std::pair<int, int> PlayerSmart::attack()
 	return ATTACK_END;
 }
 
-std::vector<std::pair<int, int>> PlayerSmart::getAllPositions(char type)
+std::vector<std::pair<int, int>> PlayerSmart::getAllPositions(char type) const
 {
-	std::vector<std::pair<int, int>> positions;
+	std::vector<std::pair<int, int>> hitPositions;
+	const GameBoard& opponentBoard = _opponentBoard;
 
-	for (int row = 1 ; row <= _opponentBoard.rows() ; row++)
+	for (int row = 1 ; row <= opponentBoard.rows() ; row++)
 	{
-		for (int col = 1; col <= _opponentBoard.cols(); col++)
+		for (int col = 1; col <= opponentBoard.cols(); col++)
 		{
-			if (_opponentBoard(row, col) == type)
+			if (opponentBoard(row, col) == type)
 			{
-				positions.push_back(std::make_pair(row, col));
+				hitPositions.push_back(std::make_pair(row, col));
 			}
 		}
 	}
 
-	return positions;
+	return std::vector<std::pair<int, int>>();
 }
 
 std::pair<int, int> PlayerSmart::selectAttackPositionFromEmptyPositions(std::vector<std::pair<int, int>>& emptyPositions)

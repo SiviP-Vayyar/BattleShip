@@ -47,6 +47,7 @@
 class GameBoard
 {
 public:
+	friend class PlayerBase;
 	GameBoard() : _board(nullptr), _rows(0), _cols(0), _isSet(false) {}
 	GameBoard(const char* const* board, int numRows, int numCols) : GameBoard() { setBoard(board, numRows, numCols); }
 	GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols) {} // copy c'tor
@@ -56,7 +57,6 @@ public:
 	/*Using 1-based matrix call on vector*/
 
 	char operator()(int row, int col) const;	// used as getter, e.g. char piece = board(1,2)
-	char& operator()(int row, int col);			// used as setter, e.g. board(1,2) = 'M'
 	GameBoard& operator=(const GameBoard& other);
 	std::pair<AttackResult, char> attack(std::pair<int, int> attackPosition);
 
@@ -96,4 +96,5 @@ private:
 	bool _isSet;
 
 	void setBoard(const char* const* board, int numRows, int numCols);
+	char& operator()(int row, int col);			// used as setter, e.g. board(1,2) = 'M'
 };
