@@ -107,7 +107,7 @@ void GameMaker::RunGame() //TODO: ZOHAR - I think it's ok but just make sure. al
 
 
 /*Validate input, parse it, and set all needed local variables*/
-bool GameMaker::ParseInput(int argc, char* argv[]) //TODO: make sure order of prints after change!!!
+bool GameMaker::ParseInput(int argc, char* argv[])
 {
 	std::string path = "";
 	

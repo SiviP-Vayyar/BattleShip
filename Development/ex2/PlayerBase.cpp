@@ -139,11 +139,6 @@ void PlayerBase::markOpponentBoardAfterSink(int row, int col)
 	}
 }
 
-void PlayerBase::deduceOpponentBoardAfterMiss(int row, int col)
-{
-	//TODO: implelemnt
-}
-
 void PlayerBase::deduceOpponentBoardAfterHit(int row, int col)
 {
 	auto adjCoordinates = _opponentBoard.getAdjacentCoordinatesAsVector(row, col);

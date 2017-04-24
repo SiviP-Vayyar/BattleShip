@@ -33,7 +33,6 @@ protected:
 	void updateOpponentBoardAfterSink(int row, int col);
 	void updateOpponentBoardAfterHit(int row, int col);
 	void markOpponentBoardAfterSink(int row, int col);
-	void deduceOpponentBoardAfterMiss(int row, int col);
 	void deduceOpponentBoardAfterHit(int row, int col);
 	void deduceOpponentBoardAfterSink(int row, int col);
 };
