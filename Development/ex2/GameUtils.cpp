@@ -69,7 +69,7 @@ std::vector<std::string> GameUtils::GetAllFilesSorted(std::string path, std::str
 	return allFiles;
 }
 
-void GameUtils::printRawBoard(GameBoard &board) {
+void GameUtils::printRawBoard(const GameBoard &board) {
 	printf("\nprinting board\n");
 	for (int row = 1; row <= board.rows(); row++) {
 		for (int col = 1; col <= board.cols(); col++) {

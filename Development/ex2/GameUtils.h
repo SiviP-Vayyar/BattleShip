@@ -15,9 +15,9 @@ public:
 	static std::vector<std::string> GetAllFilesSorted(std::string path, std::string endsWith = "");
 
 	/*Used to select an element uniformly at random from a container*/
-	static void printRawBoard(GameBoard &board);
 	template <typename I>
 	static I randomElement(I begin, I end);
+	static void printRawBoard(const GameBoard &board);
 };
 
 template <typename I>
