@@ -10,13 +10,11 @@ void PrintHandler::cleanOutput()
 	if (!_printEnabled)
 		return;
 	delay(_delayMS);
-	for (int x = 0; x < 80; x++)
+	
+	gotoxy(0, 0);
+	for (int i = 0 ; i < 20 ; i++)
 	{
-		for (int y = 0; y < 80; y++)
-		{
-			gotoxy(x, y);
-			putchar(' ');
-		}
+		std::cout << std::string(20, ' ') << std::endl;
 	}
 	gotoxy(0, 0);
 }
