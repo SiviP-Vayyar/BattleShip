@@ -18,10 +18,17 @@ std::pair<int, int> PlayerFile::attack()
 		throw std::exception("attack() was called before setBoard was called!");
 	}
 
-	/*Return next move, and advance the iterator*/
+	//Return next move, and advance the iterator
 	if (_movesIterator != _myMoves.end())
 	{
-		return *_movesIterator++;
+		// verify legal position
+		while(!_myBoard.isInBoard(_movesIterator->first, _movesIterator->second))
+		{
+			++_movesIterator;
+		}
+		std::pair<int, int> moveToReturn = *_movesIterator;
+		++_movesIterator;
+		return moveToReturn;
 	}
 	return ATTACK_END;
 }
@@ -89,12 +96,6 @@ std::vector<std::pair<int, int>> PlayerFile::getMovesFromFile(const std::string&
 
 			// read second parameter
 			lineStream >> col;
-
-			// verify legal position
-			if(!_myBoard.isInBoard(row, col))
-			{
-				continue;
-			}
 
 			// add values to vector
 			moves.push_back(std::pair<int, int>(row, col));
