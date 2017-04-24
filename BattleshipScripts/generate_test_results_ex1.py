@@ -63,10 +63,11 @@ if __name__ == '__main__':
     tests_path = 'C:/Git/BattleShip/BattleshipScripts/ex1_tests'
     my_dir = 'C:/Git/BattleShip/BattleshipScripts/ex1_tests'
     teams_parent_dir = "C:/Git/BattleShip/build/Windows-x64-Release/output"
+    #teams_parent_dir = 'C:\\Git\\BattleShip\\BattleshipScripts'
     teams_source_dir = "C:/Git/BattleShip/Development/Testing/ex1"
     students_xlsx = "C:/Git/BattleShip/BattleshipScripts/AllStudents.xlsx"
     ignore_teams_list = []
-    test_only_teams = []
+    test_only_teams = ['jonathans1']
 
     # Generate Results Excell:
     parser = excel_parser.Parser()

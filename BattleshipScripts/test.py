@@ -1,3 +1,5 @@
+import subprocess
+
 import team
 import my_utils
 import os
@@ -6,7 +8,7 @@ import difflib
 DEBUG = False
 AUTO_QUIET = False
 BACKSLASH = True
-test_only = ['T4']
+test_only = []
 ignore_tests = []
 
 
@@ -42,6 +44,8 @@ class Test:
                 print(execute_line)
                 print()
             os.system(execute_line)
+            #subprocess.Popen(execute_line, cwd=os.path.dirname(team_to_test.exe_path))
+            #subprocess.call(execute_line, shell=True)
 
             # Read test results
             with open(output_file) as fd:

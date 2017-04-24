@@ -34,6 +34,7 @@ class Team:
             os.mkdir(self.out_dir)
 
         self.get_team_exe_path()
+        self.get_team_exe_path()
         self.get_team_bonus()
         self.get_team_members()
 
