@@ -7,6 +7,10 @@
 #include <cctype>
 #include <string>
 
+const char GameBoard::_shipTypes[] = { RUBBER, MISSILE, SUB, DESTROYER };
+const int GameBoard::_shipLengths[] = { RUBBER_LEN, MISSILE_LEN, SUB_LEN, DESTROYER_LEN };
+const int GameBoard::_shipScores[] = { RUBBER_SCORE, MISSILE_SCORE, SUB_SCORE, DESTROYER_SCORE };
+
 GameBoard::GameBoard(const std::string& path) : GameBoard()
 {
 	GameBoard& thisBoard = *this;
@@ -341,17 +345,13 @@ bool GameBoard::isAdjacent() const
 
 int GameBoard::getShipScore(char piece)
 {
-	int size = 4;
-	char shipTypes[] = { RUBBER, MISSILE, SUB, DESTROYER };
-	int shipScores[] = { RUBBER_SCORE, MISSILE_SCORE, SUB_SCORE, DESTROYER_SCORE };
-
-	for (int i=0 ; i < size ; i++)
+	for (int i=0 ; i < _numShipTypes ; i++)
 	{
-		auto shipType = shipTypes[i];
+		auto shipType = _shipTypes[i];
 		if (playerShipType(PLAYER_A, shipType) == piece ||
 			playerShipType(PLAYER_B, shipType) == piece)
 		{
-			return shipScores[i];
+			return _shipScores[i];
 		}
 	}
 	return 0;
@@ -359,17 +359,13 @@ int GameBoard::getShipScore(char piece)
 
 int GameBoard::getShipLength(char piece)
 {
-	int size = 4;
-	char shipTypes[] = { RUBBER, MISSILE, SUB, DESTROYER };
-	int shipLengths[] = { RUBBER_LEN, MISSILE_LEN, SUB_LEN, DESTROYER_LEN };
-
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < _numShipTypes; i++)
 	{
-		auto shipType = shipTypes[i];
+		auto shipType = _shipTypes[i];
 		if (playerShipType(PLAYER_A, shipType) == piece ||
 			playerShipType(PLAYER_B, shipType) == piece)
 		{
-			return shipLengths[i];
+			return _shipLengths[i];
 		}
 	}
 	return 0;

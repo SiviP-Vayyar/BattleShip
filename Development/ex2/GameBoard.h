@@ -95,6 +95,11 @@ private:
 	int _cols;
 	bool _isSet;
 
+	static const int _numShipTypes = 4;
+	static const char _shipTypes[];
+	static const int _shipLengths[];
+	static const int _shipScores[];
+
 	void setBoard(const char* const* board, int numRows, int numCols);
 	char& operator()(int row, int col);			// used as setter, e.g. board(1,2) = 'M'
 };
