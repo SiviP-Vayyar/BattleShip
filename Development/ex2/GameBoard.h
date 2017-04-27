@@ -47,15 +47,18 @@ class GameBoard
 public:
 	friend class PlayerBase;
 	GameBoard() : _board(nullptr), _rows(0), _cols(0), _isSet(false) {}
-	GameBoard(const char* const* board, int numRows, int numCols) : GameBoard() { setBoard(board, numRows, numCols); }
+	explicit GameBoard(const std::string& path); //c'tor from file
+	explicit GameBoard(const char* const* board, int numRows, int numCols) : GameBoard() { setBoard(board, numRows, numCols); }
+	
 	GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols) {} // copy c'tor
-	explicit GameBoard(const std::string& path);
-	~GameBoard();
+	GameBoard(GameBoard&& other) noexcept : _rows(other._rows), _cols(other._cols), _isSet(other._isSet) { std::swap(_board, other._board); } // move c'tor
+	GameBoard& operator=(const GameBoard& other); // copy assignment
+	GameBoard& operator=(GameBoard&& other) noexcept; // move assignment
+	~GameBoard(); // d'tor
 
 	/*Using 1-based matrix call on vector*/
 
 	char operator()(int row, int col) const; // used as getter, e.g. char piece = board(1,2)
-	GameBoard& operator=(const GameBoard& other);
 	std::pair<AttackResult, char> attack(std::pair<int, int> attackPosition);
 
 	/*Board info methods*/

@@ -384,7 +384,17 @@ GameBoard& GameBoard::operator=(const GameBoard& other)
 {
 	setBoard(other._board, other._rows, other._cols);
 	return *this;
-};
+}
+
+GameBoard& GameBoard::operator=(GameBoard&& other) noexcept
+{
+	std::swap(_board, other._board); // the swap trick
+	_rows = other.rows();
+	_cols = other._cols;
+	_isSet = other._isSet;
+	
+	return *this;
+}
 
 /*return a vector of all valid surrounding Coordinates*/
 std::vector<std::pair<int, int>> GameBoard::getSurroundingCoordinatesAsVector(int row, int col) const
