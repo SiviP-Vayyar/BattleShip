@@ -53,4 +53,5 @@ if __name__ == '__main__':
     path = 'C:\Git\BattleShip\Development\Testing\ex1'
     #cmake_lists_from_all_subfolders(path)
     #find_files(path, ['stdafx'])
+
     pass
