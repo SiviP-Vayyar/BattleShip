@@ -2,7 +2,10 @@ import xlwt
 import xlrd
 import team
 from team import Student
+from test import TestError
 
+ERRORS_START_COL = 6
+ERROR_MARK = 'X'
 
 class Parser:
     def __init__(self):
@@ -12,7 +15,7 @@ class Parser:
         self.ws.remove_splits = True
         self.ws.vert_split_pos = 1
         self.ws.horz_split_pos = 1
-        self.cur_row = 2
+        self.cur_row = 1
 
         # styles
         self.style_header = xlwt.easyxf('font: bold True; alignment: horizontal center')
@@ -20,12 +23,17 @@ class Parser:
         self.ws.row(0).set_style(self.style_header)
         self.ws.col(5).set_style(self.style_header)
 
-        self.ws.write(1, 0, 'Team', self.style_header)
-        self.ws.write(1, 1, 'ID', self.style_header)
-        self.ws.write(1, 2, 'Comments', self.style_header)
-        self.ws.write(1, 3, 'Grade', self.style_header)
-        self.ws.write(1, 4, 'Bonus', self.style_header)
-        self.ws.write(1, 5, 'Final Grade', self.style_header)
+        self.ws.write(0, 0, 'Team', self.style_header)
+        self.ws.write(0, 1, 'ID', self.style_header)
+        self.ws.write(0, 2, 'Comments', self.style_header)
+        self.ws.write(0, 3, 'Grade', self.style_header)
+        self.ws.write(0, 4, 'Bonus', self.style_header)
+        self.ws.write(0, 5, 'Final Grade', self.style_header)
+
+        #errors header
+        for num, val in TestError.items():
+            self.ws.write(0, ERRORS_START_COL+num, val, self.style_header)
+
 
     def write_team_name(self, name):
         self.ws.write(self.cur_row, 0, name)
@@ -50,10 +58,16 @@ class Parser:
         if not team_to_parse.has_students_file:
             diff_results += '\n' + 'Did not have the students.txt file: (-3)' + '\n'
         self.write_comments(diff_results)
+        self.write_errors(team_to_parse.errors)
+
         if len(team_to_parse.students) == 0:
             self.cur_row += 1
         else:
             self.write_ids(team_to_parse.students)
+
+    def write_errors(self, errors):
+        for num in set(errors):
+            self.ws.write(self.cur_row, ERRORS_START_COL+num, ERROR_MARK, self.style_center)
 
     def add_missing_students(self, students_list):
         for s in students_list:

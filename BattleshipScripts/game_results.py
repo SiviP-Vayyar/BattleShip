@@ -13,6 +13,7 @@ class GameResults:
         self.get_game_results_from_results_file()
         self.declared_right_winner()
 
+
     def get_game_results_from_results_file(self):
         with open(self.file) as fd:
             lines = fd.readlines()

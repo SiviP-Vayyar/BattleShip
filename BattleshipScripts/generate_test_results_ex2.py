@@ -35,7 +35,7 @@ if __name__ == '__main__':
     copy_extra_files(teams_source_dir, teams_parent_dir)
 
     # Generate Teams:
-    team_dirs = [x[0] for x in os.walk(teams_parent_dir) if 'results' not in x[0]][1:]
+    team_dirs = [x for x in my_utils.get_all_sub_folders(teams_parent_dir) if 'results' not in x]
     teams = [Team(d) for d in team_dirs]
 
     # Generate teams' test result:
@@ -67,6 +67,6 @@ if __name__ == '__main__':
     parser.add_worksheet("Output Too Long", error_parsing_diff)
 
     # Make report of results:
-    parser.save_report(os.path.join(my_dir, 'ex2.xls'))
+    parser.save_report(os.path.join(tests_path, 'ex2.xls'))
 
     print('=== Finished ===')

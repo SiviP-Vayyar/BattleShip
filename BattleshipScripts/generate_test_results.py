@@ -1,22 +1,23 @@
 import os
 import my_utils
-from shutil import move, copyfile, copy_tree
+from shutil import move, copyfile
+from distutils.dir_util import copy_tree
 
 
 def generate_teams_folders(teams_parent_dir):
     for root, dirnames, filenames in os.walk(teams_parent_dir):
         for filename in filenames:
-            if filename.endswith('.exe'):
+            if filename.endswith('.exe') or filename.endswith('.dll'):
                 full_dir_name = os.path.join(teams_parent_dir, os.path.basename(filename).split('.')[0])
                 if not os.path.isdir(full_dir_name):
                     os.mkdir(full_dir_name)
                 move(os.path.join(root, filename), os.path.join(full_dir_name, filename))
 
-        for filename in filenames:
-            if not os.path.isdir(filename):
-                full_dir_name = os.path.join(teams_parent_dir, os.path.basename(filename).split('.')[0])
-                if os.path.isdir(full_dir_name):
-                    move(os.path.join(root, filename), os.path.join(full_dir_name, filename))
+        # for filename in filenames:
+        #     if not os.path.isdir(filename):
+        #         full_dir_name = os.path.join(teams_parent_dir, os.path.basename(filename).split('.')[0])
+        #         if os.path.isdir(full_dir_name):
+        #             move(os.path.join(root, filename), os.path.join(full_dir_name, filename))
 
 
 def get_team_name_from_source_folder(source_folder):
@@ -48,9 +49,12 @@ def copy_file_from_source_to_build(team_source_dir, build_dir, filename):
 
 def copy_tests_to_team_build_folder(test_dirs, build_dir):
     team_dirs = my_utils.get_all_sub_folders(build_dir)
-    for d in test_dirs:
-        for t in team_dirs:
-            copy_tree(d, t)
+    for test_dir in test_dirs:
+        for team_dir in team_dirs:
+            to = os.path.join(team_dir, os.path.basename(test_dir))
+            if not os.path.isdir(to):
+                os.mkdir(to)
+            copy_tree(test_dir, to)
 
 def copy_extra_files(source_dir, build_dir):
     teams_dirs = [d for d in my_utils.get_all_sub_folders(source_dir) if os.path.basename(d).startswith('ex')]

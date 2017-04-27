@@ -1,13 +1,13 @@
 import zipfile
 from my_utils import *
 import os
-from generate_test_results_ex1 import get_team_name_from_source_folder
+from generate_test_results import get_team_name_from_source_folder
 from distutils.dir_util import copy_tree
 import shutil
 from cmake_authenticator import authenticate_cmake_files
 
 ###############
-EXCERSICE = 'ex1'
+EXCERSICE = 'ex2'
 ###############
 
 zip_folder = 'C:/Git/BattleShip/Development/Testing/{}'.format(EXCERSICE)

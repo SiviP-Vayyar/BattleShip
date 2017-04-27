@@ -4,19 +4,34 @@ import my_utils
 
 
 root_folder = 'C:\Git\BattleShip\Development\Testing'
-cmake_str = '''### DO NOT CHANGE FROM HERE ON ###
+cmake_str = '''message("user: ${user1}, id: ${id1}")
 
-message("user: ${user1}, id: ${id1}")
-message("user: ${user2}, id: ${id2}")
-message("user: ${user3}, id: ${id3}")
+# Set exe build parameters
+set(EXE_NAME "ex2.${user1}")
+add_executable( ${EXE_NAME}	${EXE_SOURCE_FILES})
+set_property(TARGET ${EXE_NAME} PROPERTY FOLDER "ex2/${user1}")
+set_property(TARGET ${EXE_NAME} PROPERTY OUTPUT_NAME "${user1}")
 
-set(EXE_NAME "ex1.${user1}")
-add_executable( ${EXE_NAME}
-	${SOURCE_FILES}
-)
-#BUILD_BINARY_OUTPUT_DIRECTORY
-set_property(TARGET ${EXE_NAME} PROPERTY FOLDER "ex1/${user1}")
-set_property(TARGET ${EXE_NAME} PROPERTY OUTPUT_NAME "${user1}")'''
+# Set naive algorithm's .dll build parameters
+set(ALG1_NAME "ex2.${user1}.naive")
+add_library(${ALG1_NAME} SHARED ${NAIVE_ALGO_SOURCE_FILES})
+set_property(TARGET ${ALG1_NAME} PROPERTY FOLDER "ex2/${user1}")
+set_property(TARGET ${ALG1_NAME} PROPERTY OUTPUT_NAME "${user1}.naive")
+target_compile_definitions(${ALG1_NAME} PRIVATE -DALGO_EXPORTS) # preprocessor flag saying we are the one compiling the header now
+
+# Set read-from-file algorithm's .dll build parameters
+set(ALG2_NAME "ex2.${user1}.file")
+add_library(${ALG2_NAME} SHARED ${FILE_ALGO_SOURCE_FILES})
+set_property(TARGET ${ALG2_NAME} PROPERTY FOLDER "ex2/${user1}")
+set_property(TARGET ${ALG2_NAME} PROPERTY OUTPUT_NAME "${user1}.file")
+target_compile_definitions(${ALG2_NAME} PRIVATE -DALGO_EXPORTS) # preprocessor flag saying we are the one compiling the header now
+
+# Set smart algorithm's .dll build parameters
+set(ALG3_NAME "ex2.${user1}.smart")
+add_library(${ALG3_NAME} SHARED ${SMART_ALGO_SOURCE_FILES})
+set_property(TARGET ${ALG3_NAME} PROPERTY FOLDER "ex2/${user1}")
+set_property(TARGET ${ALG3_NAME} PROPERTY OUTPUT_NAME "${user1}.smart")
+target_compile_definitions(${ALG3_NAME} PRIVATE -DALGO_EXPORTS) # preprocessor flag saying we are the one compiling the header now'''
 
 
 def authenticate_cmake_files(root_folder):

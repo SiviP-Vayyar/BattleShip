@@ -2,7 +2,7 @@ import team
 import my_utils
 import os
 import difflib
-from enum import Enum
+from game_results import GameResults
 
 
 DEBUG = False
@@ -92,6 +92,7 @@ class Test:
         return output_diff
 
     def get_golden_ex1(self, golden_team):
+        self.golden_team = golden_team
         self.test_dirs = [t for t in my_utils.get_all_sub_folders(self.tests_path) if
                           os.path.basename(t).startswith('T')]
         for d in self.test_dirs:
@@ -105,25 +106,29 @@ class Test:
                 self.test_results[test_name] = fd.readlines()
 
     def get_golden_ex2(self, golden_team):
+        self.golden_team = golden_team
         # only tests 1 & 2 need printed results
         self.test_dirs = [t for t in my_utils.get_all_sub_folders(golden_team.team_dir) if
-                          os.path.basename(t).startswith('T1') or os.path.basename(t).startswith('T2')]
+                          os.path.basename(t).startswith('T')]
         for d in self.test_dirs:
             test_name = os.path.basename(d)[os.path.basename(d).find('_')+1:]
             output_file = os.path.join(self.tests_path, '{}.txt'.format(test_name))
             if BACKSLASH:
                 output_file = output_file.replace("\\", "/")
                 d = d.replace("\\", "/")
-            os.system('{} {} > {}'.format(golden_team.exe_path, d, output_file))
+            os.system('{} {} -quiet > {}'.format(golden_team.exe_path, d, output_file))
             with open(output_file) as fd:
                 self.test_results[test_name] = fd.readlines()
-
-
+        self.test_dirs = [os.path.join(os.path.dirname(os.path.dirname(d)), os.path.basename(d)) for d in self.test_dirs]
 
     def test_team_ex2(self, team_to_test):
         # Can't test if didn't compile
         if not team_to_test.is_compiled:
             return ''
+
+        arguments = ''
+        if AUTO_QUIET or team_to_test.is_bonus:  # Bonus run with -quiet
+            arguments = ' -quiet'
 
         output_diff = ''
         team_test_dirs = [t for t in my_utils.get_all_sub_folders(team_to_test.team_dir) if os.path.basename(t).startswith('T')]
@@ -134,46 +139,76 @@ class Test:
 
         to_test.sort()
         for d in to_test:  # first 2 tests need diff
-            test_name = os.path.basename(d).split('_')[1]
+            do_diff = False
+            test_name = os.path.basename(d)[os.path.basename(d).find('_')+1:]
             output_file = os.path.join(team_to_test.out_dir, '{}.txt'.format(test_name))
-            arguments = ''
-            if AUTO_QUIET or team_to_test.is_bonus:  # Bonus run with -quiet
-                arguments = ' -quiet'
+            curr_output = output_file
             if BACKSLASH:
                 output_file = output_file.replace("\\", "/")
                 d = d.replace("\\", "/")
 
-            if 'Game2' in test_name or 'Game3' in test_name:
+            if 'Game1' in test_name or 'Game2' in test_name:
                 execute_line = '{} {}{} > {}'.format(team_to_test.exe_path, d, arguments, output_file)
                 if DEBUG:
                     print(execute_line)
                     print()
                 os.system(execute_line)
-                # subprocess.Popen(execute_line, cwd=os.path.dirname(team_to_test.exe_path))
-                # subprocess.call(execute_line, shell=True)
 
+                do_diff = True
                 # Read test results
-                with open(output_file) as fd:
+                with open(curr_output) as fd:
                     team_to_test.test_results[test_name] = fd.readlines()
-            else:  # Game1 - with my game maker
 
-                execute_line = '{} {}{} > {}'.format(self.golden_team.exe_path, d, arguments, output_file)
-                if DEBUG:
-                    print(execute_line)
-                    print()
-                os.system(execute_line)
+            else:  # Game3 - smart vs naive
+                A = 0
+                B = 0
+                for i in range(BEST_OUT_OF):
+                    curr_output = '{}.{}'.format(output_file, i)
+                    execute_line = '{} {}{} > {}'.format(self.golden_team.exe_path, d, arguments, curr_output)
+                    if DEBUG:
+                        print(execute_line)
+                        print()
+                    os.system(execute_line)
+                    results = GameResults(curr_output)
+                    if not results.has_score:
+                        # Read test results
+                        with open(curr_output) as fd:
+                            lines = fd.readlines()
+                            if ''.join(lines) is '':
+                                team_to_test.errors.append(14)
+                            else:
+                                do_diff = True
+                                if test_name not in team_to_test.test_results:
+                                    team_to_test.test_results[test_name] = lines
+                                else:
+                                    team_to_test.test_results[test_name].append(lines)
+                    else:  # has score
+                        if not results.right_winner:
+                            team_to_test.errors.append(10)
+                        else:  # right winner
+                            if results.score_a > results.score_b:
+                                A += 1
+                            elif results.score_a < results.score_b:
+                                B += 1
+                            else:
+                                A += 1
+                                B += 1
+                # after a few games - player B should win:
+                if A > B:
+                    team_to_test.errors.append(13)
+                    team_to_test.smart_score = '{} - {}'.format(A, B)
 
-
-            # Diff
-            diff = difflib.ndiff(self.test_results[test_name], team_to_test.test_results[test_name])
-            changes = ''.join([l for l in diff])
-            changes_lines = [l for l in changes.split('\n') if not l.startswith(' ')]
-            if ''.join(changes_lines) is '':  # No Changes
-                continue
-            else:
-                output_diff += '##########' + '\n'
-                output_diff += test_name + '\n'
-                output_diff += '##########' + '\n\n'
-                output_diff += changes + '\n'
+            if do_diff:
+                # Diff
+                diff = difflib.ndiff(self.test_results[test_name], team_to_test.test_results[test_name])
+                changes = ''.join([l for l in diff])
+                changes_lines = [l for l in changes.split('\n') if not l.startswith(' ')]
+                if ''.join(changes_lines) is '':  # No Changes
+                    continue
+                else:
+                    output_diff += '##########' + '\n'
+                    output_diff += test_name + '\n'
+                    output_diff += '##########' + '\n\n'
+                    output_diff += changes + '\n'
 
         return output_diff

@@ -31,6 +31,7 @@ class Team:
         self.out_dir = os.path.join(self.team_dir, 'results')
         self.test_results = {}  # <name : [result lines]>
         self.errors = []
+        self.smart_score = ''
         if not os.path.isdir(self.out_dir):
             os.mkdir(self.out_dir)
 
