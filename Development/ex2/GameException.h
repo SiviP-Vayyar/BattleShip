@@ -4,8 +4,7 @@
 class GameException : public std::exception
 {
 public:
-	explicit GameException(const std::string& message) : _msg(message)
-	{}
+	explicit GameException(const std::string& message) : _msg(message) { }
 
 	const char* what() const throw () override
 	{

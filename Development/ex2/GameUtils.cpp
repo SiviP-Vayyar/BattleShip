@@ -5,7 +5,7 @@
 
 std::stringstream& GameUtils::skipSpaces(std::stringstream& s)
 {
-	while(s.peek() == ' ')
+	while (s.peek() == ' ')
 	{
 		s.ignore();
 	}
@@ -18,12 +18,12 @@ bool GameUtils::isDirectory(const std::string& path)
 	DWORD ftyp = GetFileAttributesA(path.c_str());
 
 	// test for invalid path
-	if(ftyp == INVALID_FILE_ATTRIBUTES)
+	if (ftyp == INVALID_FILE_ATTRIBUTES)
 	{
 		return false;
 	}
 	// test if path is a directory
-	if(ftyp & FILE_ATTRIBUTE_DIRECTORY)
+	if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
 	{
 		return true;
 	}
@@ -31,9 +31,9 @@ bool GameUtils::isDirectory(const std::string& path)
 }
 
 /*test if str ends with suffix*/
-bool GameUtils::endsWith(std::string const & str, std::string const & suffix)
+bool GameUtils::endsWith(std::string const& str, std::string const& suffix)
 {
-	if(suffix.size() > str.size())
+	if (suffix.size() > str.size())
 	{
 		return false;
 	}
@@ -48,18 +48,19 @@ std::vector<std::string> GameUtils::GetAllFilesSorted(std::string path, std::str
 	std::vector<std::string> allFiles;
 
 	// iterate over files in path
-	if(isDirectory(path))
+	if (isDirectory(path))
 	{
 		// test for empty directory
 		std::string s = path + "\\*" + endsWith;
 
 		dir = FindFirstFileA(s.c_str(), &fileData);
-		if(dir != INVALID_HANDLE_VALUE)
+		if (dir != INVALID_HANDLE_VALUE)
 		{
 			do
 			{
 				allFiles.push_back(fileData.cFileName);
-			} while(FindNextFileA(dir, &fileData));
+			}
+			while (FindNextFileA(dir, &fileData));
 		}
 
 		/*Sort dll names and take only first 2*/
@@ -69,10 +70,13 @@ std::vector<std::string> GameUtils::GetAllFilesSorted(std::string path, std::str
 	return allFiles;
 }
 
-void GameUtils::printRawBoard(const GameBoard &board) {
+void GameUtils::printRawBoard(const GameBoard& board)
+{
 	printf("\nprinting board\n");
-	for (int row = 1; row <= board.rows(); row++) {
-		for (int col = 1; col <= board.cols(); col++) {
+	for (int row = 1; row <= board.rows(); row++)
+	{
+		for (int col = 1; col <= board.cols(); col++)
+		{
 			printf("%c", board(row, col));
 		}
 		printf("|\n");

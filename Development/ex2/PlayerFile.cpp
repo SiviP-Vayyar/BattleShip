@@ -4,7 +4,6 @@
 #include <fstream>
 #include "GameMaker.h"
 
-
 void PlayerFile::SetMoves(std::vector<std::pair<int, int>> moves)
 {
 	_myMoves = moves;
@@ -22,7 +21,7 @@ std::pair<int, int> PlayerFile::attack()
 	if (_movesIterator != _myMoves.end())
 	{
 		// verify legal position
-		while(!_myBoard.isInBoard(_movesIterator->first, _movesIterator->second))
+		while (!_myBoard.isInBoard(_movesIterator->first, _movesIterator->second))
 		{
 			++_movesIterator;
 		}
@@ -48,7 +47,7 @@ bool PlayerFile::init(const std::string& path)
 	default:
 		lexOrder = (_player == PLAYER_A) ? 0 : 1;
 	}
-	
+
 	_algoMovesFile = path + "\\" + allFiles[lexOrder];
 	SetMoves(getMovesFromFile(_algoMovesFile));
 
@@ -64,7 +63,7 @@ std::vector<std::pair<int, int>> PlayerFile::getMovesFromFile(const std::string&
 	int row, col;
 
 	// check if file failed to open
-	if(!fin)
+	if (!fin)
 	{
 		std::string err("Failed to open file in path: ");
 		err += movesFilePath;
@@ -72,7 +71,7 @@ std::vector<std::pair<int, int>> PlayerFile::getMovesFromFile(const std::string&
 	}
 
 	// parse the file line by line
-	while(std::getline(fin, line))
+	while (std::getline(fin, line))
 	{
 		std::stringstream lineStream(line);
 
@@ -87,7 +86,7 @@ std::vector<std::pair<int, int>> PlayerFile::getMovesFromFile(const std::string&
 
 			// skip spaces and comma between parameters
 			GameUtils::skipSpaces(lineStream);
-			if(lineStream.peek() != ',') // illegal line - skip
+			if (lineStream.peek() != ',') // illegal line - skip
 			{
 				continue;
 			}
@@ -102,18 +101,15 @@ std::vector<std::pair<int, int>> PlayerFile::getMovesFromFile(const std::string&
 		}
 
 		// if line has illegal format - skip
-		catch(std::exception e)
-		{
-		}
+		catch (std::exception e) { }
 	}
 
 	fin.close();
 	return moves;
 }
 
-
 IBattleshipGameAlgo* GetAlgorithm()
 {
-	_instancesVec.push_back(new PlayerFile());			// Create new instance and keep it in vector
-	return _instancesVec[_instancesVec.size() - 1];		// Return last instance
+	_instancesVec.push_back(new PlayerFile()); // Create new instance and keep it in vector
+	return _instancesVec[_instancesVec.size() - 1]; // Return last instance
 }

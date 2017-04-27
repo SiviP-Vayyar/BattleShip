@@ -4,14 +4,12 @@
 #include "GameBoard.h"
 #include <vector>
 
-
 static std::vector<IBattleshipGameAlgo *> _instancesVec; // A static vector to hold all instances of algo in the dll
 
 class PlayerBase : public IBattleshipGameAlgo
 {
 public:
-	PlayerBase() : _player(PLAYER_NOT_YET_KNOWN)
-	{};
+	PlayerBase() : _player(PLAYER_NOT_YET_KNOWN) { };
 	virtual ~PlayerBase();
 
 	/* Will be called once from outside the class, to init the board*/

@@ -1,12 +1,8 @@
 #include "GameMaker.h"
 #include "GameException.h"
 #include <iostream>
-//#include <tchar.h>
-//#include <strsafe.h>
-//#include <winapifamily.h>
 #include "GameUtils.h"
 #include "PrintHandler.h"
-
 
 GameMaker::GameMaker(int argc, char* argv[])
 {
@@ -92,7 +88,7 @@ void GameMaker::RunGame()
 
 		// switch players for next round
 		currentPlayerDef = currentPlayerDef == PLAYER_A ? PLAYER_B : PLAYER_A;
-		currentPlayer = currentPlayer == _playerA ? _playerB : _playerA; //TODO: make sure move works
+		currentPlayer = currentPlayer == _playerA ? _playerB : _playerA;
 		currentPlayerMovesRemaining = currentPlayerMovesRemaining == &movesRemainingA ? &movesRemainingB : &movesRemainingA;
 		std::swap(currentShipsCntr, opponentShipsCntr);
 		std::swap(currentScore, opponentScore);
@@ -109,8 +105,6 @@ void GameMaker::RunGame()
 	std::cout << "Player B: " << scorePlayerB << std::endl;
 }
 
-
-
 /*Validate input, parse it, and set all needed local variables*/
 bool GameMaker::ParseInput(int argc, char* argv[])
 {
@@ -118,29 +112,29 @@ bool GameMaker::ParseInput(int argc, char* argv[])
 	bool printEnabled = PRINT_ENABLED_DEFAULT;
 	int printDelay = PRINT_DELAY_DEFAULT;
 
-	if(argc > 5) // at most 5 args - name, path, -quiet, -delay + amount
+	if (argc > 5) // at most 5 args - name, path, -quiet, -delay + amount
 	{
 		//In case more that 1 argument was given - we choose to stop the program
 		throw std::exception("Program takes at most 4 arguments!");
 	}
 
 	// set path and print parameters according to argv
-	for(int i = 1; i < argc; i++)
+	for (int i = 1; i < argc; i++)
 	{
-		if(strcmp(argv[i], "-quiet") == 0)
+		if (strcmp(argv[i], "-quiet") == 0)
 		{
 			printEnabled = false;
 		}
-		else if(strcmp(argv[i], "-delay") == 0)
+		else if (strcmp(argv[i], "-delay") == 0)
 		{
 			i++;
-			if(i == argc)
+			if (i == argc)
 			{
 				throw std::exception("Missing delay amount argument!");
 			}
 			char* endPtr;
 			printDelay = int(strtol(argv[i], &endPtr, 10));
-			if(*endPtr)
+			if (*endPtr)
 			{
 				throw std::exception("Delay argument must be an integer!");
 			}
@@ -160,7 +154,7 @@ bool GameMaker::ParseInput(int argc, char* argv[])
 	}
 
 	std::cout << "Wrong path: " << path.c_str() << std::endl;
-	return false;	
+	return false;
 }
 
 bool GameMaker::LoadAndInitAlgos()
@@ -207,7 +201,7 @@ bool GameMaker::LoadAndInitAlgos()
 			failedInitB = !_playerB->init(_inputFolder);
 		}
 	}
-	
+
 	if (failedLoadA || failedLoadB || failedInitA || failedInitB)
 	{
 		if (failedLoadA)
@@ -246,7 +240,7 @@ bool GameMaker::SetAndValidateBoardsAndAlgos()
 	std::string s = _inputFolder + "/*";
 
 	dir = FindFirstFileA(s.c_str(), &fileData);
-	if(dir != INVALID_HANDLE_VALUE)
+	if (dir != INVALID_HANDLE_VALUE)
 	{
 		// test each file suffix and set variables as needed
 		do
@@ -254,35 +248,35 @@ bool GameMaker::SetAndValidateBoardsAndAlgos()
 			std::string fileName(fileData.cFileName);
 
 			// In case there are multiple possibilities - we choose to take the last one
-			if(GameUtils::endsWith(fileName, ".sboard"))
+			if (GameUtils::endsWith(fileName, ".sboard"))
 			{
 				std::string fullFileName = _inputFolder + "/" + fileName;
 				_boardFilePath = fullFileName;
 				misBoard = false;
 			}
-			else if(GameUtils::endsWith(fileName, ".dll"))
+			else if (GameUtils::endsWith(fileName, ".dll"))
 			{
 				dllNamesVec.push_back(fileName);
 			}
-
-		} while(FindNextFileA(dir, &fileData));
+		}
+		while (FindNextFileA(dir, &fileData));
 	}
 	FindClose(dir);
 
 	// Set Player A
-	if(dllNamesVec.size() > 0)
+	if (dllNamesVec.size() > 0)
 	{
 		_algoDataA.algoFile = _inputFolder + "/" + dllNamesVec[0];
 	}
 
 	// Set Player B
-	if(dllNamesVec.size() > 1)
+	if (dllNamesVec.size() > 1)
 	{
 		misAlgo = false;
 		_algoDataB.algoFile = _inputFolder + "/" + dllNamesVec[1];
 	}
 
-	if(!misBoard)
+	if (!misBoard)
 	{
 		fullBoard = GameBoard(_boardFilePath);
 		GameBoard copyBoard(fullBoard);
@@ -312,45 +306,45 @@ bool GameMaker::SetAndValidateBoardsAndAlgos()
 	/*Validate input by an exact order*/
 	if (wrongSizeA || wrongSizeB || fewA || fewB || manyA || manyB || adjacent)
 	{
-		if(misBoard)
+		if (misBoard)
 		{
 			std::cout << "Missing board file (*.sboard) looking in path: " << _inputFolder.c_str() << std::endl;
 		}
 		else // only if board exists
 		{
-			if(wrongSizeA)
+			if (wrongSizeA)
 			{
 				//print a line for each wrong size type
-				for(char shipType : illegalShipsA)
+				for (char shipType : illegalShipsA)
 				{
 					std::cout << "Wrong size or shape for ship " << shipType << " for player A" << std::endl;
 				}
 			}
-			if(wrongSizeB)
+			if (wrongSizeB)
 			{
 				//print a line for each wrong size type
-				for(char shipType : illegalShipsB)
+				for (char shipType : illegalShipsB)
 				{
 					std::cout << "Wrong size or shape for ship " << shipType << " for player B" << std::endl;
 				}
 			}
-			if(manyA)
+			if (manyA)
 			{
 				std::cout << "Too many ships for player A" << std::endl;
 			}
-			if(fewA)
+			if (fewA)
 			{
 				std::cout << "Too few ships for player A" << std::endl;
 			}
-			if(manyB)
+			if (manyB)
 			{
 				std::cout << "Too many ships for player B" << std::endl;
 			}
-			if(fewB)
+			if (fewB)
 			{
 				std::cout << "Too few ships for player B" << std::endl;
 			}
-			if(adjacent)
+			if (adjacent)
 			{
 				std::cout << "Adjacent Ships on Board" << std::endl;
 			}

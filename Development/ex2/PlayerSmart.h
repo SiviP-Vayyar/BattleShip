@@ -2,12 +2,10 @@
 
 #include "PlayerBase.h"
 
-
 class PlayerSmart : public PlayerBase
 {
 public:
-	PlayerSmart() : PlayerBase()
-	{};
+	PlayerSmart() : PlayerBase() { };
 
 	/* When I want to make a move on opponent's board*/
 	std::pair<int, int> attack() override;
@@ -17,5 +15,5 @@ public:
 
 private:
 	std::vector<std::pair<int, int>> getAllPositions(char type) const;
-	std::pair<int, int> selectAttackPositionFromEmptyPositions(std::vector<std::pair<int, int>>& emptyPositions);
+	static std::pair<int, int> selectAttackPositionFromEmptyPositions(std::vector<std::pair<int, int>>& emptyPositions);
 };

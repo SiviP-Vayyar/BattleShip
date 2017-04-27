@@ -4,7 +4,6 @@
 #include <set>
 #include <vector>
 
-
 /*ship types definitions*/
 #define RUBBER			'B'
 #define MISSILE			'P'
@@ -43,7 +42,6 @@
 #define SINK 					'S'
 #define MAX_SHIPS 				5
 
-
 class GameBoard
 {
 public:
@@ -56,7 +54,7 @@ public:
 
 	/*Using 1-based matrix call on vector*/
 
-	char operator()(int row, int col) const;	// used as getter, e.g. char piece = board(1,2)
+	char operator()(int row, int col) const; // used as getter, e.g. char piece = board(1,2)
 	GameBoard& operator=(const GameBoard& other);
 	std::pair<AttackResult, char> attack(std::pair<int, int> attackPosition);
 
@@ -85,10 +83,10 @@ public:
 	static char playerShipType(int player, char piece);
 	static char** newEmptyRawBoard(int rows, int cols);
 	static void deleteRawBoard(char** board, int rows, int cols);
-	
+
 	/* check if ship belongs to this player*/
 	static bool isPlayerShip(int player, char shipType) { return (shipType != EMPTY && playerShipType(player, shipType) == shipType); }
-	
+
 private:
 	char** _board;
 	int _rows;
@@ -101,5 +99,5 @@ private:
 	static const int _shipScores[];
 
 	void setBoard(const char* const* board, int numRows, int numCols);
-	char& operator()(int row, int col);			// used as setter, e.g. board(1,2) = 'M'
+	char& operator()(int row, int col); // used as setter, e.g. board(1,2) = 'M'
 };

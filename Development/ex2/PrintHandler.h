@@ -28,16 +28,26 @@
 #define HIT_COLOR_B		(PLAYER_A_COLOR)
 #define MISS_COLOR		(EMPTY_COLOR)
 
-// TODO: can we just make the whole class static?
 class PrintHandler
 {
 public:
-	static void init(bool printEnabled, int delayMS) { _printEnabled = printEnabled; _delayMS = delayMS; hideCursor(); }
+	static void init(bool printEnabled, int delayMS)
+	{
+		_printEnabled = printEnabled;
+		_delayMS = delayMS;
+		hideCursor();
+	}
+
 	static void cleanOutput();
 	static void printInitialBoard(const GameBoard& board);
 	static void printAttackResult(std::pair<int, int> attackPosition, AttackResult attackResult, char attackedPiece, int player);
-	static void delay(const int millis = _delayMS / 2) { if (_printEnabled) Sleep(millis);  }
-	
+
+	static void delay(const int millis = _delayMS / 2)
+	{
+		if (_printEnabled)
+			Sleep(millis);
+	}
+
 private:
 	static bool _printEnabled;
 	static int _delayMS;

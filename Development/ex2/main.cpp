@@ -2,7 +2,6 @@
 #include "GameMaker.h"
 #include <iostream>
 
-
 void print_error(const std::string& s)
 {
 	std::cout << "Error: " << s.c_str() << std::endl;

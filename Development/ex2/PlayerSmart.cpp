@@ -1,7 +1,6 @@
 #include "PlayerSmart.h"
 #include "GameUtils.h"
 
-
 std::pair<int, int> PlayerSmart::attack()
 {
 	if (_player == PLAYER_NOT_YET_KNOWN)
@@ -24,7 +23,6 @@ std::pair<int, int> PlayerSmart::attack()
 		}
 	}
 
-
 	// if no hits were found, collect all empty locations and select from them
 	auto emptyPositions = getAllPositions(EMPTY);
 	if (!emptyPositions.empty())
@@ -40,7 +38,7 @@ std::vector<std::pair<int, int>> PlayerSmart::getAllPositions(char type) const
 	std::vector<std::pair<int, int>> positions;
 	const GameBoard& opponentBoard = _opponentBoard;
 
-	for (int row = 1 ; row <= opponentBoard.rows() ; row++)
+	for (int row = 1; row <= opponentBoard.rows(); row++)
 	{
 		for (int col = 1; col <= opponentBoard.cols(); col++)
 		{
@@ -61,6 +59,6 @@ std::pair<int, int> PlayerSmart::selectAttackPositionFromEmptyPositions(std::vec
 
 IBattleshipGameAlgo* GetAlgorithm()
 {
-	_instancesVec.push_back(new PlayerSmart());			// Create new instance and keep it in vector
-	return _instancesVec[_instancesVec.size() - 1];		// Return last instance
+	_instancesVec.push_back(new PlayerSmart()); // Create new instance and keep it in vector
+	return _instancesVec[_instancesVec.size() - 1]; // Return last instance
 }

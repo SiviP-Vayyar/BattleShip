@@ -1,10 +1,9 @@
 #include "PlayerBase.h"
 #include "GameUtils.h"
 
-
 PlayerBase::~PlayerBase()
 {
-	for(auto it = _instancesVec.begin(); it != _instancesVec.end(); ++it)
+	for (auto it = _instancesVec.begin(); it != _instancesVec.end(); ++it)
 	{
 		delete(*it);
 	}
@@ -30,7 +29,6 @@ void PlayerBase::notifyOnAttackResult(int player, int row, int col, AttackResult
 	/*Getting feedback for an attack (while ignoring ATTACK_END and all positions outside the board)*/
 	if (_opponentBoard.isInBoard(row, col))
 	{
-		bool myAttack = player == _player;
 		bool myShip = GameBoard::isPlayerShip(_player, _myBoard(row, col)); // If not self attack - Assuming one square can be occupied by one player only
 		if (!myShip) // The common case
 		{
@@ -44,32 +42,35 @@ char PlayerBase::attackResultToChar(AttackResult result)
 	switch (result)
 	{
 	case AttackResult::Hit:
-	{
-		return HIT;
-	}
+		{
+			return HIT;
+		}
 	case AttackResult::Miss:
-	{
-		return MISS;
-	}
+		{
+			return MISS;
+		}
 	case AttackResult::Sink:
-	{
-		return SINK;
-	}
+		{
+			return SINK;
+		}
 	default:
-	{
-		return 'X'; // Just so all paths has return values
-	}	
+		{
+			return 'X'; // Just so all paths has return values
+		}
 	}
 }
 
-void PlayerBase::updateOpponentBoardAfterBoardInit() {
-	for (int row = 1; row <= _myBoard.rows() ; row++)
+void PlayerBase::updateOpponentBoardAfterBoardInit()
+{
+	for (int row = 1; row <= _myBoard.rows(); row++)
 	{
 		for (int col = 1; col <= _myBoard.cols(); col++)
 		{
-			if (GameBoard::isPlayerShip(_player, _myBoard(row, col))) {//check if the coordinates are of this player's ship
+			if (GameBoard::isPlayerShip(_player, _myBoard(row, col)))
+			{//check if the coordinates are of this player's ship
 				updateOpponentBoardAfterMiss(row, col);
-				for (auto adjCoord : _myBoard.getAdjacentCoordinatesAsVector(row, col)) {
+				for (auto adjCoord : _myBoard.getAdjacentCoordinatesAsVector(row, col))
+				{
 					updateOpponentBoardAfterMiss(adjCoord.first, adjCoord.second);
 				}
 			}
@@ -81,22 +82,22 @@ void PlayerBase::updateOpponentBoardAfterAttack(int row, int col, char attackCha
 {
 	switch (attackChar)
 	{
-		case MISS:
+	case MISS:
 		{
 			updateOpponentBoardAfterMiss(row, col);
 			return;
 		}
-		case  HIT:
+	case HIT:
 		{
 			updateOpponentBoardAfterHit(row, col);
 			return;
 		}
-		case SINK:
+	case SINK:
 		{
 			updateOpponentBoardAfterSink(row, col);
-			return ;
+			return;
 		}
-		default:
+	default:
 		{
 			return;
 		}
@@ -105,14 +106,16 @@ void PlayerBase::updateOpponentBoardAfterAttack(int row, int col, char attackCha
 
 void PlayerBase::updateOpponentBoardAfterMiss(int row, int col)
 {
-	if (_opponentBoard(row, col) == EMPTY) {
+	if (_opponentBoard(row, col) == EMPTY)
+	{
 		_opponentBoard(row, col) = MISS;
 	}
 }
 
 void PlayerBase::updateOpponentBoardAfterHit(int row, int col)
 {
-	if (_opponentBoard(row, col) == EMPTY) {
+	if (_opponentBoard(row, col) == EMPTY)
+	{
 		_opponentBoard(row, col) = HIT;
 		deduceOpponentBoardAfterHit(row, col);
 	}
@@ -129,7 +132,7 @@ void PlayerBase::markOpponentBoardAfterSink(int row, int col)
 	_opponentBoard(row, col) = SINK;
 	auto surroundingCoordinates = _opponentBoard.getAdjacentCoordinatesAsVector(row, col);
 
-	for (auto Coordinates : surroundingCoordinates) 
+	for (auto Coordinates : surroundingCoordinates)
 	{
 		if (_opponentBoard(Coordinates.first, Coordinates.second) == HIT)
 		{
@@ -144,15 +147,19 @@ void PlayerBase::deduceOpponentBoardAfterHit(int row, int col)
 	auto diagCoordinates = _opponentBoard.getDiagonalCoordinatesAsVector(row, col);
 	std::vector<std::pair<int, int>> possibleCoordinatesToMark;
 
-	for (auto adjCoord : adjCoordinates) {
-		if (_opponentBoard(adjCoord.first, adjCoord.second) == HIT) {
-			if (adjCoord.first == row) {
+	for (auto adjCoord : adjCoordinates)
+	{
+		if (_opponentBoard(adjCoord.first, adjCoord.second) == HIT)
+		{
+			if (adjCoord.first == row)
+			{
 				possibleCoordinatesToMark.push_back(std::pair<int, int>(row + 1, col));
 				possibleCoordinatesToMark.push_back(std::pair<int, int>(row - 1, col));
 				possibleCoordinatesToMark.push_back(std::pair<int, int>(row + 1, adjCoord.second));
 				possibleCoordinatesToMark.push_back(std::pair<int, int>(row - 1, adjCoord.second));
 			}
-			else {//if ( adjCoord.second == col)
+			else
+			{//if ( adjCoord.second == col)
 				possibleCoordinatesToMark.push_back(std::pair<int, int>(row, col + 1));
 				possibleCoordinatesToMark.push_back(std::pair<int, int>(row, col - 1));
 				possibleCoordinatesToMark.push_back(std::pair<int, int>(adjCoord.first, col + 1));
@@ -161,16 +168,20 @@ void PlayerBase::deduceOpponentBoardAfterHit(int row, int col)
 		}
 	}
 
-	for (auto diagCoord : diagCoordinates) {
-		if (_opponentBoard(diagCoord.first, diagCoord.second) == HIT) {
+	for (auto diagCoord : diagCoordinates)
+	{
+		if (_opponentBoard(diagCoord.first, diagCoord.second) == HIT)
+		{
 			possibleCoordinatesToMark.push_back(std::pair<int, int>(diagCoord.first, col));
 			possibleCoordinatesToMark.push_back(std::pair<int, int>(row, diagCoord.second));
 		}
 	}
 
-	for (auto possibleCoord : possibleCoordinatesToMark) {
+	for (auto possibleCoord : possibleCoordinatesToMark)
+	{
 		if (_opponentBoard.isInBoard(possibleCoord.first, possibleCoord.second)
-			&& _opponentBoard(possibleCoord.first, possibleCoord.second) == EMPTY) {
+			&& _opponentBoard(possibleCoord.first, possibleCoord.second) == EMPTY)
+		{
 			_opponentBoard(possibleCoord.first, possibleCoord.second) = MISS;
 		}
 	}
@@ -181,12 +192,12 @@ void PlayerBase::deduceOpponentBoardAfterSink(int row, int col)
 	std::set<std::pair<int, int>> sunkShipCoordinates;
 	_opponentBoard.getShipCoordinates(row, col, sunkShipCoordinates);
 
-	for(auto sunkCoords : sunkShipCoordinates)
+	for (auto sunkCoords : sunkShipCoordinates)
 	{
 		auto surroundingCoordinates = _opponentBoard.getAdjacentCoordinatesAsVector(sunkCoords.first, sunkCoords.second);
-		for(auto Coordinates : surroundingCoordinates)
+		for (auto Coordinates : surroundingCoordinates)
 		{
-			if(_opponentBoard(Coordinates.first, Coordinates.second) == EMPTY)
+			if (_opponentBoard(Coordinates.first, Coordinates.second) == EMPTY)
 			{
 				_opponentBoard(Coordinates.first, Coordinates.second) = MISS;
 			}

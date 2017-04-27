@@ -10,9 +10,9 @@ void PrintHandler::cleanOutput()
 	if (!_printEnabled)
 		return;
 	delay(_delayMS);
-	
+
 	gotoxy(0, 0);
-	for (int i = 0 ; i < 20 ; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		std::cout << std::string(20, ' ') << std::endl;
 	}
@@ -39,7 +39,7 @@ void PrintHandler::printInitialBoard(const GameBoard& board)
 				setTextColor(PLAYER_A_COLOR);
 			else
 				setTextColor(PLAYER_B_COLOR);
-			
+
 			putchar(board(row, col));
 		}
 	}
@@ -62,7 +62,7 @@ void PrintHandler::printAttackResult(std::pair<int, int> attackPosition, AttackR
 
 	if (attackPosition == ATTACK_END)
 		return;
-	
+
 	int row = attackPosition.first, col = attackPosition.second;
 	WORD savedColor = getTextColor();
 
@@ -88,10 +88,10 @@ void PrintHandler::printAttackResult(std::pair<int, int> attackPosition, AttackR
 
 void PrintHandler::gotoxy(int x, int y)
 {
-	static HANDLE h = NULL;
+	static HANDLE h = nullptr;
 	if (!h)
 		h = GetStdHandle(STD_OUTPUT_HANDLE);
-	COORD c = { x, y };
+	COORD c = {x, y};
 	SetConsoleCursorPosition(h, c);
 }
 
@@ -113,14 +113,13 @@ void PrintHandler::setTextColor(const WORD color)
 	HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	SetConsoleTextAttribute(hstdout, color);
-
 }
 
 WORD PrintHandler::getTextColor()
 {
 	HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	
+
 	GetConsoleScreenBufferInfo(hstdout, &csbi);
 	return csbi.wAttributes;
 }

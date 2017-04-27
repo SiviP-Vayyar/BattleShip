@@ -3,11 +3,10 @@
 #include "IBattleshipGameAlgo.h"
 #include "GameBoard.h"
 #include <functional>
-#include <memory>
 #include <windows.h>
 
 typedef IBattleshipGameAlgo IAlgo;
-typedef IAlgo *(*GetAlgoFuncType)();
+typedef IAlgo*(*GetAlgoFuncType)();
 
 #define GET_ALGORITHM_STR "GetAlgorithm"
 
@@ -29,10 +28,10 @@ public:
 	void RunGame();
 
 private:
-	IAlgo *_playerA;
-	IAlgo *_playerB;
+	IAlgo* _playerA;
+	IAlgo* _playerB;
 	GameBoard _board;
-	
+
 	std::string _inputFolder;
 	std::string _boardFilePath;
 	AlgoData _algoDataA;
