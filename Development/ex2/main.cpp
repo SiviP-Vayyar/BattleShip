@@ -12,6 +12,10 @@ int main(int argc, char* argv[])
 	try
 	{
 		GameMaker gameMaker(argc, argv);
+		if (!gameMaker.isInitSuccess())
+		{
+			throw GameException("Init of GameMaker failed!");
+		}
 		gameMaker.RunGame();
 	}
 	catch (GameException ex)

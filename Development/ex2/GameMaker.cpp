@@ -4,29 +4,31 @@
 #include "GameUtils.h"
 #include "PrintHandler.h"
 
-GameMaker::GameMaker(int argc, char* argv[])
+GameMaker::GameMaker(int argc, char* argv[]): _initSuccess(true)
 {
 	// (1) Validate input & Set input arguments
 	if (!ParseInput(argc, argv))
 	{
-		throw GameException("");
+		_initSuccess = false;
 	}
 
 	// (2) Set local Boards & Validate them + Validate algorithm files
 	if (!SetAndValidateBoardsAndAlgos())
 	{
-		throw GameException("");
+		_initSuccess = false;
 	}
 
 	// (3-6) Load and Init dll
 	if (!LoadAndInitAlgos())
 	{
-		throw GameException("");
+		_initSuccess = false;
 	}
 }
 
 GameMaker::~GameMaker()
 {
+	delete _playerA;
+	delete _playerB;
 	FreeLibrary(_algoDataA.handle);
 	FreeLibrary(_algoDataB.handle);
 }

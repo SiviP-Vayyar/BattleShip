@@ -25,12 +25,14 @@ public:
 
 	GameMaker& operator=(const GameMaker& otheBoard) = delete; // We intend to instantiate only once
 
+	bool isInitSuccess() { return _initSuccess; }
 	void RunGame();
 
 private:
-	IAlgo* _playerA;
-	IAlgo* _playerB;
+	IAlgo* _playerA = nullptr;
+	IAlgo* _playerB = nullptr;
 	GameBoard _board;
+	bool _initSuccess;
 
 	std::string _inputFolder;
 	std::string _boardFilePath;
