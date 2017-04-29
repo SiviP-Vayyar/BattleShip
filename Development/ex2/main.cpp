@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 		GameMaker gameMaker(argc, argv);
 		if (!gameMaker.isInitSuccess())
 		{
-			throw GameException("Init of GameMaker failed!");
+			return -1;
 		}
 		gameMaker.RunGame();
 	}

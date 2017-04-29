@@ -10,18 +10,21 @@ GameMaker::GameMaker(int argc, char* argv[]): _initSuccess(true)
 	if (!ParseInput(argc, argv))
 	{
 		_initSuccess = false;
+		return;
 	}
 
 	// (2) Set local Boards & Validate them + Validate algorithm files
 	if (!SetAndValidateBoardsAndAlgos())
 	{
 		_initSuccess = false;
+		return;
 	}
 
 	// (3-6) Load and Init dll
 	if (!LoadAndInitAlgos())
 	{
 		_initSuccess = false;
+		return;
 	}
 }
 

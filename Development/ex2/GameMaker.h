@@ -25,7 +25,7 @@ public:
 
 	GameMaker& operator=(const GameMaker& otheBoard) = delete; // We intend to instantiate only once
 
-	bool isInitSuccess() { return _initSuccess; }
+	bool isInitSuccess() const { return _initSuccess; }
 	void RunGame();
 
 private:
