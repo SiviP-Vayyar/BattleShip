@@ -306,7 +306,7 @@ bool GameMaker::SetAndValidateBoardsAndAlgos()
 	}
 
 	/*Validate input by an exact order*/
-	if (wrongSizeA || wrongSizeB || fewA || fewB || manyA || manyB || adjacent)
+	if (wrongSizeA || wrongSizeB || fewA || fewB || manyA || manyB || adjacent || misAlgo)
 	{
 		if (misBoard)
 		{
