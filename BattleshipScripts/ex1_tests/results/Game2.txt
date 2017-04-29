@@ -1,4 +1,4 @@
-Player B won
+Player A won
 Points:
-Player A: 8
-Player B: 10
+Player A: 10
+Player B: 6

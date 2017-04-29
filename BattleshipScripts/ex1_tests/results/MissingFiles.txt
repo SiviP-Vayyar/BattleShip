@@ -1,2 +1,1 @@
-Wrong path: C:/BattleshipScripts/ex1_tests\T7_MissingFiles
-Missing attack file for player B (*.attack-b) looking in path: C:/BattleshipScripts/ex1_tests\T7_MissingFiles
+Missing attack file for player B (*.attack-b) looking in path: C:/Git/BattleShip/BattleshipScripts/ex1_tests/T7_MissingFiles
