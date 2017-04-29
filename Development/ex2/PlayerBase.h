@@ -4,13 +4,16 @@
 #include "GameBoard.h"
 #include <vector>
 
-static std::vector<IBattleshipGameAlgo *> _instancesVec; // A static vector to hold all instances of algo in the dll
+/* A static vector to hold all instances of algo in the dll
+ * Caller (Game Manager) is responsible to delete all instances!
+ */
+static std::vector<IBattleshipGameAlgo *> _instancesVec;
 
 class PlayerBase : public IBattleshipGameAlgo
 {
 public:
 	PlayerBase() : _player(PLAYER_NOT_YET_KNOWN) { };
-	virtual ~PlayerBase();
+	virtual ~PlayerBase() = default;
 
 	/* Will be called once from outside the class, to init the board*/
 	void setBoard(int player, const char** board, int numRows, int numCols) override;
