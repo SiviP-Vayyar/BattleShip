@@ -5,11 +5,11 @@ import difflib
 from game_results import GameResults
 
 
-DEBUG = False
-AUTO_QUIET = True
+DEBUG = True
+AUTO_QUIET = False
 BACKSLASH = True
 BEST_OUT_OF = 3
-test_only = []
+test_only = ['T13']
 ignore_tests = []
 
 TestError = {}

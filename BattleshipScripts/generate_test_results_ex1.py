@@ -9,11 +9,13 @@ if __name__ == '__main__':
     tests_path = 'C:/Git/BattleShip/BattleshipScripts/ex1_tests'
     my_dir = 'C:/Git/BattleShip/BattleshipScripts/ex1_tests'
     teams_parent_dir = "C:/Git/BattleShip/build/Windows-x64-Release/output"
-    #teams_parent_dir = 'C:\\Git\\BattleShip\\BattleshipScripts'
+    # teams_parent_dir = 'C:\\Git\\BattleShip\\BattleshipScripts'
     teams_source_dir = "C:/Git/BattleShip/Development/Testing/ex1"
     students_xlsx = "C:/Git/BattleShip/BattleshipScripts/AllStudents.xlsx"
     ignore_teams_list = []
-    test_only_teams = ['jonathans1']
+    test_only_teams = [
+                       'galklein'
+                       ]
 
     # Generate Results Excell:
     parser = excel_parser.Parser()
@@ -54,7 +56,6 @@ if __name__ == '__main__':
             error_parsing_diff.append(team_to_test.name)
         parser.parse_team(team_to_test, output_diff)
         students_with_grades.extend([s for s in team_to_test.students])
-
 
     # Lists of special cases for the end:
     team_students_file_missing_list = [t.name for t in teams if not t.has_students_file]
