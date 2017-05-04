@@ -295,11 +295,7 @@ std::pair<int, std::set<char>> GameBoard::analyseShips(int player)
 				legalShipsCount++;
 			}
 
-			// clear ship from board
-			for (auto pos : coords)
-			{
-				thisBoard(pos.first, pos.second) = EMPTY;
-			}
+			ClearShipFromBoard(coords);
 		}
 	}
 	return std::make_pair(legalShipsCount, illegalShips);
@@ -340,6 +336,15 @@ bool GameBoard::isAdjacent() const
 		}
 	}
 	return false;
+}
+
+void GameBoard::ClearShipFromBoard(const std::set<std::pair<int, int>>& coords)
+{
+	for(auto pos : coords)
+	{
+		(*this)(pos.first, pos.second) = EMPTY;
+	}
+
 }
 
 int GameBoard::getShipScore(char piece)
@@ -451,4 +456,32 @@ std::vector<std::pair<int, int>> GameBoard::getDiagonalCoordinatesAsVector(int r
 		}
 	}
 	return diagonalCoordinates;
+}
+
+/*
+ * Returns the Max Score on board possible for player - meaning it is other player ships' score
+ * @Pre: Assuming correct board
+ */
+int GameBoard::GetMaxScore(int player) const
+{
+	GameBoard copyBoard(*this);
+	int score = 0;
+
+	// Iterate board
+	for (size_t row = 1; row <= _rows; row++)
+	{
+		for (size_t col = 1; col <= _cols; col++)
+		{
+			// find enemy ships
+			char shipType = copyBoard(row, col);
+			if(!isPlayerShip(player, shipType) && !(shipType == EMPTY))
+			{
+				std::set<std::pair<int, int>> coords;
+				copyBoard.getShipCoordinates(row, col, coords);
+				score += getShipScore(shipType);
+				copyBoard.ClearShipFromBoard(coords);
+			}
+		}
+	}
+	return score;
 }

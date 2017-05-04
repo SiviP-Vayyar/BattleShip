@@ -108,7 +108,7 @@ public:
 	std::pair<AlgoData, AlgoData> GetWinnersFromHouse(const std::vector<AlgoData>& house);
 	std::vector<AlgoData> PlayTournamentStage(const std::vector<AlgoData>& stagePlayers, size_t bestOf = DEFAULT_BEST_OF);
 	void RunTournament();
-	GameResult RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard);
+	GameResult RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard) const;
 	GameBoard GetNextBoard() {return _boardsVec[_currBoardIdx++ % _boardsVec.size()]; }
 	static GameBoard::BoardErrors ValidateBoard(const GameBoard& gameBoard);
 

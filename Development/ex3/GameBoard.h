@@ -73,12 +73,13 @@ public:
 
 	/*Board validation methods*/
 	std::pair<int, std::set<char>> analyseShips(int player);
+	void ClearShipFromBoard(const std::set<std::pair<int, int>>& coords);
 	std::pair<int, int> getShipDimensions(const std::set<std::pair<int, int>>& coords) const;
 	void getShipCoordinates(int row, int col, std::set<std::pair<int, int>>& coords) const;
 	std::vector<std::pair<int, int>> getSurroundingCoordinatesAsVector(int row, int col) const;
 	std::vector<std::pair<int, int>> getAdjacentCoordinatesAsVector(int row, int col) const;
 	std::vector<std::pair<int, int>> getDiagonalCoordinatesAsVector(int row, int col) const;
-	int GetMaxScore(int player) const { return 1; }; //TODO: for player A get max score of player B's ships
+	int GetMaxScore(int player) const;
 
 	/*Board static methods*/
 	static int getShipScore(char piece);

@@ -385,7 +385,7 @@ void TournamentMaker::RunTournament()
 		
 }
 
-GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard)
+GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard) const
 {
 	GameResult result(0, 0);
 	IAlgo *playerA, *playerB;
