@@ -412,7 +412,7 @@ std::vector<std::pair<int, int>> GameBoard::getSurroundingCoordinatesAsVector(in
 			}
 			if (isInBoard(tempRow, tempCol))
 			{
-				surroundingCoordinates.push_back(std::pair<int, int>(tempRow, tempCol));
+				surroundingCoordinates.emplace_back(tempRow, tempCol);
 			}
 		}
 	}
@@ -430,7 +430,7 @@ std::vector<std::pair<int, int>> GameBoard::getAdjacentCoordinatesAsVector(int r
 		int r = row + inc.first, c = col + inc.second;
 		if (isInBoard(r, c))
 		{
-			adjacentCoordinates.push_back(std::pair<int, int>(r, c));
+			adjacentCoordinates.emplace_back(r, c);
 		}
 	}
 	return adjacentCoordinates;
@@ -447,7 +447,7 @@ std::vector<std::pair<int, int>> GameBoard::getDiagonalCoordinatesAsVector(int r
 		int r = row + inc.first, c = col + inc.second;
 		if (isInBoard(r, c))
 		{
-			diagonalCoordinates.push_back(std::pair<int, int>(r, c));
+			diagonalCoordinates.emplace_back(r, c);
 		}
 	}
 	return diagonalCoordinates;
