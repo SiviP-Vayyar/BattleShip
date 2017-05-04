@@ -1,9 +1,9 @@
-#include "TournamentMaker.h"
+﻿#include "TournamentMaker.h"
 
 #include "GameUtils.h"
 #include <iostream>
 #include "PrintHandler.h"
-#include <algorithm>
+#include <map>
 
 TournamentMaker::TournamentMaker(int argc, char* argv[])
 {
@@ -264,9 +264,46 @@ std::vector<std::vector<AlgoData>> TournamentMaker::DividePlayersToHouses(int nu
 	return houses;
 }
 
+/* Each player playes each player in the same house twice
+ * 1) As player A
+ * 2) As Player B
+ * This way he has no advantage in starting against him
+ */
 std::pair<AlgoData, AlgoData> TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house)
 {
-	return std::make_pair(house[0], house[1]); //TODO: implement house games + winners
+	// Work with house entries
+	std::map<std::string, HouseEntry&> houseEntries;
+	for (auto& data : house)
+	{
+		houseEntries.emplace(data.name, HouseEntry(data));
+	}
+
+	// Prelimineries - Play all house games
+	for (auto dataA = house.cbegin(); dataA != house.cend(); ++dataA)
+	{
+		for(auto dataB = house.cbegin(); dataB != house.cend(); ++dataB)
+		{
+			GameResult result = RunGame(*dataA, *dataB, GetNextBoard());
+			houseEntries[dataA->name].Update(result, PLAYER_A);
+			houseEntries[dataB->name].Update(result, PLAYER_B);
+		}
+	}
+
+	// Sort results
+	HouseEntry::Sort(houseEntries.begin(), houseEntries.end());
+
+	// Choose first two players - Eliminate duplicates for same team
+	HouseEntry firstPlace = houseEntries.begin()->second;
+	for (auto entry = houseEntries.begin(); entry != houseEntries.end(); ++entry)
+	{
+		if (entry->second.GetTeamName() != firstPlace.GetTeamName())
+		{
+			return std::make_pair(firstPlace.data, entry->second.data);
+		}
+	}
+
+	// If all of the same player for some reason - just return the first two
+	return std::make_pair(firstPlace.data, std::next(houseEntries.begin())->second.data);
 }
 
 std::vector<AlgoData> TournamentMaker::PlayTournamentStage(const std::vector<AlgoData>& stagePlayers, size_t bestOf)
@@ -352,6 +389,7 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 {
 	GameResult result(0, 0);
 	IAlgo *playerA, *playerB;
+	playerA = playerB = nullptr;
 	bool techLossA, techLossB;
 	techLossA = techLossB = false;
 	auto rawBoard = gameBoard.getBoard();

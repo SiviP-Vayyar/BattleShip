@@ -1,6 +1,7 @@
-#pragma once
+﻿#pragma once
 
 #include "IBattleshipGameAlgo.h"
+#include <algorithm>
 #include "GameMaker.h"
 #include <string>
 #include <windows.h>
@@ -19,6 +20,81 @@ struct AlgoData
 	GetAlgoFuncType GetPlayer;
 	HINSTANCE handle;
 };
+
+class HouseEntry
+{
+public:
+	explicit HouseEntry(const AlgoData& data_) : data(data_), wins(0), losses(0), ptsFor(0), ptsAgainst(0)
+	{}
+	const AlgoData& data;
+	int wins;
+	int losses;
+	int ptsFor;
+	int ptsAgainst;
+	std::string GetTeamName() const
+	{
+		return data.name;
+	}
+	void Update(const GameResult& result, int player)
+	{
+		if(player == PLAYER_A)
+		{
+			ptsFor += result.scoreA;
+			ptsAgainst += result.scoreB;
+			if(result.Winner() == PLAYER_A)
+			{
+				++wins;
+			}
+			else if(result.Winner() == PLAYER_B)
+			{
+				++losses;
+			}
+		}
+		else // PLAYER_B
+		{
+			ptsFor += result.scoreB;
+			ptsAgainst += result.scoreA;
+			if(result.Winner() == PLAYER_B)
+			{
+				++wins;
+			}
+			else if(result.Winner() == PLAYER_A)
+			{
+				++losses;
+			}
+		}
+	}
+	template< class RandomIt>
+	static void Sort(RandomIt first, RandomIt last)
+	{
+		// returns ​true if the first argument is less than (i.e. is ordered before) the second. 
+		auto cmp = [](std::pair<std::string, HouseEntry&> const & a, std::pair<std::string, HouseEntry&> const & b)
+		{
+			if(a.second.wins != b.second.wins)
+			{
+				return a.second.wins < b.second.wins; // more wins
+			}
+			else if(a.second.losses != b.second.losses) // same wins
+			{
+				return a.second.wins > b.second.wins; // less losses
+			}
+			else if(a.second.ptsFor != b.second.ptsFor) // same losses
+			{
+				return a.second.ptsFor < b.second.ptsFor; // more points for
+			}
+			else if(a.second.ptsAgainst != b.second.ptsAgainst) // same points for
+			{
+				return a.second.ptsAgainst > b.second.ptsAgainst; // less points against
+			}
+			else
+			{
+				return a.second.GetTeamName() < b.second.GetTeamName(); // Alphabetically
+			}
+		};
+		std::sort(first, last, cmp);
+	}
+};
+
 
 class TournamentMaker
 {
