@@ -271,11 +271,11 @@ std::vector<std::vector<AlgoData>> TournamentMaker::DividePlayersToHouses(int nu
  */
 std::pair<AlgoData, AlgoData> TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house)
 {
-	// Work with house entries
-	std::map<std::string, HouseEntry&> houseEntries;
+	// Work with house entries - sorted as we decide
+	std::map<std::string, HouseEntry> houseEntries;
 	for (auto& data : house)
 	{
-		houseEntries.emplace(data.name, HouseEntry(data));
+		houseEntries[data.name] = HouseEntry(data);
 	}
 
 	// Prelimineries - Play all house games
@@ -289,12 +289,13 @@ std::pair<AlgoData, AlgoData> TournamentMaker::GetWinnersFromHouse(const std::ve
 		}
 	}
 
-	// Sort results
-	HouseEntry::Sort(houseEntries.begin(), houseEntries.end());
+	// Sort house entries
+	std::vector<std::pair<std::string, HouseEntry>> mapCopy(houseEntries.begin(), houseEntries.end());
+	std::sort(mapCopy.begin(), mapCopy.end(), HouseEntry::Compare());
 
 	// Choose first two players - Eliminate duplicates for same team
-	HouseEntry firstPlace = houseEntries.begin()->second;
-	for (auto entry = houseEntries.begin(); entry != houseEntries.end(); ++entry)
+	HouseEntry firstPlace = mapCopy.begin()->second;
+	for (auto entry = mapCopy.begin(); entry != mapCopy.end(); ++entry)
 	{
 		if (entry->second.GetTeamName() != firstPlace.GetTeamName())
 		{
@@ -303,7 +304,7 @@ std::pair<AlgoData, AlgoData> TournamentMaker::GetWinnersFromHouse(const std::ve
 	}
 
 	// If all of the same player for some reason - just return the first two
-	return std::make_pair(firstPlace.data, std::next(houseEntries.begin())->second.data);
+	return std::make_pair(firstPlace.data, std::next(mapCopy.begin())->second.data);
 }
 
 std::vector<AlgoData> TournamentMaker::PlayTournamentStage(const std::vector<AlgoData>& stagePlayers, size_t bestOf)

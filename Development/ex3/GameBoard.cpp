@@ -468,9 +468,9 @@ int GameBoard::GetMaxScore(int player) const
 	int score = 0;
 
 	// Iterate board
-	for (size_t row = 1; row <= _rows; row++)
+	for (int row = 1; row <= _rows; row++)
 	{
-		for (size_t col = 1; col <= _cols; col++)
+		for (int col = 1; col <= _cols; col++)
 		{
 			// find enemy ships
 			char shipType = copyBoard(row, col);

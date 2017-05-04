@@ -5,6 +5,7 @@
 #include "GameMaker.h"
 #include <string>
 #include <windows.h>
+#include <map>
 
 typedef IAlgo*(*GetAlgoFuncType)();
 
@@ -24,9 +25,9 @@ struct AlgoData
 class HouseEntry
 {
 public:
-	explicit HouseEntry(const AlgoData& data_) : data(data_), wins(0), losses(0), ptsFor(0), ptsAgainst(0)
-	{}
-	const AlgoData& data;
+	HouseEntry() : wins(0), losses(0), ptsFor(0), ptsAgainst(0) {}
+	explicit HouseEntry(const AlgoData& data_) : HouseEntry() { data = data_; }
+	AlgoData data;
 	int wins;
 	int losses;
 	int ptsFor;
@@ -64,35 +65,31 @@ public:
 			}
 		}
 	}
-	template< class RandomIt>
-	static void Sort(RandomIt first, RandomIt last)
+	
+	struct Compare
 	{
-		// returns ​true if the first argument is less than (i.e. is ordered before) the second. 
-		auto cmp = [](std::pair<std::string, HouseEntry&> const & a, std::pair<std::string, HouseEntry&> const & b)
+		//returns ​true if the first argument is less than (i.e. is ordered before) the second. 
+		bool operator()(std::pair<std::string, HouseEntry> const & a, std::pair<std::string, HouseEntry> const & b) const
 		{
 			if(a.second.wins != b.second.wins)
 			{
-				return a.second.wins < b.second.wins; // more wins
+				return a.second.wins > b.second.wins; // more wins
 			}
-			else if(a.second.losses != b.second.losses) // same wins
+			if(a.second.losses != b.second.losses) // same wins
 			{
-				return a.second.wins > b.second.wins; // less losses
+				return a.second.wins < b.second.wins; // less losses
 			}
-			else if(a.second.ptsFor != b.second.ptsFor) // same losses
+			if(a.second.ptsFor != b.second.ptsFor) // same losses
 			{
-				return a.second.ptsFor < b.second.ptsFor; // more points for
+				return a.second.ptsFor > b.second.ptsFor; // more points for
 			}
-			else if(a.second.ptsAgainst != b.second.ptsAgainst) // same points for
+			if(a.second.ptsAgainst != b.second.ptsAgainst) // same points for
 			{
-				return a.second.ptsAgainst > b.second.ptsAgainst; // less points against
+				return a.second.ptsAgainst < b.second.ptsAgainst; // less points against
 			}
-			else
-			{
-				return a.second.GetTeamName() < b.second.GetTeamName(); // Alphabetically
-			}
-		};
-		std::sort(first, last, cmp);
-	}
+			return a.second.GetTeamName() > b.second.GetTeamName(); // Alphabetically			
+		}
+	};
 };
 
 
