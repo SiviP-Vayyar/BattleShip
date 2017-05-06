@@ -26,6 +26,9 @@ GameResult GameMaker::RunGame()
 	auto currentScore = &scorePlayerA;
 	auto opponentScore = &scorePlayerB;
 
+	//general parameters here because of try-catch
+	std::pair<int, int> attackPosition;
+
 	PrintHandler::printInitialBoard(_board);
 
 	// game loop
@@ -34,7 +37,15 @@ GameResult GameMaker::RunGame()
 		PrintHandler::delay();
 
 		// get attack from player and play it on the board
-		auto attackPosition = currentPlayer->attack();
+		try
+		{
+			attackPosition = currentPlayer->attack();
+		}
+		catch(std::exception ex) // if a player crashes - give technical win to other player
+		{
+			(currentPlayerDef == PLAYER_A) ? (scorePlayerB = _board.GetMaxScore(PLAYER_B)): (scorePlayerA = _board.GetMaxScore(PLAYER_A));
+			break;
+		}
 		*currentPlayerMovesRemaining = (attackPosition != ATTACK_END);
 		auto attackResultInfo = _board.attack(attackPosition);
 		auto attackResult = attackResultInfo.first;
@@ -43,8 +54,24 @@ GameResult GameMaker::RunGame()
 		int row = attackPosition.first, col = attackPosition.second;
 
 		// notify the players:
-		_playerA->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
-		_playerB->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+		try
+		{
+			_playerA->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+		}
+		catch(std::exception ex) // if a player crashes - give technical win to other player
+		{
+			scorePlayerB = _board.GetMaxScore(PLAYER_B);
+			break;
+		}
+		try
+		{
+			_playerB->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+		}
+		catch(std::exception ex) // if a player crashes - give technical win to other player
+		{
+			scorePlayerA = _board.GetMaxScore(PLAYER_A);
+			break;
+		}
 
 		PrintHandler::printAttackResult(attackPosition, attackResult, attackedPiece, currentPlayerDef);
 
