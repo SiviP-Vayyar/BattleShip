@@ -94,6 +94,10 @@ void PrintHandler::PrintTournametStage(const std::vector<GameResult>& vector)
 void PrintHandler::PrintWinner(const AlgoData& algoData)
 {
 	//TODO: implement print
+	std::cout << std::endl;
+	std::cout << "###########################################" << std::endl;
+	std::cout << "####    Winner Is: " << algoData.name << " #####" << std::endl;
+	std::cout << "###########################################" << std::endl;
 }
 
 void PrintHandler::PrintSingleGameWinner(const GameResult& result)
