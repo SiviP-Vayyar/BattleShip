@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     for idx, team_to_test in enumerate(teams):
         print('Started team: {}\t\t{}/{}'.format(team_to_test.name, idx + 1, len(teams)))
-        output_diff = test.test_team_ex2(team_to_test)  # TODO: implement
+        output_diff = test.test_team_ex2(team_to_test)
         if len(output_diff) > 30000:
             output_diff = 'PROGRAM OUTPUT TOO LONG!!!'
             error_parsing_diff.append(team_to_test.name)

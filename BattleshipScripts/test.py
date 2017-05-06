@@ -5,11 +5,11 @@ import difflib
 from game_results import GameResults
 
 
-DEBUG = True
-AUTO_QUIET = False
+DEBUG = False
+AUTO_QUIET = True
 BACKSLASH = True
 BEST_OUT_OF = 3
-test_only = ['T13']
+test_only = []
 ignore_tests = []
 
 TestError = {}
@@ -29,11 +29,11 @@ TestError[11] = 'T1 - wrong score'
 TestError[12] = 'T2 - wrong score'
 TestError[13] = 'T0 - Smart lost to Naive'
 TestError[14] = 'T0 - Did not run with our game manager'
-TestError[15] = ''
-TestError[16] = ''
-TestError[17] = ''
-TestError[18] = ''
-TestError[19] = ''
+TestError[15] = 'Compilation warnings'
+TestError[16] = 'Did not compile - submitted late'
+TestError[17] = 'Unused variable'
+TestError[18] = 'Member function may be static'
+TestError[19] = 'Member function may be const'
 TestError[20] = ''
 TestError[21] = ''
 TestError[22] = ''
