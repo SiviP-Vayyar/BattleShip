@@ -72,20 +72,8 @@ GameResult GameMaker::RunGame()
 		std::swap(currentScore, opponentScore);
 	}
 
-
-	//// print end game results // TODO: see what about it
-	//PrintHandler::cleanOutput();
-	//if (remainingShipsA == 0 || remainingShipsB == 0)
-	//{
-	//	std::cout << "Player " << (remainingShipsA == 0 ? 'B' : 'A') << " won" << std::endl;
-	//}
-	//std::cout << "Points:" << std::endl;
-	//std::cout << "Player A: " << scorePlayerA << std::endl;
-	//std::cout << "Player B: " << scorePlayerB << std::endl;
-
-
-	//TODO: if a player crashes - give technical win to other player
-
-	return GameResult(scorePlayerA, scorePlayerB);
+	GameResult result(scorePlayerA, scorePlayerB);
+	PrintHandler::PrintSingleGameWinner(result);
+	return result;
 }
 

@@ -96,6 +96,23 @@ void PrintHandler::PrintWinner(const AlgoData& algoData)
 	//TODO: implement print
 }
 
+void PrintHandler::PrintSingleGameWinner(const GameResult& result)
+{
+	if(_printEnabled) // TODO: not necesarrily how we want to print!
+		return;
+	// print end game results
+	cleanOutput();
+	int winner = result.Winner();
+	if (winner == PLAYER_A || winner == PLAYER_B)
+	{
+		std::cout << "Player " << (winner == PLAYER_B ? 'B' : 'A') << " won" << std::endl;
+	}
+	
+	std::cout << "Points:" << std::endl;
+	std::cout << "Player A: " << result.scoreA << std::endl;
+	std::cout << "Player B: " << result.scoreB << std::endl;
+}
+
 void PrintHandler::gotoxy(int x, int y)
 {
 	static HANDLE h = nullptr;

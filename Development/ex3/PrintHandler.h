@@ -52,6 +52,7 @@ public:
 
 	static void PrintTournametStage(const std::vector<GameResult>& vector);
 	static void PrintWinner(const AlgoData& algoData);
+	static void PrintSingleGameWinner(const GameResult& result);
 
 private:
 	static bool _printEnabled;
