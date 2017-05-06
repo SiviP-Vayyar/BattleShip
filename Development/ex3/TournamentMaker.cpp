@@ -4,6 +4,7 @@
 #include <iostream>
 #include "PrintHandler.h"
 #include <map>
+#include "GameException.h"
 
 TournamentMaker::TournamentMaker(int argc, char* argv[])
 {
@@ -39,7 +40,7 @@ TournamentMaker::~TournamentMaker()
 			{
 				FreeLibrary(data.handle);
 			}
-			catch(...){ } //TODO: print errors??
+			catch(...){ }
 		}
 	}
 }
@@ -167,6 +168,7 @@ bool TournamentMaker::LoadAndInitAlgos()
 {
 	bool failedLoadPlayer, failedGetPlayer, failedInitPlayer;
 	char** emptyBoard = GameBoard::newEmptyRawBoard(BOARD_ROWS, BOARD_COLS);
+	std::vector<std::string> logBuffer;
 
 	for(auto algoFile : _dllNamesVec)
 	{
@@ -184,21 +186,26 @@ bool TournamentMaker::LoadAndInitAlgos()
 			data.GetPlayer = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(data.handle, GET_ALGORITHM_STR));
 			if(data.GetPlayer)
 			{
-				failedGetPlayer = false;
-				// See if player is valid - so he can enter the tournament
-				IAlgo* player = data.GetPlayer();
-
-				// Set boards for player - Sanity Check
-				player->setBoard(PLAYER_A, const_cast<const char**>(emptyBoard), BOARD_ROWS, BOARD_COLS);
-				// Init player - Sanity Check
-				failedInitPlayer = !player->init(_inputFolder);
 				try
 				{
+					failedGetPlayer = false;
+					// See if player is valid - so he can enter the tournament
+					IAlgo* player = data.GetPlayer();
+
+					// Set boards for player - Sanity Check
+					player->setBoard(PLAYER_A, const_cast<const char**>(emptyBoard), BOARD_ROWS, BOARD_COLS);
+					// Init player - Sanity Check
+					failedInitPlayer = !player->init(_inputFolder);
 					delete player;
 				}
-				catch(...)
+				catch(std::exception ex)
 				{
-				} //TODO: maybe report?
+					logBuffer.push_back("Exception handling player: " + data.algoFile + "\tWhat: " + ex.what());
+				}
+			}
+			else
+			{
+				logBuffer.push_back("Failed resolving GetAlgorithm: " + data.algoFile);
 			}
 			if(failedGetPlayer || failedInitPlayer)
 			{
@@ -206,44 +213,24 @@ bool TournamentMaker::LoadAndInitAlgos()
 				{
 					FreeLibrary(data.handle);
 				}
-				catch(...)
+				catch(std::exception ex)
 				{
-				} //TODO: maybe report?
+					logBuffer.push_back("Exception FreeLibrary: " + data.algoFile + "\tWhat: " + ex.what());
+				}
 			}
 		}
-
-		if(failedLoadPlayer || failedGetPlayer || failedInitPlayer)
+		else
 		{
-			//TODO: something with prints
+			logBuffer.push_back("Cannot load dll: " + data.algoFile);
 		}
-		else // Good player
+
+		if(!(failedLoadPlayer || failedGetPlayer || failedInitPlayer)) // Good player
 		{
 			_algoDataVec.push_back(data);
 		}
 	}
 
 	GameBoard::deleteRawBoard(emptyBoard, BOARD_ROWS, BOARD_COLS);
-
-	//if(failedLoadA || failedLoadB || failedInitA || failedInitB)
-	//{
-	//	if(failedLoadA)
-	//	{
-	//		std::cout << "Cannot load dll: " << _algoDataA.algoFile << std::endl;
-	//	}
-	//	if(failedLoadB)
-	//	{
-	//		std::cout << "Cannot load dll: " << _algoDataB.algoFile << std::endl;
-	//	}
-	//	if(failedInitA)
-	//	{
-	//		std::cout << "Algorithm initialization failed for dll: " << _algoDataA.algoFile << std::endl;
-	//	}
-	//	if(failedInitB)
-	//	{
-	//		std::cout << "Algorithm initialization failed for dll: " << _algoDataB.algoFile << std::endl;
-	//	}
-	//	return false;
-	//}
 
 	return !_algoDataVec.empty();
 }
@@ -349,9 +336,8 @@ void TournamentMaker::RunTournament()
 {
 	if (_algoDataVec.size() < MIN_PLAYERS)
 	{
-		//TODO: not enough players for the preleminaries
-		std::cout << "Not enough players" << std::endl;
-		return;
+		std::cout << "Not enough players for the preliminaries: " << _algoDataVec.size() << " Players" << std::endl;
+		throw GameException("");
 	}
 
 	std::vector<std::pair<AlgoData,AlgoData>> winnersVec;
@@ -404,7 +390,6 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 	catch(std::exception ex)
 	{
 		techLossA = true;
-		//TODO: A - technical loss
 	}
 	
 	try
@@ -416,7 +401,6 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 	catch(std::exception ex)
 	{
 		techLossB = true;
-		//TODO: B - technical loss
 	}
 
 	GameBoard::deleteRawBoard(rawBoard, gameBoard.rows(), gameBoard.cols());
@@ -431,6 +415,10 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 		{
 			result.scoreA = gameBoard.GetMaxScore(PLAYER_A);
 		}
+		return result;
+	}
+	if (techLossA && techLossB) //if both didn't load correctly
+	{
 		return result;
 	}
 
