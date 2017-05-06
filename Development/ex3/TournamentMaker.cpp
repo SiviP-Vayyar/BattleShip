@@ -232,6 +232,12 @@ bool TournamentMaker::LoadAndInitAlgos()
 
 	GameBoard::deleteRawBoard(emptyBoard, BOARD_ROWS, BOARD_COLS);
 
+	// Print accumulated errors
+	for (auto& err : logBuffer)
+	{
+		std::cout << err << std::endl;
+	}
+
 	return !_algoDataVec.empty();
 }
 
