@@ -4,6 +4,7 @@
 #include "GameMaker.h"
 #include "TournamentMaker.h"
 #include <windows.h>
+#include <algorithm>
 
 #define PRINT_ENABLED_DEFAULT	true
 #define PRINT_DELAY_DEFAULT		500
@@ -53,6 +54,7 @@ public:
 	static void PrintTournametStage(const std::vector<GameResult>& vector);
 	static void PrintWinner(const AlgoData& algoData);
 	static void PrintSingleGameWinner(const GameResult& result);
+	static void PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standings);
 
 private:
 	static bool _printEnabled;

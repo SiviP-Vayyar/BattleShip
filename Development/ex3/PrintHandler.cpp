@@ -102,7 +102,7 @@ void PrintHandler::PrintWinner(const AlgoData& algoData)
 
 void PrintHandler::PrintSingleGameWinner(const GameResult& result)
 {
-	if(_printEnabled) // TODO: not necesarrily how we want to print!
+	if(!_printEnabled) // TODO: not necesarrily how we want to print!
 		return;
 	// print end game results
 	cleanOutput();
@@ -115,6 +115,16 @@ void PrintHandler::PrintSingleGameWinner(const GameResult& result)
 	std::cout << "Points:" << std::endl;
 	std::cout << "Player A: " << result.scoreA << std::endl;
 	std::cout << "Player B: " << result.scoreB << std::endl;
+}
+
+void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standings)
+{
+	std::cout << "Team Name\t\tWins\tLosses\tPts For\tPts Against" << std::endl << std::endl;
+	for (auto& line : standings)
+	{
+		std::cout << line.first << "\t\t" << line.second.wins << "\t" << line.second.losses << "\t" << line.second.ptsFor << "\t" << line.second.ptsAgainst << "\t" << std::endl;
+	}
+	std::cout << std::endl;
 }
 
 void PrintHandler::gotoxy(int x, int y)

@@ -262,7 +262,7 @@ std::vector<std::vector<AlgoData>> TournamentMaker::DividePlayersToHouses(int nu
  * 2) As Player B
  * This way he has no advantage in starting against him
  */
-std::pair<AlgoData, AlgoData> TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house)
+std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house)
 {
 	// Work with house entries - sorted as we decide
 	std::map<std::string, HouseEntry> houseEntries;
@@ -292,12 +292,12 @@ std::pair<AlgoData, AlgoData> TournamentMaker::GetWinnersFromHouse(const std::ve
 	{
 		if (entry->second.GetTeamName() != firstPlace.GetTeamName())
 		{
-			return std::make_pair(firstPlace.data, entry->second.data);
+			return std::make_tuple(firstPlace.data, entry->second.data, mapCopy);
 		}
 	}
 
 	// If all of the same player for some reason - just return the first two
-	return std::make_pair(firstPlace.data, std::next(mapCopy.begin())->second.data);
+	return std::make_tuple(firstPlace.data, std::next(mapCopy.begin())->second.data, mapCopy);
 }
 
 std::vector<AlgoData> TournamentMaker::PlayTournamentStage(const std::vector<AlgoData>& stagePlayers, size_t bestOf)
@@ -338,7 +338,7 @@ std::vector<AlgoData> TournamentMaker::PlayTournamentStage(const std::vector<Alg
 	return nextStagePlayers;
 }
 
-void TournamentMaker::RunTournament()
+void TournamentMaker::RunTournament(int numOfHouses)
 {
 	if (_algoDataVec.size() < MIN_PLAYERS)
 	{
@@ -349,29 +349,39 @@ void TournamentMaker::RunTournament()
 	std::vector<std::pair<AlgoData,AlgoData>> winnersVec;
 
 	// Divide into houses
-	std::vector<std::vector<AlgoData>> houses = DividePlayersToHouses();
+	std::vector<std::vector<AlgoData>> houses = DividePlayersToHouses(numOfHouses);
 
 	// Prelimineries
 	for (auto& house : houses)
 	{
 		auto winners = GetWinnersFromHouse(house);
-		winnersVec.push_back(std::move(winners));
+		winnersVec.push_back(std::make_pair(std::get<0>(winners), std::get<1>(winners)));
+		PrintHandler::PrintHouseStandings(std::get<2>(winners));
 	}
 
-	// Top MIN_PLAYERS teams - First of house X with Second of house Y and vice versa
-	std::vector<AlgoData> topPlayersVec(winnersVec.size()*2);
-	for (size_t i = 0; i < winnersVec.size(); i+=2)
+	std::vector<AlgoData> topPlayersVec(winnersVec.size() * 2);
+	if (numOfHouses > 1)
 	{
-		topPlayersVec[2 * i]	 = winnersVec[i]    .first;
-		topPlayersVec[2 * i + 1] = winnersVec[i + 1].second;
-		topPlayersVec[2 * i + 2] = winnersVec[i + 1].first;
-		topPlayersVec[2 * i + 3] = winnersVec[i]    .second;
-	}
+		// Top MIN_PLAYERS teams - First of house X with Second of house Y and vice versa
+		for(size_t i = 0; i < winnersVec.size(); i += 2)
+		{
+			topPlayersVec[2 * i]	 = winnersVec[i]	.first;
+			topPlayersVec[2 * i + 1] = winnersVec[i + 1].second;
+			topPlayersVec[2 * i + 2] = winnersVec[i + 1].first;
+			topPlayersVec[2 * i + 3] = winnersVec[i]	.second;
+		}
 
-	while (topPlayersVec.size() > 1)
-	{
-		topPlayersVec = PlayTournamentStage(topPlayersVec);
+		while(topPlayersVec.size() > 1)
+		{
+			topPlayersVec = PlayTournamentStage(topPlayersVec);
+		}
 	}
+	else
+	{
+		topPlayersVec[0] = winnersVec[0].first;
+		topPlayersVec[1] = winnersVec[0].second;
+	}
+	
 
 	// We Have A Winner!!!
 	PrintHandler::PrintWinner(topPlayersVec[0]);

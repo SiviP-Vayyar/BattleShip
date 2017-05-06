@@ -102,9 +102,9 @@ public:
 	TournamentMaker(const TournamentMaker&) = delete;
 	TournamentMaker& operator= (const TournamentMaker&) = delete;
 	std::vector<std::vector<AlgoData>> DividePlayersToHouses(int numOfHouses = MIN_HOUSES);
-	std::pair<AlgoData, AlgoData> GetWinnersFromHouse(const std::vector<AlgoData>& house);
+	std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> GetWinnersFromHouse(const std::vector<AlgoData>& house);
 	std::vector<AlgoData> PlayTournamentStage(const std::vector<AlgoData>& stagePlayers, size_t bestOf = DEFAULT_BEST_OF);
-	void RunTournament();
+	void RunTournament(int numOfHouses = MIN_HOUSES);
 	GameResult RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard) const;
 	GameBoard GetNextBoard() {return _boardsVec[_currBoardIdx++ % _boardsVec.size()]; }
 	static GameBoard::BoardErrors ValidateBoard(const GameBoard& gameBoard);

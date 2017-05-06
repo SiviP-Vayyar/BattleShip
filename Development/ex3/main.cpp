@@ -26,12 +26,14 @@ int main(int argc, char* argv[])
 		{
 			return -1;
 		}
-		tMaker.RunTournament();
+		//int numOfHouses = 1; // All in one house
+		int numOfHouses = MIN_HOUSES; // Tournament
+		tMaker.RunTournament(numOfHouses);
 	}
 	catch (GameException ex)
 	{
-		/*If a game exception was thrown,
-		 *the throwing method already printed the error msgs
+		/* If a game exception was thrown,
+		 * the throwing method already printed the error msgs
 		 * all we need is to end the program
 		 */
 		return -1;
