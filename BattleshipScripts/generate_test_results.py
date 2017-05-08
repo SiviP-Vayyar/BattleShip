@@ -63,18 +63,16 @@ def copy_extra_files(source_dir, build_dir):
 
     team_build_dirs = my_utils.get_all_sub_folders(build_dir)
     for team_build_path in team_build_dirs:
-        for root, dirnames, filenames in os.walk(team_build_path):
-            t0 = os.path.join(team_build_path, 'T0_Game1_MyManager')
-            t1 = os.path.join(team_build_path, 'T1_Game2_Naive_File')
-            t2 = os.path.join(team_build_path, 'T2_Game3_Smart_Naive')
-            for filename in filenames:
-                src_filename = os.path.join(team_build_path, filename)
-                if filename.endswith('.file.dll'):
-                    copyfile(src_filename, os.path.join(t0, filename))
-                    copyfile(src_filename, os.path.join(t1, filename))
-                if filename.endswith('.naive.dll'):
-                    copyfile(src_filename, os.path.join(t1, filename))
-                    copyfile(src_filename, os.path.join(t2, filename))
-                if filename.endswith('.smart.dll'):
-                    copyfile(src_filename, os.path.join(t0, filename))
-                    copyfile(src_filename, os.path.join(t2, filename))
+        filenames = my_utils.get_all_files(team_build_path)
+        t0 = os.path.join(team_build_path, 'T0_Game1_MyManager')
+        t1 = os.path.join(team_build_path, 'T1_Game2_Naive_File')
+        t2 = os.path.join(team_build_path, 'T2_Game3_Smart_Naive')
+        for filename in filenames:
+            if filename.endswith('.file.dll'):
+                copyfile(filename, os.path.join(t1, os.path.basename(filename)))
+            if filename.endswith('.naive.dll'):
+                copyfile(filename, os.path.join(t1, os.path.basename(filename)))
+                copyfile(filename, os.path.join(t2, os.path.basename(filename)))
+            if filename.endswith('.smart.dll'):
+                copyfile(filename, os.path.join(t0, os.path.basename(filename)))
+                copyfile(filename, os.path.join(t2, os.path.basename(filename)))

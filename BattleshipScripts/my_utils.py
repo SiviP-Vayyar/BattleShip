@@ -9,6 +9,14 @@ def get_all_sub_folders(path):
 
     return all_sub_folders
 
+def get_all_files(path):
+    all_files = []
+    root, dirnames, filenames = next(os.walk(path))
+    for filename in filenames:
+        all_files.append(os.path.join(root, filename))
+
+    return all_files
+
 
 def get_all_files(folder, suffix=''):
     all_files = []
