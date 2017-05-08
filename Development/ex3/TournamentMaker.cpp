@@ -6,7 +6,7 @@
 #include <map>
 #include "GameException.h"
 
-TournamentMaker::TournamentMaker(int argc, char* argv[])
+TournamentMaker::TournamentMaker(int argc, char* argv[]) : _currBoardIdx(0)
 {
 	// (1) Validate input & Set input arguments
 	if(!ParseInput(argc, argv))
@@ -177,6 +177,8 @@ bool TournamentMaker::LoadAndInitAlgos()
 		failedLoadPlayer = failedGetPlayer = failedInitPlayer = true;
 		data.name = GameUtils::GetTeamNameFromFileName(data.algoFile);
 
+		std::cout << "Initializing: " << data.name << std::endl;
+
 		// Load dynamic library
 		data.handle = LoadLibraryA(data.algoFile.c_str()); // Notice: Unicode compatible version of LoadLibrary
 		if(data.handle)
@@ -209,6 +211,15 @@ bool TournamentMaker::LoadAndInitAlgos()
 			}
 			if(failedGetPlayer || failedInitPlayer)
 			{
+				if (failedGetPlayer)
+				{
+					logBuffer.push_back(data.name +  ": failedGetPlayer");
+				}
+				if(failedInitPlayer)
+				{
+					logBuffer.push_back(data.name + ": failedInitPlayer");
+				}
+				
 				try
 				{
 					FreeLibrary(data.handle);
@@ -276,9 +287,12 @@ std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> 
 	{
 		for(auto dataB = house.cbegin(); dataB != house.cend(); ++dataB)
 		{
-			GameResult result = RunGame(*dataA, *dataB, GetNextBoard());
-			houseEntries[dataA->name].Update(result, PLAYER_A);
-			houseEntries[dataB->name].Update(result, PLAYER_B);
+			if (dataA->name != dataB->name)
+			{
+				GameResult result = RunGame(*dataA, *dataB, GetNextBoard());
+				houseEntries[dataA->name].Update(result, PLAYER_A);
+				houseEntries[dataB->name].Update(result, PLAYER_B);
+			}
 		}
 	}
 
@@ -395,15 +409,16 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 	playerA = playerB = nullptr;
 	bool techLossA, techLossB;
 	techLossA = techLossB = false;
-	auto rawBoard = gameBoard.getBoard();
+	auto rawBoardA = gameBoard.getBoardForPlayer(PLAYER_A);
+	auto rawBoardB = gameBoard.getBoardForPlayer(PLAYER_B);
 
 	try
 	{
 		playerA = playerAData.GetPlayer();
+		playerA->setBoard(PLAYER_A, const_cast<const char**>(rawBoardA), gameBoard.rows(), gameBoard.cols());
 		playerA->init(_inputFolder);
-		playerA->setBoard(PLAYER_A, const_cast<const char**>(rawBoard), gameBoard.rows(), gameBoard.cols());
 	}
-	catch(std::exception ex)
+	catch(...)
 	{
 		techLossA = true;
 	}
@@ -411,15 +426,16 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 	try
 	{
 		playerB = playerBData.GetPlayer();
+		playerB->setBoard(PLAYER_B, const_cast<const char**>(rawBoardB), gameBoard.rows(), gameBoard.cols());
 		playerB->init(_inputFolder);
-		playerB->setBoard(PLAYER_B, const_cast<const char**>(rawBoard), gameBoard.rows(), gameBoard.cols());
 	}
-	catch(std::exception ex)
+	catch(...)
 	{
 		techLossB = true;
 	}
 
-	GameBoard::deleteRawBoard(rawBoard, gameBoard.rows(), gameBoard.cols());
+	GameBoard::deleteRawBoard(rawBoardA, gameBoard.rows(), gameBoard.cols());
+	GameBoard::deleteRawBoard(rawBoardB, gameBoard.rows(), gameBoard.cols());
 	
 	if (techLossA != techLossB)
 	{

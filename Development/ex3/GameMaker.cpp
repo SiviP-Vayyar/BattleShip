@@ -9,6 +9,11 @@ GameMaker::~GameMaker()
 	delete _playerA;
 	delete _playerB;
 }
+
+#define TECH_LOSS_CURR_PLAYER   (currentPlayerDef == PLAYER_A) ? (scorePlayerB = maxScoreB) : (scorePlayerA = maxScoreA); break;
+#define TECH_LOSS_A				scorePlayerB = maxScoreB; break;
+#define TECH_LOSS_B				scorePlayerA = maxScoreA; break;
+
 /*@pre: assume players and board were set and validated*/
 GameResult GameMaker::RunGame()
 {
@@ -26,8 +31,10 @@ GameResult GameMaker::RunGame()
 	auto currentScore = &scorePlayerA;
 	auto opponentScore = &scorePlayerB;
 
-	//general parameters here because of try-catch
+	//general parameters
 	std::pair<int, int> attackPosition;
+	int maxScoreA = _board.GetMaxScore(PLAYER_A);
+	int maxScoreB = _board.GetMaxScore(PLAYER_B);
 
 	PrintHandler::printInitialBoard(_board);
 
@@ -41,36 +48,39 @@ GameResult GameMaker::RunGame()
 		{
 			attackPosition = currentPlayer->attack();
 		}
-		catch(std::exception ex) // if a player crashes - give technical win to other player
-		{
-			(currentPlayerDef == PLAYER_A) ? (scorePlayerB = _board.GetMaxScore(PLAYER_B)): (scorePlayerA = _board.GetMaxScore(PLAYER_A));
-			break;
-		}
+		catch(std::exception ex) { TECH_LOSS_CURR_PLAYER } // if a player crashes - give technical win to other player
+		catch(...) { TECH_LOSS_CURR_PLAYER }  //TODO: handle SIGSEGV and all SIGS...
+
 		*currentPlayerMovesRemaining = (attackPosition != ATTACK_END);
+		if(*currentPlayerMovesRemaining && !_board.isInBoard(attackPosition.first, attackPosition.second)) // Not in board -> technical lost
+		{
+			TECH_LOSS_CURR_PLAYER //TODO: add log for technical loss
+		}
 		auto attackResultInfo = _board.attack(attackPosition);
 		auto attackResult = attackResultInfo.first;
 		char attackedPiece = attackResultInfo.second;
 		bool selfHit = GameBoard::isPlayerShip(currentPlayerDef, attackedPiece);
 		int row = attackPosition.first, col = attackPosition.second;
 
-		// notify the players:
-		try
+		// notify the players - only if not ATTACK_END:
+		if (*currentPlayerMovesRemaining)
 		{
-			_playerA->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
-		}
-		catch(std::exception ex) // if a player crashes - give technical win to other player
-		{
-			scorePlayerB = _board.GetMaxScore(PLAYER_B);
-			break;
-		}
-		try
-		{
-			_playerB->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
-		}
-		catch(std::exception ex) // if a player crashes - give technical win to other player
-		{
-			scorePlayerA = _board.GetMaxScore(PLAYER_A);
-			break;
+			try
+			{
+				_playerA->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+			}
+			catch(std::exception ex)
+			{
+				TECH_LOSS_A
+			}// if a player crashes - give technical win to other player			
+			try
+			{
+				_playerB->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+			}
+			catch(std::exception ex)
+			{
+				TECH_LOSS_B
+			}// if a player crashes - give technical win to other player	
 		}
 
 		PrintHandler::printAttackResult(attackPosition, attackResult, attackedPiece, currentPlayerDef);

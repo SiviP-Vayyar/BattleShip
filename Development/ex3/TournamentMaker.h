@@ -22,7 +22,7 @@ struct AlgoData
 	HINSTANCE handle;
 };
 
-class HouseEntry
+class HouseEntry //TODO: consider moving
 {
 public:
 	HouseEntry() : wins(0), losses(0), ptsFor(0), ptsAgainst(0) {}
