@@ -1,5 +1,4 @@
 #include "GameMaker.h"
-#include "GameException.h"
 #include <iostream>
 #include "GameUtils.h"
 #include "PrintHandler.h"
@@ -44,18 +43,28 @@ GameResult GameMaker::RunGame()
 		PrintHandler::delay();
 
 		// get attack from player and play it on the board
-		try
+		__try
 		{
 			attackPosition = currentPlayer->attack();
 		}
-		catch(std::exception ex) { TECH_LOSS_CURR_PLAYER } // if a player crashes - give technical win to other player
-		catch(...) { TECH_LOSS_CURR_PLAYER }  //TODO: handle SIGSEGV and all SIGS...
+		__except(TRUE)
+		{
+			TECH_LOSS_CURR_PLAYER
+		}
 
 		*currentPlayerMovesRemaining = (attackPosition != ATTACK_END);
-		if(*currentPlayerMovesRemaining && !_board.isInBoard(attackPosition.first, attackPosition.second)) // Not in board -> technical lost
+		if(*currentPlayerMovesRemaining)
+		{
+			if(!_board.isInBoard(attackPosition.first, attackPosition.second))// Not in board -> technical lost
+			{
+				TECH_LOSS_CURR_PLAYER //TODO: add log for technical loss
+			}
+		}
+		else
 		{
 			TECH_LOSS_CURR_PLAYER //TODO: add log for technical loss
 		}
+
 		auto attackResultInfo = _board.attack(attackPosition);
 		auto attackResult = attackResultInfo.first;
 		char attackedPiece = attackResultInfo.second;
@@ -65,20 +74,22 @@ GameResult GameMaker::RunGame()
 		// notify the players - only if not ATTACK_END:
 		if (*currentPlayerMovesRemaining)
 		{
-			try
+			__try
 			{
 				_playerA->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 			}
-			catch(std::exception ex)
+			__except(TRUE)
 			{
+				std::cout << "_playerA->notifyOnAttackResult(" << currentPlayerDef << ", " << row << ", " << col << ", " << static_cast<int>(attackResult) << ");" << std::endl;
 				TECH_LOSS_A
 			}// if a player crashes - give technical win to other player			
-			try
+			__try
 			{
 				_playerB->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
 			}
-			catch(std::exception ex)
+			__except(TRUE)
 			{
+				std::cout << "_playerB->notifyOnAttackResult(" << currentPlayerDef << ", " << row << ", " << col << ", " << static_cast<int>(attackResult) << ");" << std::endl;
 				TECH_LOSS_B
 			}// if a player crashes - give technical win to other player	
 		}

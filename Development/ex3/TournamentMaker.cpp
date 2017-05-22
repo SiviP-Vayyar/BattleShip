@@ -273,7 +273,7 @@ std::vector<std::vector<AlgoData>> TournamentMaker::DividePlayersToHouses(int nu
  * 2) As Player B
  * This way he has no advantage in starting against him
  */
-std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house)
+std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds)
 {
 	// Work with house entries - sorted as we decide
 	std::map<std::string, HouseEntry> houseEntries;
@@ -283,18 +283,21 @@ std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> 
 	}
 
 	// Prelimineries - Play all house games
-	for (auto dataA = house.cbegin(); dataA != house.cend(); ++dataA)
+	for (auto round = 0; round < playingRounds; round++)
 	{
-		for(auto dataB = house.cbegin(); dataB != house.cend(); ++dataB)
+		for(std::vector<AlgoData>::const_iterator dataA = house.cbegin(); dataA != house.cend(); ++dataA)
 		{
-			if (dataA->name != dataB->name)
+			for(std::vector<AlgoData>::const_iterator dataB = house.cbegin(); dataB != house.cend(); ++dataB)
 			{
-				GameResult result = RunGame(*dataA, *dataB, GetNextBoard());
-				houseEntries[dataA->name].Update(result, PLAYER_A);
-				houseEntries[dataB->name].Update(result, PLAYER_B);
+				if(dataA->name != dataB->name)
+				{
+					GameResult result = RunGame(*dataA, *dataB, GetNextBoard());
+					houseEntries[dataA->name].Update(result, PLAYER_A);
+					houseEntries[dataB->name].Update(result, PLAYER_B);
+				}
 			}
 		}
-	}
+	}	
 
 	// Sort house entries
 	std::vector<std::pair<std::string, HouseEntry>> mapCopy(houseEntries.begin(), houseEntries.end());
@@ -368,7 +371,7 @@ void TournamentMaker::RunTournament(int numOfHouses)
 	// Prelimineries
 	for (auto& house : houses)
 	{
-		auto winners = GetWinnersFromHouse(house);
+		auto winners = GetWinnersFromHouse(house, PLAYING_ROUNDS);
 		winnersVec.push_back(std::make_pair(std::get<0>(winners), std::get<1>(winners)));
 		PrintHandler::PrintHouseStandings(std::get<2>(winners));
 	}

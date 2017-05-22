@@ -13,7 +13,10 @@ struct GameResult
 	int scoreB;
 	int Winner() const
 	{
-		if(scoreB == scoreA) return PLAYER_NOT_YET_KNOWN;
+		if(scoreB == scoreA)
+		{
+			return PLAYER_NOT_YET_KNOWN;
+		}
 		return scoreA > scoreB ? PLAYER_A : PLAYER_B;
 	}
 };

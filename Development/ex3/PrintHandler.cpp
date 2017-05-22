@@ -1,6 +1,7 @@
 #include "PrintHandler.h"
 
 #include <iostream>
+#include <iomanip>
 
 bool PrintHandler::_printEnabled;
 int PrintHandler::_delayMS;
@@ -119,10 +120,12 @@ void PrintHandler::PrintSingleGameWinner(const GameResult& result)
 
 void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standings)
 {
-	std::cout << "Team Name\t\tWins\tLosses\tPts For\tPts Against" << std::endl << std::endl;
+	std::cout << "#\tTeam Name\t\tWins\tLosses\t%\tPts For\tPts Against" << std::endl << std::endl;
+	size_t place = 1;
 	for (auto& line : standings)
 	{
-		std::cout << line.first << "\t\t" << line.second.wins << "\t" << line.second.losses << "\t" << line.second.ptsFor << "\t" << line.second.ptsAgainst << "\t" << std::endl;
+		double precentage = static_cast<double>(line.second.wins) / (line.second.wins + line.second.losses);
+		std::cout << place++ << ".\t" << line.first << "\t\t" << line.second.wins << "\t" << line.second.losses << "\t" << std::setprecision(4) << precentage*100  << "\t" << line.second.ptsFor << "\t" << line.second.ptsAgainst << "\t" << std::endl;
 	}
 	std::cout << std::endl;
 }
