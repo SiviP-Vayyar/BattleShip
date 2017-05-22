@@ -23,7 +23,7 @@ struct AlgoData
 	HINSTANCE handle;
 };
 
-class HouseEntry //TODO: consider moving
+class HouseEntry //TODO: move this to a new file!!
 {
 public:
 	HouseEntry() : wins(0), losses(0), ptsFor(0), ptsAgainst(0) {}

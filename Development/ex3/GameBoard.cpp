@@ -1,4 +1,5 @@
 #include "GameBoard.h"
+#include "GameUtils.h"
 
 #include <algorithm>
 #include <cctype>
@@ -15,128 +16,70 @@ GameBoard::GameBoard(const std::string& path) : GameBoard()
 {
 	GameBoard& thisBoard = *this;
 
-	//allocate local empty board for setBoard
-	char** emptyBoard = newEmptyRawBoard(BOARD_ROWS, BOARD_COLS);
-
-	//call setBoard to allocate a board
-	setBoard(emptyBoard, BOARD_ROWS, BOARD_COLS);
-
-	//delete local empty board
-	deleteRawBoard(emptyBoard, BOARD_ROWS, BOARD_COLS);
-
 	//start reading from file
 	std::ifstream inputFileStream(path);
 	std::string line;
 
-	int linesReadCount = 1;
-	int charInLineCount;
-	while (std::getline(inputFileStream, line) && linesReadCount <= BOARD_ROWS)
+	std::getline(inputFileStream, line); // read dimentions
+	std::tie(_rows, _cols, _depth) = GetDimentionsFromLine(line);
+
+	_board = std::move(newEmptyRawBoard(_rows, _cols, _depth));
+
+	for (int d = 1; d <= _depth; d++)
 	{
-		charInLineCount = 1;
-		for (char pieceChar : line)
+		std::getline(inputFileStream, line); // skip delimiting blank line
+		for (int r = 1; r <= _rows; r++)
 		{
-			thisBoard(linesReadCount, charInLineCount) = isShip(pieceChar) ? pieceChar : EMPTY;
-			charInLineCount++;
+			std::getline(inputFileStream, line); // read row
+			for(int c = 1; c <= _cols; c++) // read cols in a row
+			{
+				char pieceChar = line[c - 1];
+				thisBoard(r, c, d) = isShip(pieceChar) ? pieceChar : EMPTY;
+			}
 		}
-		//if not a full line - the board is already filled with EMPTY slots
-		linesReadCount++;
 	}
-	//if under BOARD_ROWS lines - the board is already filled with EMPTY slots
+	//TODO: guard access violation for rows and cols
+
 	inputFileStream.close();
 }
 
-GameBoard::~GameBoard()
+
+cube GameBoard::newEmptyRawBoard(int rows, int cols, int depth)
 {
-	deleteRawBoard(_board, _rows, _cols);
+	return cube(rows * cols * depth, ' ');
 }
 
-/*Caller of this method if resposible for allocation - must call deleteRawBoard()*/
-char** GameBoard::newEmptyRawBoard(int rows, int cols)
+void GameBoard::setBoard(const cube& board, int rows, int cols, int depth)
 {
-	char** newBoard = new char*[rows]; // Local empty board allocation
-	for (int row = 0; row < rows; row++) // Copy board
-	{
-		newBoard[row] = new char[cols];
-		for (int col = 0; col < cols; col++)
-		{
-			newBoard[row][col] = EMPTY;
-		}
-	}
-	return newBoard;
-}
-
-void GameBoard::deleteRawBoard(char** board, int rows, int cols)
-{
-	if (board == nullptr)
-	{
-		return;
-	}
-
-	for (int i = 0; i < rows; i++)
-	{
-		delete[] board[i];
-	}
-
-	delete[] board;
-}
-
-void GameBoard::setBoard(const char* const* board, int numRows, int numCols)
-{
-	deleteRawBoard(_board, _rows, _cols);
-
-	_rows = numRows;
-	_cols = numCols;
+	_rows = rows;
+	_cols = cols;
+	_depth = depth;
 	_isSet = true;
-	_board = new char*[numRows];
-
-	for (int row = 0; row < _rows; row++)
-	{
-		_board[row] = new char[numCols];
-		for (int col = 0; col < _cols; col++)
-		{
-			_board[row][col] = board[row][col];
-		}
-	}
+	_board = board;
 }
 
-/*return a new raw board*/
-/*@post: the returned board is dynamically allocated and must be freed*/
-char** GameBoard::getBoard() const
+/*return a copy of the board*/
+cube GameBoard::getBoard() const
 {
-	char** board = new char*[_rows];
-
-	for (int row = 0; row < _rows; row++)
-	{
-		board[row] = new char[_cols];
-		for (int col = 0; col < _cols; col++)
-		{
-			board[row][col] = _board[row][col];
-		}
-	}
-
-	return board;
+	return _board;
 }
 
 /*return a new raw board with only the player's ships*/
-/*@post: the returned boad is dynamically allocated and must be freed*/
-char** GameBoard::getBoardForPlayer(int player) const
+cube GameBoard::getBoardForPlayer(int player) const
 {
-	char** board = new char*[_rows];
+	cube board(numel());
 
-	for (int row = 0; row < _rows; row++)
+	for (int i = 0; i < numel(); i++)
 	{
-		board[row] = new char[_cols];
-		for (int col = 0; col < _cols; col++)
-		{
-			char piece = _board[row][col];
-			board[row][col] = (playerShipType(player, piece) == piece ? piece : EMPTY);
-		}
+		char piece = _board[i];
+		board[i] = (playerShipType(player, piece) == piece ? piece : EMPTY);
 	}
+	
 	return board;
 }
 
 /*update the board to reflect an attack, and notify on the result and what was hit*/
-std::pair<AttackResult, char> GameBoard::attack(std::pair<int, int> attackPosition)
+std::pair<AttackResult, char> GameBoard::boardAttack(const Coordinate& attackPosition)
 {
 	GameBoard& thisBoard = *this;
 
@@ -144,16 +87,16 @@ std::pair<AttackResult, char> GameBoard::attack(std::pair<int, int> attackPositi
 	if (attackPosition == ATTACK_END)
 		return std::make_pair(AttackResult::Miss, EMPTY);
 
-	int row = attackPosition.first, col = attackPosition.second;
-	char piece = thisBoard(row, col);
+	int row = attackPosition.x, col = attackPosition.y, depth = attackPosition.z;
+	char piece = thisBoard(row, col, depth);
 
 	if (isShip(piece))
 	{
 		// mark hit on the board
-		thisBoard(row, col) = SHIP_HIT;
+		thisBoard(row, col, depth) = SHIP_HIT;
 
 		// determine if just hit or sink, and add to score if needed
-		if (isShipSunk(row, col))
+		if (isShipSunk(row, col, depth))
 		{
 			return std::make_pair(AttackResult::Sink, piece);
 		}
@@ -182,8 +125,8 @@ char GameBoard::playerShipType(int player, char typeDef)
 }
 
 // given a position on a ship, explore all directions to determine if sunk
-/*@pre: assume (row,col) is some position on a ship*/
-bool GameBoard::isShipSunk(int row, int col)
+/*@pre: assume (row,col,depth) is some position on a ship*/
+bool GameBoard::isShipSunk(int row, int col, int depth) //TODO: implement
 {
 	GameBoard& thisBoard = *this;
 	auto increments = {std::pair<int, int>(1, 0), std::pair<int, int>(-1, 0), std::pair<int, int>(0, 1), std::pair<int, int>(0, -1)};
@@ -217,7 +160,7 @@ bool GameBoard::isShipSunk(int row, int col)
 /*returns the width and length of the ship in position (row,col)*/
 /*@Post: May return an underestimate of the dims, but when covering the entire ship, we will get at
  *least one the will catch an illegal ship */
-std::pair<int, int> GameBoard::getShipDimensions(const std::set<std::pair<int, int>>& coords) const
+std::pair<int, int> GameBoard::getShipDimensions(const std::set<Coordinate>& coords) const //TODO: implelemnt
 {
 	int rowMin, rowMax, colMin, colMax;
 	rowMin = colMin = _cols + 1;
@@ -235,7 +178,7 @@ std::pair<int, int> GameBoard::getShipDimensions(const std::set<std::pair<int, i
 }
 
 /*recursively gather all coordinates of the given ship*/
-void GameBoard::getShipCoordinates(int row, int col, std::set<std::pair<int, int>>& coords) const
+void GameBoard::getShipCoordinates(int row, int col, int depth, std::set<Coordinate>& coords) const //TODO: implelemnt
 {
 	const GameBoard& thisBoard = *this;
 
@@ -249,20 +192,20 @@ void GameBoard::getShipCoordinates(int row, int col, std::set<std::pair<int, int
 	coords.insert(std::make_pair(row, col));
 
 	//continue to neighbors
-	for (auto neighbor : getAdjacentCoordinatesAsVector(row, col))
+	for (auto neighbor : getAdjacentCoordinatesAsVector(row,, col))
 	{
 		// if same type - continue recursion
 		int r = neighbor.first;
 		int c = neighbor.second;
 		if (thisBoard(r, c) == thisBoard(row, col))
 		{
-			getShipCoordinates(r, c, coords);
+			getShipCoordinates(r, c,, coords);
 		}
 	}
 }
 
 /*returns: legalShipsCount, illegalShips*/
-std::pair<int, std::set<char>> GameBoard::analyseShips(int player)
+std::pair<int, std::set<char>> GameBoard::analyseShips(int player) //TODO: implelemnt
 {
 	GameBoard& thisBoard = *this;
 	int legalShipsCount = 0;
@@ -280,7 +223,7 @@ std::pair<int, std::set<char>> GameBoard::analyseShips(int player)
 			}
 
 			std::set<std::pair<int, int>> coords;
-			getShipCoordinates(row, col, coords);
+			getShipCoordinates(row, col,, coords);
 			auto dim = getShipDimensions(coords);
 			int size = getShipLength(piece);
 
@@ -302,7 +245,7 @@ std::pair<int, std::set<char>> GameBoard::analyseShips(int player)
 }
 
 /*@return: false iff there are no adjacent ships on the board*/
-bool GameBoard::isAdjacent() const
+bool GameBoard::isAdjacent() const //TODO: implelemnt
 {
 	const GameBoard& thisBoard = *this;
 
@@ -317,7 +260,7 @@ bool GameBoard::isAdjacent() const
 			}
 
 			// for every piece on the board that belongs to a ship, check the surrounding pieces
-			auto surroudingPositions = getAdjacentCoordinatesAsVector(row, col);
+			auto surroudingPositions = getAdjacentCoordinatesAsVector(row,, col);
 			for (auto position : surroudingPositions)
 			{
 				// if the adjacent piece is not a ship - it's good
@@ -338,11 +281,11 @@ bool GameBoard::isAdjacent() const
 	return false;
 }
 
-void GameBoard::ClearShipFromBoard(const std::set<std::pair<int, int>>& coords)
+void GameBoard::ClearShipFromBoard(const std::set<Coordinate>& coords)
 {
 	for(auto pos : coords)
 	{
-		(*this)(pos.first, pos.second) = EMPTY;
+		(*this)(pos.x, pos.y, pos.z) = EMPTY;
 	}
 
 }
@@ -375,43 +318,50 @@ int GameBoard::getShipLength(char piece)
 	return 0;
 }
 
-char& GameBoard::operator()(int row, int col)
+std::tuple<int, int, int> GameBoard::GetDimentionsFromLine(const std::string& cs)
 {
-	return _board[row - 1][col - 1];
+	//TODO: implement 1X2X4;
+	return std::make_tuple(0, 0, 0);
 }
 
-char GameBoard::operator()(int row, int col) const
+char& GameBoard::operator()(int row, int col, int depth)
 {
-	return _board[row - 1][col - 1];
+	return _board[((depth - 1)*_cols + (col - 1))*_rows + (row - 1)];
+}
+
+char GameBoard::operator()(int row, int col, int depth) const
+{
+	return _board[((depth - 1)*_cols + (col - 1))*_rows + (row - 1)];
 }
 
 GameBoard& GameBoard::operator=(const GameBoard& other)
 {
-	setBoard(other._board, other._rows, other._cols);
+	setBoard(other._board, other._rows, other._cols, other._depth);
 	return *this;
 }
 
 GameBoard& GameBoard::operator=(GameBoard&& other) noexcept
 {
-	std::swap(_board, other._board); // the swap trick
-	_rows = other.rows();
+	_board = std::move(other._board); // the move trick
+	_rows = other._rows;
 	_cols = other._cols;
+	_depth = other._depth;
 	_isSet = other._isSet;
 	
 	return *this;
 }
 
 /*return a vector of all valid surrounding Coordinates*/
-std::vector<std::pair<int, int>> GameBoard::getSurroundingCoordinatesAsVector(int row, int col) const
+std::vector<Coordinate> GameBoard::getSurroundingCoordinatesAsVector(int row, int col, int depth) const  //TODO: implelemnt
 {
 	std::vector<std::pair<int, int>> surroundingCoordinates;
 
 	//iterate through all surrounding Coordinates and if valid -> add to return vector
 	for (int tempRow = row - 1; tempRow <= row + 1; ++tempRow)
 	{
-		for (int tempCol = col - 1; tempCol <= col + 1; ++tempCol)
+		for (int tempCol = depth - 1; tempCol <= depth + 1; ++tempCol)
 		{
-			if (tempCol == col && tempRow == row)
+			if (tempCol == depth && tempRow == row)
 			{
 				continue;
 			}
@@ -425,14 +375,14 @@ std::vector<std::pair<int, int>> GameBoard::getSurroundingCoordinatesAsVector(in
 }
 
 /*returns a vector of all adjacent Coordinates (does not include diagonal Coordinates)*/
-std::vector<std::pair<int, int>> GameBoard::getAdjacentCoordinatesAsVector(int row, int col) const
+std::vector<Coordinate> GameBoard::getAdjacentCoordinatesAsVector(int row, int col, int depth) const //TODO: implelemnt
 {
 	std::vector<std::pair<int, int>> adjacentCoordinates;
 
 	auto increments = {std::pair<int, int>(1, 0), std::pair<int, int>(-1, 0), std::pair<int, int>(0, 1), std::pair<int, int>(0, -1)};
 	for (auto inc : increments)
 	{
-		int r = row + inc.first, c = col + inc.second;
+		int r = row + inc.first, c = depth + inc.second;
 		if (isInBoard(r, c))
 		{
 			adjacentCoordinates.emplace_back(r, c);
@@ -442,7 +392,7 @@ std::vector<std::pair<int, int>> GameBoard::getAdjacentCoordinatesAsVector(int r
 }
 
 /*returns a vector of all diagonal Coordinates (does not include diagonal Coordinates)*/
-std::vector<std::pair<int, int>> GameBoard::getDiagonalCoordinatesAsVector(int row, int col) const
+std::vector<Coordinate> GameBoard::getDiagonalCoordinatesAsVector(int row, int col, int depth) const //TODO: implelemnt
 {
 	std::vector<std::pair<int, int>> diagonalCoordinates;
 
@@ -462,7 +412,7 @@ std::vector<std::pair<int, int>> GameBoard::getDiagonalCoordinatesAsVector(int r
  * Returns the Max Score on board possible for player - meaning it is other player ships' score
  * @Pre: Assuming correct board
  */
-int GameBoard::GetMaxScore(int player) const
+int GameBoard::GetMaxScore(int player) const //TODO: implelemnt
 {
 	GameBoard copyBoard(*this);
 	int score = 0;
@@ -477,7 +427,7 @@ int GameBoard::GetMaxScore(int player) const
 			if(!isPlayerShip(player, shipType) && !(shipType == EMPTY))
 			{
 				std::set<std::pair<int, int>> coords;
-				copyBoard.getShipCoordinates(row, col, coords);
+				copyBoard.getShipCoordinates(row, col,, coords);
 				score += getShipScore(shipType);
 				copyBoard.ClearShipFromBoard(coords);
 			}

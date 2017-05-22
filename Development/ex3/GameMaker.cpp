@@ -65,7 +65,7 @@ GameResult GameMaker::RunGame()
 			TECH_LOSS_CURR_PLAYER //TODO: add log for technical loss
 		}
 
-		auto attackResultInfo = _board.attack(attackPosition);
+		auto attackResultInfo = _board.boardAttack(attackPosition);
 		auto attackResult = attackResultInfo.first;
 		char attackedPiece = attackResultInfo.second;
 		bool selfHit = GameBoard::isPlayerShip(currentPlayerDef, attackedPiece);

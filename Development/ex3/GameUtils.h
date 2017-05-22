@@ -34,3 +34,8 @@ I GameUtils::randomElement(I begin, I end)
 	std::advance(begin, k);
 	return begin;
 }
+
+inline bool operator==(const Coordinate& c1, const Coordinate& c2)
+{
+	return c1.x == c2.x && c1.y == c2.y && c1.z == c2.z;
+}
