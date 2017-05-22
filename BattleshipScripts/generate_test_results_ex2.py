@@ -11,7 +11,7 @@ if __name__ == '__main__':
     teams_parent_dir = "C:/Git/BattleShip/build/Windows-x64-Release/output"
     teams_source_dir = "C:/Git/BattleShip/Development/Testing/ex2"
     students_xlsx = "C:/Git/BattleShip/BattleshipScripts/AllStudents.xlsx"
-    ignore_teams_list = []
+    ignore_teams_list = ['nofarhiki']
     test_only_teams = []
 
     # Generate Results Excell:

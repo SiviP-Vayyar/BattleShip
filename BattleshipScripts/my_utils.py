@@ -1,5 +1,5 @@
 import os
-
+from shutil import move, copyfile
 
 def get_all_sub_folders(path):
     all_sub_folders = []
@@ -58,8 +58,14 @@ def cmake_lists_from_all_subfolders(path):
 
 if __name__ == '__main__':
     #find_student('C:\Git\BattleShip\Development\Testing\ex1', 'noamg')
-    path = 'C:\Git\BattleShip\Development\Testing\ex1'
+    path_from = 'C:/Git/BattleShip/build/Windows-x64-Release/output'
+    path_to = 'C:/Temp/manyAlgos'
     #cmake_lists_from_all_subfolders(path)
     #find_files(path, ['stdafx'])
+    files = get_all_files(path_from)
+    files = [f for f in files if f.endswith('smart.dll')]
+    for f in files:
+        to = os.path.join(path_to, os.path.basename(f))
+        move(f, to)
 
     pass

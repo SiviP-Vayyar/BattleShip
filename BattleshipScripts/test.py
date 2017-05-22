@@ -5,7 +5,7 @@ import difflib
 from game_results import GameResults
 
 
-DEBUG = False
+DEBUG = True
 AUTO_QUIET = True
 BACKSLASH = True
 BEST_OUT_OF = 3
@@ -13,22 +13,25 @@ test_only = []
 ignore_tests = []
 
 TestError = {}
-TestError[0] = 'Wrong path'
-TestError[1] = 'Missing board file'
-TestError[2] = 'Missing an algorithm'
-TestError[3] = 'Cannot load dll'
-TestError[4] = 'Algorithm initialization failed'
-TestError[5] = 'Wrong size or shape'
-TestError[6] = 'Too many'
-TestError[7] = 'Too few'
-TestError[8] = 'Adjacent'
-##############################
-TestError[9] = 'Bad prints'
+###### Technical issues #######
+TestError[0] = 'Late submission'
+TestError[1] = 'Late submission second time'
+TestError[2] = 'CMake issues'
+TestError[3] = 'Submitted extra files'
+TestError[4] = 'Did not compile'
+TestError[5] = 'Argument support errors'
+TestError[6] = 'No Students.txt file'
+TestError[7] = 'General issues'
+TestError[8] = 'CMake - no need for cmake_minimum_required(VERSION 3.8) - no points were taken off'
+TestError[9] = 'Tabs instead of spaces in students.txt - no points were taken off'
 TestError[10] = 'Wrong/No winner'
-TestError[11] = 'T1 - wrong score'
-TestError[12] = 'T2 - wrong score'
-TestError[13] = 'T0 - Smart lost to Naive'
-TestError[14] = 'T0 - Did not run with our game manager'
+TestError[11] = 'T0 - wrong score'
+TestError[12] = 'T1 - wrong score'
+TestError[13] = 'T2 - Smart lost to Naive'
+TestError[14] = 'T2 - Did not run with our game manager'
+
+###### Code issues #######
+
 TestError[15] = 'Compilation warnings'
 TestError[16] = 'Did not compile - submitted late'
 TestError[17] = 'Unused variable'
@@ -37,6 +40,35 @@ TestError[19] = 'Member function may be const'
 TestError[20] = ''
 TestError[21] = ''
 TestError[22] = ''
+TestError[23] = ''
+TestError[24] = ''
+TestError[25] = ''
+TestError[26] = ''
+TestError[27] = 'Access violation on call to init(<actual_path>)'
+TestError[28] = 'Runtime errors'
+TestError[29] = 'Returned <-1,-1> while there are still ships on the board'
+TestError[30] = 'Out of board attacks'
+TestError[31] = 'Access violation reading location'
+TestError[32] = ''
+TestError[33] = ''
+TestError[34] = ''
+TestError[35] = ''
+TestError[36] = ''
+TestError[37] = ''
+TestError[38] = ''
+
+###### Prints issues #######
+
+TestError[39] = 'Bad prints'
+TestError[40] = 'Wrong path'
+TestError[41] = 'Missing board file'
+TestError[42] = 'Missing an algorithm'
+TestError[43] = 'Cannot load dll'
+TestError[44] = 'Algorithm initialization failed'
+TestError[45] = 'Wrong size or shape'
+TestError[46] = 'Too many'
+TestError[47] = 'Too few'
+TestError[48] = 'Adjacent'
 
 
 class Test:

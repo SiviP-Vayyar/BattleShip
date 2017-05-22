@@ -1,0 +1,84 @@
+=== Still Needs Checking ===
+
+Too long to run a game - see what about:
+karimmahamed (did test)
+shiranmazor (did test)
+
+Not running with my game manager
+nofarhiki - Smart algorithm gets stuck on my manager (don't run T2_Game3)
+shukrun - weird output
+
+Check const methods
+
+Give zoharmeir a fair score
+
+
+=== Errors ===
+
+Late Submission: -2
+drorsuhomi
+schwart7
+danachernov
+ruthchemla
+shukrun
+ronnysivan
+matanshaked
+
+Late Submittion 2nd time:
+danachernov - asked for a continuous then submitted a non-compiling project
+
+CMake Issues:
+danielf1 - had extra line in end of CMakeLists.txt
+ohadglass - did not remove unicode definition
+razkliger - did not remove unicode definition
+benohayon - CmakeLists.txt
+danachernov - CmakeLists.txt
+
+No points taken off:
+itayroll - no need for cmake_minimum_required(VERSION 3.8)
+ormalkai - no need for cmake_minimum_required(VERSION 3.8)
+shukrun - no need for cmake_minimum_required(VERSION 3.8)
+perifishgold - no need for cmake_minimum_required(VERSION 3.8)
+mayaisrael - tabs instead of spaces in students.txt
+galklein - tabs instead of spaces in students.txt
+
+Did not compile (I fixed it):
+meitalswissa - include issue - #include "../submarinesGame/IBattleshipGameAlgo.h"
+hilabalahsan - include issue - #include <dirent.h> without supplying the file.
+
+General Error:
+schwart7 - submitted dlls + files in inner folder
+amitmarcus - bad students.txt, missing id
+nabeelhodroj - ran with DEBUG flag on, tests stuck on cin.get()
+itayroll - -quiet still prints stuff and delays the game + -delay arg doesn't work
+ronnysivan - FileAlgo failed to open board file
+
+No Students file:
+ruthchemla
+
+Access violation on call to init(<full_path>):
+galklein
+perifishgold
+ruthchemla
+
+Runtime errors:
+matanshaked - stack overflow
+shukrun - BattleshipGameAlgoSmart.attack: Something went wrong, can't find next cell to attack (Player 1, currently in TARGET mode) - integer division by zero
+baruchmakro - heap corruption while trying to delete player
+
+Access violation reading location:
+barschwartz - call was: _playerA->notifyOnAttackResult(PLAYER_A, 10, 6, HIT);
+nabeelhodroj - call was: currentPlayer->attack();
+tomnatan - call was: currentPlayer->attack();
+talkaminer - call was: _playerA->notifyOnAttackResult(PLAYER_A, 1, 10, SINK);
+
+Returned <-1,-1> while there are still ships on the board:
+hananbitan
+talkaminer
+meitalswissa
+ofekamir
+shukrun
+
+Out of board attacks:
+nadircohen - (0,0)
+stephank - (*,11)

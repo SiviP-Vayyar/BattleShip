@@ -1,0 +1,50 @@
+Tournaments Rules:
+
+1. If our game manager could not load/init your player, you are out!
+2. If you don't play by the rules, you are out!
+3. If you do something bad (throw exception, access violation...), you are out!
+4. If you return <-1, -1> while there are still ships on the game board, you are out!
+5. If you are not out, you are part of <AllPlayers> and then the tournament is played as shown in the pseudo-code below
+6. A random board for each game
+7. A total of 1800 games played per player
+
+
+	for (round : 25 rounds)
+	{
+		for(playerA : AllPlayers)
+		{
+			for(playerB : AllPlayers)
+			{
+				if(playerA is not playerB)
+				{
+					PlayGame(playerA, playerB, GetRandomBoard());
+				}
+			}
+		}
+	}
+
+
+Tournament Results Are (Top 15 only):
+
+	
+###########################################
+####     Winner Is: oribarel.smart    #####
+###########################################
+
+#       Team Name               Wins    Losses  %       Pts For Pts Against
+
+1.      oribarel.smart          1530    270     85      34930   18353
+2.      galtzafri.smart         1487    313     82.61   41157   28268
+3.      danielkozlov.smart      1465    335     81.39   35369   26544
+4.      gelbart1.smart          1353    447     75.17   32802   26553
+5.      danachernov.smart       1329    471     73.83   34534   22008
+6.      shiranmazor.smart       1295    505     71.94   48695   25508
+7.      ormalkai.smart          1278    522     71      34798   25337
+8.      itamark.smart           1268    532     70.44   42776   33455
+9.      nivk.smart              1198    602     66.56   32553   26301
+10.     danielf1.smart          1013    787     56.28   38101   34543
+11.     ronnysivan.smart        976     824     54.22   37333   36036
+12.     amitmarcus.smart        975     825     54.17   28339   28585
+13.     itayroll.smart          974     826     54.11   40821   37034
+14.     inbarm1.smart           962     838     53.44   41708   38733
+15.     ofirg1.smart            940     860     52.22   36013   35334

@@ -55,8 +55,6 @@ class Parser:
             diff_results += '\n' + 'DID NOT COMPILE!!!' + '\n'
         if team_to_parse.is_bonus:
             diff_results += '\n' + 'DID THE BONUS!!!' + '\n'
-        if not team_to_parse.has_students_file:
-            diff_results += '\n' + 'Did not have the students.txt file: (-3)' + '\n'
         self.write_comments(diff_results)
         self.write_errors(team_to_parse.errors)
 

@@ -63,3 +63,5 @@ class Team:
                             else:
                                 name = token.strip()
                     self.students.append(Student(name, s_id))
+        else:
+            self.errors.append(6)
