@@ -1,5 +1,6 @@
 #include "HouseEntry.h"
 
+
 void HouseEntry::Update(const GameResult& result, int player)
 {
 	if(player == PLAYER_A)

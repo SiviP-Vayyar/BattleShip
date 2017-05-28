@@ -27,9 +27,6 @@
 #define DESTROYER_LEN	4
 
 /*Player Macros*/
-#define PLAYER_NOT_YET_KNOWN	-1
-#define PLAYER_A				0
-#define PLAYER_B				1
 #define ATTACK_END				Coordinate(-1, -1, -1) // To mark the end of the moves list
 
 /*Board Macros*/

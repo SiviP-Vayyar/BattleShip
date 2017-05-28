@@ -23,16 +23,20 @@
     <ClCompile Include="..\..\ex3\GameBoardData.cpp" />
     <ClCompile Include="..\..\ex3\GameMaker.cpp" />
     <ClCompile Include="..\..\ex3\GameUtils.cpp" />
+    <ClCompile Include="..\..\ex3\HouseEntry.cpp" />
     <ClCompile Include="..\..\ex3\main.cpp" />
     <ClCompile Include="..\..\ex3\PrintHandler.cpp" />
     <ClCompile Include="..\..\ex3\TournamentMaker.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\ex3\AlgoData.h" />
     <ClInclude Include="..\..\ex3\GameBoard.h" />
     <ClInclude Include="..\..\ex3\GameBoardData.h" />
     <ClInclude Include="..\..\ex3\GameException.h" />
     <ClInclude Include="..\..\ex3\GameMaker.h" />
+    <ClInclude Include="..\..\ex3\GameResult.h" />
     <ClInclude Include="..\..\ex3\GameUtils.h" />
+    <ClInclude Include="..\..\ex3\HouseEntry.h" />
     <ClInclude Include="..\..\ex3\IBattleshipGameAlgo.h" />
     <ClInclude Include="..\..\ex3\PrintHandler.h" />
     <ClInclude Include="..\..\ex3\TournamentMaker.h" />

@@ -1,26 +1,22 @@
 ﻿#pragma once
 
-#include "TournamentMaker.h"
+#include "AlgoData.h"
+#include "GameBoard.h"
+#include "GameResult.h"
 
 class HouseEntry
 {
 public:
-	HouseEntry() : wins(0), losses(0), ptsFor(0), ptsAgainst(0)
-	{}
-	explicit HouseEntry(const AlgoData& data_) : HouseEntry()
-	{
-		data = data_;
-	}
+	HouseEntry() : wins(0), losses(0), ptsFor(0), ptsAgainst(0) {}
+	explicit HouseEntry(const AlgoData& data_) : HouseEntry() {	data = data_; }
+	std::string GetTeamName() const	{ return data.name; }
+	void Update(const GameResult& result, int player);
+	
 	AlgoData data;
 	int wins;
 	int losses;
 	int ptsFor;
 	int ptsAgainst;
-	std::string GetTeamName() const
-	{
-		return data.name;
-	}
-	void Update(const GameResult& result, int player);
 
 	struct Compare
 	{

@@ -1,26 +1,18 @@
 ﻿#pragma once
 
+#include "AlgoData.h"
 #include "IBattleshipGameAlgo.h"
 #include "GameMaker.h"
-#include <windows.h>
 #include <map>
 #include "HouseEntry.h"
 
-typedef IAlgo*(*GetAlgoFuncType)();
+
 
 #define GET_ALGORITHM_STR "GetAlgorithm"
 #define MIN_PLAYERS 2 //TODO: 32
 #define MIN_HOUSES (MIN_PLAYERS/2)
 #define DEFAULT_BEST_OF 3
 #define PLAYING_ROUNDS 25
-
-struct AlgoData
-{
-	std::string name;
-	std::string algoFile;
-	GetAlgoFuncType GetPlayer;
-	HINSTANCE handle;
-};
 
 class TournamentMaker
 {
