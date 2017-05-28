@@ -1,0 +1,17 @@
+see if copy/assignment blocking in destructor for next time
+
+
+
+Add to code review: 
+1. see if copy/assignment blocking in destructor for next time
+2. all 0 point reductions
+3. (AI)- Missing a user defined constructor because of uninitialized data members
+	* see if there are more non informative comments and add them to the code review
+4. deleted a static allocation
+5. next time C-style cast used instead of a C++ cast - will take off points
+6. explain OOP bad/medium/light - give example
+
+
+
+check if problem:
+Macro redefinition - if not - 0

@@ -1,0 +1,7 @@
+Find long main functions:
+
+int main(.*\).*(\n{|)(.*[\n])(\s.*\n){90} #check!
+
+Find long functions:
+
+([a-zA-Z<>,:].* [a-zA-Z]*::[a-zA-Z]*\(.*\).*)(\n{|)(.*[\n])(\s.*\n){100}

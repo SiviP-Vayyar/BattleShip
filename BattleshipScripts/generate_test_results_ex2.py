@@ -12,7 +12,7 @@ if __name__ == '__main__':
     teams_source_dir = "C:/Git/BattleShip/Development/Testing/ex2"
     students_xlsx = "C:/Git/BattleShip/BattleshipScripts/AllStudents.xlsx"
     ignore_teams_list = ['nofarhiki']
-    test_only_teams = []
+    test_only_teams = ['shukrun']
 
     # Generate Results Excell:
     parser = excel_parser.Parser()
