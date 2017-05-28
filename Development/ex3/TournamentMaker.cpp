@@ -5,6 +5,7 @@
 #include "PrintHandler.h"
 #include <map>
 #include "GameException.h"
+#include "GameBoardData.h"
 
 TournamentMaker::TournamentMaker(int argc, char* argv[]) : _currBoardIdx(0)
 {
@@ -167,7 +168,7 @@ bool TournamentMaker::SetAndValidateBoardsAndAlgos()
 bool TournamentMaker::LoadAndInitAlgos()
 {
 	bool failedLoadPlayer, failedGetPlayer, failedInitPlayer;
-	char** emptyBoard = GameBoard::newEmptyRawBoard(BOARD_ROWS, BOARD_COLS);
+	GameBoard dummyBoard(GameBoard::newEmptyRawBoard(DUMMY_DIMENTION, DUMMY_DIMENTION, DUMMY_DIMENTION), DUMMY_DIMENTION, DUMMY_DIMENTION, DUMMY_DIMENTION); //TODO: better way?
 	std::vector<std::string> logBuffer;
 
 	for(auto algoFile : _dllNamesVec)
@@ -195,9 +196,8 @@ bool TournamentMaker::LoadAndInitAlgos()
 					IAlgo* player = data.GetPlayer();
 
 					// Set boards for player - Sanity Check
-					player->setBoard(PLAYER_A, const_cast<const char**>(emptyBoard), BOARD_ROWS, BOARD_COLS);
-					// Init player - Sanity Check
-					failedInitPlayer = !player->init(_inputFolder);
+					GameBoardData boardData(PLAYER_A, dummyBoard);
+					player->setBoard(boardData);
 					delete player;
 				}
 				catch(std::exception ex)
@@ -240,8 +240,6 @@ bool TournamentMaker::LoadAndInitAlgos()
 			_algoDataVec.push_back(data);
 		}
 	}
-
-	GameBoard::deleteRawBoard(emptyBoard, BOARD_ROWS, BOARD_COLS);
 
 	// Print accumulated errors
 	for (auto& err : logBuffer)
@@ -418,8 +416,8 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 	try
 	{
 		playerA = playerAData.GetPlayer();
-		playerA->setBoard(PLAYER_A, const_cast<const char**>(rawBoardA), gameBoard.rows(), gameBoard.cols());
-		playerA->init(_inputFolder);
+		GameBoardData boardData(PLAYER_A, gameBoard);
+		playerA->setBoard(boardData);
 	}
 	catch(...)
 	{
@@ -429,16 +427,13 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 	try
 	{
 		playerB = playerBData.GetPlayer();
-		playerB->setBoard(PLAYER_B, const_cast<const char**>(rawBoardB), gameBoard.rows(), gameBoard.cols());
-		playerB->init(_inputFolder);
+		GameBoardData boardData(PLAYER_B, gameBoard);
+		playerB->setBoard(boardData);
 	}
 	catch(...)
 	{
 		techLossB = true;
 	}
-
-	GameBoard::deleteRawBoard(rawBoardA, gameBoard.rows(), gameBoard.cols());
-	GameBoard::deleteRawBoard(rawBoardB, gameBoard.rows(), gameBoard.cols());
 	
 	if (techLossA != techLossB)
 	{
