@@ -4,10 +4,10 @@
 class GameBoardData : public BoardData
 {
 public:
-	GameBoardData(int player) : _player(player) {}
+	GameBoardData(int player, const GameBoard& board) : _board(board), _player(player) {}
 	char charAt(Coordinate c) const override;
 
 private:
-	GameBoard _board;
+	const GameBoard& _board;
 	int _player;
 };

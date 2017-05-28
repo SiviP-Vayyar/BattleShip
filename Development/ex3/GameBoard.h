@@ -37,6 +37,7 @@
 #define MISS 					'O'
 #define SINK 					'S'
 #define MAX_SHIPS 				5
+#define DUMMY_DIMENTION			10
 
 typedef std::vector<char> cube;
 
@@ -67,6 +68,7 @@ public:
 	int depth() const { return _depth; }
 	bool isSet() const { return _isSet; }
 	bool isInBoard(int row, int col, int depth) const { return 0 < row && row <= _rows && 0 < col && col <= _cols && 0 < depth && depth <= _depth; }
+	bool isInBoard(Coordinate c) const { return isInBoard(c.row, c.col, c.depth); }
 	bool isShipSunk(int row, int col, int depth);
 	bool isAdjacent() const;
 

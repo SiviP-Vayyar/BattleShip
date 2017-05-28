@@ -87,7 +87,7 @@ std::pair<AttackResult, char> GameBoard::boardAttack(const Coordinate& attackPos
 	if (attackPosition == ATTACK_END)
 		return std::make_pair(AttackResult::Miss, EMPTY);
 
-	int row = attackPosition.x, col = attackPosition.y, depth = attackPosition.z;
+	int row = attackPosition.row, col = attackPosition.col, depth = attackPosition.depth;
 	char piece = thisBoard(row, col, depth);
 
 	if (isShip(piece))
@@ -285,7 +285,7 @@ void GameBoard::ClearShipFromBoard(const std::set<Coordinate>& coords)
 {
 	for(auto pos : coords)
 	{
-		(*this)(pos.x, pos.y, pos.z) = EMPTY;
+		(*this)(pos.row, pos.col, pos.depth) = EMPTY;
 	}
 
 }

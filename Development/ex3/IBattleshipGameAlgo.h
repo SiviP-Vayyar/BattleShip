@@ -1,8 +1,6 @@
 #pragma once
 
-#include <string> // Actually not required here - but here due to students request
-#include <memory> // for std::uniqe_ptr
-
+#include <string> // Actually not required here - but here due to students' request
 
 /*Notice:
  * Usually it is bad practice to have several classes/structs in the same header.
@@ -20,8 +18,8 @@ enum class AttackResult
 
 struct Coordinate
 {
-	const int x, y, z;
-	Coordinate(int x1, int y1, int z1) : x(x1), y(y1), z(z1) {}
+	int row, col, depth;
+	Coordinate(int row_, int col_, int depth_) : row(row_), col(col_), depth(depth_) {}
 };
 
 /*This is a wrapper to the Board's Data
@@ -30,15 +28,16 @@ struct Coordinate
 class BoardData
 {
 public:
-	int rows() const { return _rows; }
-	int cols() const { return _cols; }
-	int depth() const { return _depth; }
 	virtual ~BoardData() = default;
 	virtual char charAt(Coordinate c) const = 0; //returns only selected players' chars
+
+	int rows()  const { return _rows; }
+	int cols()  const { return _cols; }
+	int depth() const { return _depth; }
 protected:
-	int _rows = 0;
-	int _cols = 0;
-	int _depth = 0;
+	int _rows = 0; // make sure you set all protected members in the derived class.
+	int _cols = 0; // make sure you set all protected members in the derived class.
+	int _depth = 0; // make sure you set all protected members in the derived class.
 };
 
 class IBattleshipGameAlgo
@@ -51,10 +50,16 @@ public:
 	virtual void notifyOnAttackResult(int player, Coordinate move, AttackResult result) = 0; // last move result
 };
 
-#ifdef ALGO_EXPORTS									// A flag defined in this project's Preprocessor's Definitions
-#define ALGO_API extern "C" __declspec(dllexport)	// If we build - export
+#ifdef ALGO_EXPORTS										// A flag defined in this project's Preprocessor's Definitions
+#define ALGO_API extern "C" __declspec(dllexport)		// If we build - export
 #else
-#define ALGO_API extern "C" __declspec(dllimport)	// If someone else includes this .h - import
+#define ALGO_API extern "C" __declspec(dllimport)		// If someone else includes this .h - import
 #endif
 
-ALGO_API std::unique_ptr<IBattleshipGameAlgo> GetAlgorithm(); // This method must be implemented in each player(algorithm) .cpp file
+/* Please Notice:
+ * The derived class of IBattleshipGameAlgo allocates a new instance, returns a raw pointer, and IS NOT respoinsible for deleting it
+ * The Game Manager MUST take this pointer, and put in in an std::unique_ptr<IBattleshipGameAlgo>.
+ * The reason that we don't return a unique_ptr instead, is that it is bad practice to export cpp methods due to their name mangling.
+ * When working with shared objects (dlls), the interface must be a C interface.
+ */
+ALGO_API IBattleshipGameAlgo* GetAlgorithm(); // This method must be implemented in each player(algorithm) .cpp file
