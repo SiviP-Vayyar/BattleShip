@@ -6,7 +6,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include "TournamentMaker.h"
+#include <iterator>
+
+
+
+
 
 const char GameBoard::_shipTypes[] = {RUBBER, MISSILE, SUB, DESTROYER};
 const int GameBoard::_shipLengths[] = {RUBBER_LEN, MISSILE_LEN, SUB_LEN, DESTROYER_LEN};
@@ -320,8 +326,25 @@ int GameBoard::getShipLength(char piece)
 
 std::tuple<int, int, int> GameBoard::GetDimentionsFromLine(const std::string& cs)
 {
-	//TODO: implement 1X2X4;
-	return std::make_tuple(0, 0, 0);
+	size_t pos = 0;
+	std::string s = cs;
+	std::string token;
+	std::string delimiter = "x";
+	std::vector<int> dims;
+
+	while((pos = s.find(delimiter)) != std::string::npos)
+	{
+		token = s.substr(0, pos);
+		dims.push_back(stoi(token));
+		s.erase(0, pos + delimiter.length());
+	}
+
+	if(dims.size() < 3)
+	{
+		//TODO: not enough dims - do something
+	}
+
+	return std::make_tuple(dims[0], dims[1], dims[2]);
 }
 
 char& GameBoard::operator()(int row, int col, int depth)
