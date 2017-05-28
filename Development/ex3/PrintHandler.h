@@ -42,8 +42,8 @@ public:
 	}
 
 	static void cleanOutput();
-	static void printInitialBoard(const GameBoard& board);
-	static void printAttackResult(std::pair<int, int> attackPosition, AttackResult attackResult, char attackedPiece, int player);
+	//static void printInitialBoard(const GameBoard& board);
+	//static void printAttackResult(std::pair<int, int> attackPosition, AttackResult attackResult, char attackedPiece, int player);
 
 	static void delay(const int millis = _delayMS / 2)
 	{
