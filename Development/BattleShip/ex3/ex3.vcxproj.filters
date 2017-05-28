@@ -33,6 +33,9 @@
     <ClCompile Include="..\..\ex3\TournamentMaker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\ex3\GameBoardData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ex3\GameBoard.h">
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ex3\TournamentMaker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ex3\GameBoardData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

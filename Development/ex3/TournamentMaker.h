@@ -1,11 +1,10 @@
 ﻿#pragma once
 
 #include "IBattleshipGameAlgo.h"
-#include <algorithm>
 #include "GameMaker.h"
-#include <string>
 #include <windows.h>
 #include <map>
+#include "HouseEntry.h"
 
 typedef IAlgo*(*GetAlgoFuncType)();
 
@@ -22,77 +21,6 @@ struct AlgoData
 	GetAlgoFuncType GetPlayer;
 	HINSTANCE handle;
 };
-
-class HouseEntry //TODO: move this to a new file!!
-{
-public:
-	HouseEntry() : wins(0), losses(0), ptsFor(0), ptsAgainst(0) {}
-	explicit HouseEntry(const AlgoData& data_) : HouseEntry() { data = data_; }
-	AlgoData data;
-	int wins;
-	int losses;
-	int ptsFor;
-	int ptsAgainst;
-	std::string GetTeamName() const
-	{
-		return data.name;
-	}
-	void Update(const GameResult& result, int player)
-	{
-		if(player == PLAYER_A)
-		{
-			ptsFor += result.scoreA;
-			ptsAgainst += result.scoreB;
-			if(result.Winner() == PLAYER_A)
-			{
-				++wins;
-			}
-			else if(result.Winner() == PLAYER_B)
-			{
-				++losses;
-			}
-		}
-		else // PLAYER_B
-		{
-			ptsFor += result.scoreB;
-			ptsAgainst += result.scoreA;
-			if(result.Winner() == PLAYER_B)
-			{
-				++wins;
-			}
-			else if(result.Winner() == PLAYER_A)
-			{
-				++losses;
-			}
-		}
-	}
-	
-	struct Compare
-	{
-		//returns ​true if the first argument is less than (i.e. is ordered before) the second. 
-		bool operator()(std::pair<std::string, HouseEntry> const & a, std::pair<std::string, HouseEntry> const & b) const
-		{
-			if(a.second.wins != b.second.wins)
-			{
-				return a.second.wins > b.second.wins; // more wins
-			}
-			if(a.second.losses != b.second.losses) // same wins
-			{
-				return a.second.wins < b.second.wins; // less losses
-			}
-			if(a.second.ptsFor != b.second.ptsFor) // same losses
-			{
-				return a.second.ptsFor > b.second.ptsFor; // more points for
-			}
-			if(a.second.ptsAgainst != b.second.ptsAgainst) // same points for
-			{
-				return a.second.ptsAgainst < b.second.ptsAgainst; // less points against
-			}
-			return a.second.GetTeamName() > b.second.GetTeamName(); // Alphabetically			
-		}
-	};
-};
-
 
 class TournamentMaker
 {
