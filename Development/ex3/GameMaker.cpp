@@ -31,11 +31,9 @@ GameResult GameMaker::RunGame()
 	auto opponentScore = &scorePlayerB;
 
 	//general parameters
-	std::pair<int, int> attackPosition;
+	Coordinate attackPosition(-1,-1,-1);
 	int maxScoreA = _board.GetMaxScore(PLAYER_A);
 	int maxScoreB = _board.GetMaxScore(PLAYER_B);
-
-	PrintHandler::printInitialBoard(_board);
 
 	// game loop
 	while (remainingShipsA > 0 && remainingShipsB > 0 && (movesRemainingA || movesRemainingB))
@@ -52,10 +50,10 @@ GameResult GameMaker::RunGame()
 			TECH_LOSS_CURR_PLAYER
 		}
 
-		*currentPlayerMovesRemaining = (attackPosition != ATTACK_END);
+		*currentPlayerMovesRemaining = !(attackPosition == ATTACK_END);
 		if(*currentPlayerMovesRemaining)
 		{
-			if(!_board.isInBoard(attackPosition.first, attackPosition.second))// Not in board -> technical lost
+			if(!_board.isInBoard(attackPosition))// Not in board -> technical lost
 			{
 				TECH_LOSS_CURR_PLAYER //TODO: add log for technical loss
 			}
@@ -69,32 +67,29 @@ GameResult GameMaker::RunGame()
 		auto attackResult = attackResultInfo.first;
 		char attackedPiece = attackResultInfo.second;
 		bool selfHit = GameBoard::isPlayerShip(currentPlayerDef, attackedPiece);
-		int row = attackPosition.first, col = attackPosition.second;
 
 		// notify the players - only if not ATTACK_END:
 		if (*currentPlayerMovesRemaining)
 		{
 			__try
 			{
-				_playerA->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+				_playerA->notifyOnAttackResult(currentPlayerDef, attackPosition, attackResult);
 			}
 			__except(TRUE)
 			{
-				std::cout << "_playerA->notifyOnAttackResult(" << currentPlayerDef << ", " << row << ", " << col << ", " << static_cast<int>(attackResult) << ");" << std::endl;
+				std::cout << "_playerA->notifyOnAttackResult(" << currentPlayerDef << ", (" << attackPosition.row << ", " << attackPosition.col << ", " << attackPosition.depth << "), " << static_cast<int>(attackResult) << ");" << std::endl;
 				TECH_LOSS_A
 			}// if a player crashes - give technical win to other player			
 			__try
 			{
-				_playerB->notifyOnAttackResult(currentPlayerDef, row, col, attackResult);
+				_playerB->notifyOnAttackResult(currentPlayerDef, attackPosition, attackResult);
 			}
 			__except(TRUE)
 			{
-				std::cout << "_playerB->notifyOnAttackResult(" << currentPlayerDef << ", " << row << ", " << col << ", " << static_cast<int>(attackResult) << ");" << std::endl;
+				std::cout << "_playerB->notifyOnAttackResult(" << currentPlayerDef << ", (" << attackPosition.row << ", " << attackPosition.col << ", " << attackPosition.depth << "), " << static_cast<int>(attackResult) << ");" << std::endl;
 				TECH_LOSS_B
 			}// if a player crashes - give technical win to other player	
 		}
-
-		PrintHandler::printAttackResult(attackPosition, attackResult, attackedPiece, currentPlayerDef);
 
 		// upon hit player gets another turn (if he didn't shoot himself)
 		if (attackResult == AttackResult::Hit && !selfHit)
