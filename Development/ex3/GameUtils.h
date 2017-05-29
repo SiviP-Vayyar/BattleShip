@@ -39,3 +39,15 @@ inline bool operator==(const Coordinate& c1, const Coordinate& c2)
 {
 	return c1.row == c2.row && c1.col == c2.col && c1.depth == c2.depth;
 }
+
+namespace std
+{
+	template <> struct hash<Coordinate> //std::hash specialization for Coordinate in order to use unordered_map
+	{
+		size_t operator()(Coordinate const& c) const
+		{
+			return static_cast<size_t>(5 * c.row + 17 * c.col + 1023 * c.depth + 89); //TODO: better hash function?
+		}
+	};
+}
+

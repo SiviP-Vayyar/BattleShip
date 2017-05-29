@@ -3,6 +3,8 @@
 #include "IBattleshipGameAlgo.h"
 #include <set>
 #include <vector>
+#include <unordered_set>
+#include "GameUtils.h"
 
 /*ship types definitions*/
 #define RUBBER			'B'
@@ -46,11 +48,11 @@ public:
 	explicit GameBoard(const std::string& path); //c'tor from file
 	explicit GameBoard(const cube& board, int rows, int cols, int depth) : GameBoard() { setBoard(board, rows, cols, depth); }
 	
-	GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols, other._depth) {} // copy c'tor
-	GameBoard(GameBoard&& other) noexcept : _board(std::move(other._board)), _rows(other._rows), _cols(other._cols), _depth(other._depth), _isSet(other._isSet) {} // move c'tor
-	GameBoard& operator=(const GameBoard& other); // copy assignment
-	GameBoard& operator=(GameBoard&& other) noexcept; // move assignment
-	~GameBoard(); // d'tor
+	//GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols, other._depth) {} // copy c'tor
+	//GameBoard(GameBoard&& other) noexcept : _board(std::move(other._board)), _rows(other._rows), _cols(other._cols), _depth(other._depth), _isSet(other._isSet) {} // move c'tor
+	//GameBoard& operator=(const GameBoard& other); // copy assignment
+	//GameBoard& operator=(GameBoard&& other) noexcept; // move assignment
+	//~GameBoard(); // d'tor
 
 	/*Using 1-based matrix call on vector*/
 
@@ -71,12 +73,10 @@ public:
 
 	/*Board validation methods*/
 	std::pair<int, std::set<char>> analyseShips(int player);
-	void ClearShipFromBoard(const std::set<Coordinate>& coords);
-	std::pair<int, int> getShipDimensions(const std::set<Coordinate>& coords) const;
-	void getShipCoordinates(int row, int col, int depth, std::set<Coordinate>& coords) const;
-	std::vector<Coordinate> getSurroundingCoordinatesAsVector(int row, int col, int depth) const;
+	void ClearShipFromBoard(const std::unordered_set<Coordinate>& coords);
+	Coordinate getShipDimensions(const std::unordered_set<Coordinate>& coords) const;
+	void getShipCoordinates(int row, int col, int depth, std::unordered_set<Coordinate>& coords) const;
 	std::vector<Coordinate> getAdjacentCoordinatesAsVector(int row, int col, int depth) const;
-	std::vector<Coordinate> getDiagonalCoordinatesAsVector(int row, int col, int depth) const;
 	int GetMaxScore(int player) const;
 
 	/*Board static methods*/
