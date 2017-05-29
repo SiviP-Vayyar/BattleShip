@@ -17,7 +17,7 @@ public:
 	/*Used to select an element uniformly at random from a container*/
 	template <typename I>
 	static I randomElement(I begin, I end);
-	static void printRawBoard(const GameBoard& board);
+	//static void printRawBoard(const GameBoard& board);
 	static std::string GetTeamNameFromFileName(const std::string& path);
 };
 
