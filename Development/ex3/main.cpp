@@ -5,7 +5,6 @@
 #endif
 
 #include "GameException.h"
-#include "GameMaker.h"
 #include <iostream>
 #include "TournamentMaker.h"
 

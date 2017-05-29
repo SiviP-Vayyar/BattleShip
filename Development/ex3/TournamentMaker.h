@@ -1,8 +1,6 @@
 ﻿#pragma once
 
 #include "AlgoData.h"
-#include "IBattleshipGameAlgo.h"
-#include "GameMaker.h"
 #include <map>
 #include "HouseEntry.h"
 
@@ -26,8 +24,9 @@ public:
 	std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds = 1);
 	std::vector<AlgoData> PlayTournamentStage(const std::vector<AlgoData>& stagePlayers, size_t bestOf = DEFAULT_BEST_OF);
 	void RunTournament(int numOfHouses = MIN_HOUSES);
-	GameResult RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard) const;
 	GameBoard GetNextBoard() {return _boardsVec[_currBoardIdx++ % _boardsVec.size()]; }
+
+	static GameResult RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard);
 	static GameBoard::BoardErrors ValidateBoard(const GameBoard& gameBoard);
 
 	bool isInitSuccess() const { return _initSuccess; }

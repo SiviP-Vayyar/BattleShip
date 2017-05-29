@@ -5,7 +5,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <sstream>
 #include "TournamentMaker.h"
 #include <iterator>
 

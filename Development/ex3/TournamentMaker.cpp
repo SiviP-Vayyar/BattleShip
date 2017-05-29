@@ -403,7 +403,7 @@ void TournamentMaker::RunTournament(int numOfHouses)
 		
 }
 
-GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard) const
+GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard)
 {
 	GameResult result(0, 0);
 	IAlgo *playerA, *playerB;

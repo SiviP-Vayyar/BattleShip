@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GameBoard.h"
-#include "GameMaker.h"
 #include "TournamentMaker.h"
 #include <windows.h>
 #include <algorithm>
