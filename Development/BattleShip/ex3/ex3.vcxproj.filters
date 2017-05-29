@@ -33,9 +33,6 @@
     <ClCompile Include="..\..\ex3\TournamentMaker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ex3\GameBoardData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\ex3\HouseEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
