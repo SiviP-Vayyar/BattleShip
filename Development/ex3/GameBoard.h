@@ -57,6 +57,7 @@ public:
 	/*Using 1-based matrix call on vector*/
 
 	char operator()(int row, int col, int depth) const { return _board[((depth - 1)*_cols + (col - 1))*_rows + (row - 1)]; } // used as getter, e.g. char piece = board(1,2,3)
+	char operator()(const Coordinate& c) const { return (*this)(c.row, c.col, c.depth); }
 	std::pair<AttackResult, char> boardAttack(const Coordinate& attackPosition);
 
 	/*Board info methods*/
