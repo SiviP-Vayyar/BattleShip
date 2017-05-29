@@ -365,16 +365,6 @@ std::tuple<int, int, int> GameBoard::GetDimentionsFromLine(const std::string& cs
 	return std::make_tuple(dims[0], dims[1], dims[2]);
 }
 
-char& GameBoard::operator()(int row, int col, int depth)
-{
-	return _board[((depth - 1)*_cols + (col - 1))*_rows + (row - 1)];
-}
-
-char GameBoard::operator()(int row, int col, int depth) const
-{
-	return _board[((depth - 1)*_cols + (col - 1))*_rows + (row - 1)];
-}
-
 //GameBoard& GameBoard::operator=(const GameBoard& other)
 //{
 //	setBoard(other._board, other._rows, other._cols, other._depth);
