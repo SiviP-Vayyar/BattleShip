@@ -1,7 +1,8 @@
 #include "GameBoardData.h"
 
-inline char GameBoardData::charAt(Coordinate c) const
+char GameBoardData::charAt(Coordinate c) const
 {
 	//TODO: implement
-	return ' ';
+	char a = 'a';
+	return a;
 }
