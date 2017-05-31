@@ -59,7 +59,7 @@ private:
 	static bool _printEnabled;
 	static int _delayMS;
 
-	static void gotoxy(const int x, const int y);
+	static void gotoxy(SHORT x, SHORT y);
 	static void hideCursor();
 	static void setTextColor(const WORD color);
 	static WORD getTextColor();

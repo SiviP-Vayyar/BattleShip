@@ -130,7 +130,7 @@ void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, 
 	std::cout << std::endl;
 }
 
-void PrintHandler::gotoxy(int x, int y)
+void PrintHandler::gotoxy(SHORT x, SHORT y)
 {
 	static HANDLE h = nullptr;
 	if (!h)
