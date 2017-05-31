@@ -54,6 +54,7 @@ public:
 	static void PrintWinner(const AlgoData& algoData);
 	static void PrintSingleGameWinner(const GameResult& result);
 	static void PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standings);
+	static void PrintHouseStandings(const std::map<std::string, HouseEntry>& standings);
 
 private:
 	static bool _printEnabled;

@@ -305,8 +305,9 @@ TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t 
 			worker.join();
 		}
 
-		// TODO: do something with the scoreboard after each round
 		// NOTICE: parallelism is currently limited for each round, no need for thread safety in score printing
+		PrintHandler::cleanOutput();
+		PrintHandler::PrintHouseStandings(matches._houseEntries);
 	}	
 
 	// Sort house entries

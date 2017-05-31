@@ -10,14 +10,22 @@ void PrintHandler::cleanOutput()
 {
 	if (!_printEnabled)
 		return;
-	delay(_delayMS);
+//	delay(_delayMS);
 
-	gotoxy(0, 0);
-	for (int i = 0; i < 20; i++)
-	{
-		std::cout << std::string(20, ' ') << std::endl;
-	}
-	gotoxy(0, 0);
+	// old way
+//	gotoxy(0, 0);
+//	for (int i = 0; i < 20; i++)
+//	{
+//		std::cout << std::string(20, ' ') << std::endl;
+//	}
+//	gotoxy(0, 0);
+
+	// evil way
+//	system("cls");
+
+	// cool way
+	std::cout << "\x1B[2J\x1B[H";
+
 }
 
 //void PrintHandler::printInitialBoard(const GameBoard& board)
@@ -128,6 +136,11 @@ void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, 
 		std::cout << place++ << ".\t" << line.first << "\t\t" << line.second.wins << "\t" << line.second.losses << "\t" << std::setprecision(4) << precentage*100  << "\t" << line.second.ptsFor << "\t" << line.second.ptsAgainst << "\t" << std::endl;
 	}
 	std::cout << std::endl;
+}
+
+void PrintHandler::PrintHouseStandings(const std::map<std::string, HouseEntry>& standings)
+{
+	PrintHouseStandings(std::vector<std::pair<std::string, HouseEntry>>(standings.begin(), standings.end()));
 }
 
 void PrintHandler::gotoxy(SHORT x, SHORT y)
