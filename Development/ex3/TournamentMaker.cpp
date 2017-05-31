@@ -6,6 +6,8 @@
 #include <map>
 #include "GameException.h"
 #include "GameBoardData.h"
+#include <thread>
+#include "MatchGenerator.h"
 
 TournamentMaker::TournamentMaker(int argc, char* argv[]) : _currBoardIdx(0)
 {
@@ -266,38 +268,49 @@ std::vector<std::vector<AlgoData>> TournamentMaker::DividePlayersToHouses(int nu
 	return houses;
 }
 
+// run all house games multithreaded and keep score
+void TournamentMaker::RunGames(MatchGenerator* matches, TournamentMaker* tMaker)
+{
+	for (auto match = matches->GetNextMatch(); matches->IsValidMatch(match.first, match.second); match = matches->GetNextMatch())
+	{
+		auto& dataA = match.first;
+		auto& dataB = match.second;
+		GameResult result = RunGame(*dataA, *dataB, tMaker->GetNextBoard());
+		matches->updateHouseEntry(dataA->name, result, PLAYER_A);
+		matches->updateHouseEntry(dataB->name, result, PLAYER_B);
+	}
+}
+
 /* Each player playes each player in the same house twice
  * 1) As player A
  * 2) As Player B
  * This way he has no advantage in starting against him
  */
-std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds)
+std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>>
+TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds)
 {
-	// Work with house entries - sorted as we decide
-	std::map<std::string, HouseEntry> houseEntries;
-	for (auto& data : house)
-	{
-		houseEntries[data.name] = HouseEntry(data);
-	}
+	// match generator handles player matching and scoring thread safe
+	MatchGenerator matches(house);
 
 	// Prelimineries - Play all house games
-	for (auto round = 0; round < playingRounds; round++)
+	for (auto round = 0; round < playingRounds; round++, matches.ResetIterators())
 	{
-		for(std::vector<AlgoData>::const_iterator dataA = house.cbegin(); dataA != house.cend(); ++dataA)
+		std::vector<std::thread> workers(_threadLimit);
+		for (int i = 0 ; i < _threadLimit ; i++)
 		{
-			for(std::vector<AlgoData>::const_iterator dataB = house.cbegin(); dataB != house.cend(); ++dataB)
-			{
-				if(dataA->name != dataB->name)
-				{
-					GameResult result = RunGame(*dataA, *dataB, GetNextBoard());
-					houseEntries[dataA->name].Update(result, PLAYER_A);
-					houseEntries[dataB->name].Update(result, PLAYER_B);
-				}
-			}
+			workers.push_back(std::thread(RunGames, &matches, this));
 		}
+		for (auto& worker : workers)
+		{
+			worker.join();
+		}
+
+		// TODO: do something with the scoreboard after each round
+		// NOTICE: parallelism is currently limited for each round, no need for thread safety in score printing
 	}	
 
 	// Sort house entries
+	auto& houseEntries = matches._houseEntries;
 	std::vector<std::pair<std::string, HouseEntry>> mapCopy(houseEntries.begin(), houseEntries.end());
 	std::sort(mapCopy.begin(), mapCopy.end(), HouseEntry::Compare());
 

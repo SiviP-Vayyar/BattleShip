@@ -36,6 +36,9 @@
     <ClCompile Include="..\..\ex3\HouseEntry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\ex3\MatchGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ex3\GameBoard.h">
@@ -69,6 +72,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ex3\GameResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ex3\MatchGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
