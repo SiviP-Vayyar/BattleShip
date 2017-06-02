@@ -187,6 +187,42 @@ Coordinate GameBoard::getShipDimensions(const std::unordered_set<Coordinate>& co
 	return Coordinate(rowMax - rowMin + 1, colMax - colMin + 1, depthMax - depthMin + 1);
 }
 
+
+/*returns a vector containing all sizes of ships on board*/
+std::vector<int> GameBoard::getShipsOnBoardSizes()
+{
+	std::vector<int> retVector = std::vector<int>();
+	std::unordered_set<Coordinate> shipsCoordsSet = std::unordered_set<Coordinate>();
+	bool skip;
+
+	for (int row = 1; row <= _rows; row++)
+	{
+		for (int col = 1; col <= _cols; col++)
+		{
+			for (int depth = 1; depth <= _depth; depth++)
+			{
+				//check if the ship has already been seen
+				for (Coordinate coord : shipsCoordsSet) {
+					skip = (coord.col == col && coord.row == row && coord.depth == depth) ? true : false;
+					if (skip)
+						break;
+				}
+				//skip this coordinate if it was already seen in a ship
+				if (skip)
+					continue;
+
+				if (isShip((*this)(row, col, depth))) 
+				{
+					getShipCoordinates(row, col, depth, shipsCoordsSet);
+					retVector.push_back(getShipLength((*this)(row, col, depth)));
+				}
+			}
+		}
+	}
+	return retVector;
+}
+
+
 /*recursively gather all coordinates of the given ship*/
 void GameBoard::getShipCoordinates(int row, int col, int depth, std::unordered_set<Coordinate>& coords) const
 {

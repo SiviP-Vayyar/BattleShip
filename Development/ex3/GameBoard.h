@@ -75,6 +75,7 @@ public:
 	/*Board validation methods*/
 	std::pair<int, std::set<char>> analyseShips(int player);
 	void ClearShipFromBoard(const std::unordered_set<Coordinate>& coords);
+	std::vector<int> getShipsOnBoardSizes();
 	Coordinate getShipDimensions(const std::unordered_set<Coordinate>& coords) const;
 	void getShipCoordinates(int row, int col, int depth, std::unordered_set<Coordinate>& coords) const;
 	std::vector<Coordinate> getAdjacentCoordinatesAsVector(int row, int col, int depth) const;
