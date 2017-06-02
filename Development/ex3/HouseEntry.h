@@ -7,8 +7,12 @@
 class HouseEntry
 {
 public:
-	HouseEntry() : wins(0), losses(0), ptsFor(0), ptsAgainst(0) {}
-	explicit HouseEntry(const AlgoData& data_) : HouseEntry() {	data = data_; }
+	HouseEntry(int _wins=0, int _losses=0, int _ptsFor=0, int _ptsAgainst=0)
+	: wins(_wins), losses(_losses), ptsFor(_ptsFor), ptsAgainst(_ptsAgainst) {}
+	explicit HouseEntry(const AlgoData& data_, int _wins=0, int _losses=0, int _ptsFor=0, int _ptsAgainst=0)
+	: HouseEntry(_wins, _losses, _ptsFor, _ptsAgainst) { data = data_; }
+	HouseEntry(const HouseEntry& other) 
+	: HouseEntry(other.data, other.wins, other.losses, other.ptsFor, other.ptsAgainst) {}
 	std::string GetTeamName() const	{ return data.name; }
 	void Update(const GameResult& result, int player);
 	

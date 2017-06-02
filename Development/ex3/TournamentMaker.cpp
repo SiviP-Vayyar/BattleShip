@@ -187,9 +187,9 @@ bool TournamentMaker::LoadAndInitAlgos()
 		if(data.handle)
 		{
 			failedLoadPlayer = false;
-			// GetAlgorithm function
-			data.GetPlayer = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(data.handle, GET_ALGORITHM_STR));
-			if(data.GetPlayer)
+			// GetAlgorithm function - assume not thread safe when loading. use only GetPlayer as thread safe wrapper.
+			data.GetPlayerUnsafe = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(data.handle, GET_ALGORITHM_STR));
+			if(data.GetPlayerUnsafe)
 			{
 				try
 				{
