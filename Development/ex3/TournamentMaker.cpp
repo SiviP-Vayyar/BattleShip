@@ -9,7 +9,7 @@
 #include <thread>
 #include "MatchGenerator.h"
 
-TournamentMaker::TournamentMaker(int argc, char* argv[]) : _currBoardIdx(0)
+TournamentMaker::TournamentMaker(int argc, char* argv[])
 {
 	// (1) Validate input & Set input arguments
 	if(!ParseInput(argc, argv))
@@ -269,13 +269,13 @@ std::vector<std::vector<AlgoData>> TournamentMaker::DividePlayersToHouses(int nu
 }
 
 // run all house games multithreaded and keep score
-void TournamentMaker::RunGames(MatchGenerator* matches, TournamentMaker* tMaker)
+void TournamentMaker::RunGames(MatchGenerator* matches)
 {
 	for (auto match = matches->GetNextMatch(); matches->IsValidMatch(match.first, match.second); match = matches->GetNextMatch())
 	{
 		auto& dataA = match.first;
 		auto& dataB = match.second;
-		GameResult result = RunGame(*dataA, *dataB, tMaker->GetNextBoard());
+		GameResult result = RunGame(*dataA, *dataB, matches->GetNextBoard());
 		matches->updateHouseEntry(dataA->name, result, PLAYER_A);
 		matches->updateHouseEntry(dataB->name, result, PLAYER_B);
 	}
@@ -290,15 +290,16 @@ std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>>
 TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds)
 {
 	// match generator handles player matching and scoring thread safe
-	MatchGenerator matches(house);
+	MatchGenerator matches(house, _boardsVec);
 
 	// Prelimineries - Play all house games
 	for (auto round = 0; round < playingRounds; round++, matches.ResetIterators())
 	{
-		std::vector<std::thread> workers(_threadLimit);
+		std::vector<std::thread> workers;
+		workers.reserve(_threadLimit);
 		for (int i = 0 ; i < _threadLimit ; i++)
 		{
-			workers.push_back(std::thread(RunGames, &matches, this));
+			workers.push_back(std::thread(RunGames, &matches));
 		}
 		for (auto& worker : workers)
 		{
@@ -329,44 +330,6 @@ TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t 
 	return std::make_tuple(firstPlace.data, std::next(mapCopy.begin())->second.data, mapCopy);
 }
 
-std::vector<AlgoData> TournamentMaker::PlayTournamentStage(const std::vector<AlgoData>& stagePlayers, size_t bestOf)
-{
-	std::vector<AlgoData> nextStagePlayers(stagePlayers.size() / 2);
-	std::vector<GameResult> resultsVec(stagePlayers.size() / 2); // Abusing game results to count "best of" winner
-
-	for(size_t matchIdx = 0; matchIdx < stagePlayers.size(); matchIdx += 2)
-	{
-		for(size_t roundIdx = 0; roundIdx < bestOf; roundIdx++)
-		{
-			auto result = RunGame(stagePlayers[matchIdx], stagePlayers[matchIdx + 1], GetNextBoard());
-			if (result.Winner() == PLAYER_A)
-			{
-				resultsVec[matchIdx / 2].scoreA++;
-			}
-			else if (result.Winner() == PLAYER_B)
-			{
-				resultsVec[matchIdx / 2].scoreB++;
-			}
-		}
-		if(resultsVec[matchIdx / 2].Winner() == PLAYER_A)
-		{
-			nextStagePlayers[matchIdx / 2] = stagePlayers[matchIdx];
-		}
-		else if(resultsVec[matchIdx / 2].Winner() == PLAYER_B)
-		{
-			nextStagePlayers[matchIdx / 2] = stagePlayers[matchIdx + 1];
-		}
-		else // In case of tie - random winner
-		{
-			nextStagePlayers[matchIdx / 2] = stagePlayers[matchIdx + rand() % 2];
-		}
-	}
-
-	PrintHandler::PrintTournametStage(resultsVec);
-
-	return nextStagePlayers;
-}
-
 void TournamentMaker::RunTournament(int numOfHouses)
 {
 	if (_algoDataVec.size() < MIN_PLAYERS)
@@ -378,6 +341,7 @@ void TournamentMaker::RunTournament(int numOfHouses)
 	std::vector<std::pair<AlgoData,AlgoData>> winnersVec;
 
 	// Divide into houses
+	numOfHouses = 1; // Originally played a preliminaries + finalts stages
 	std::vector<std::vector<AlgoData>> houses = DividePlayersToHouses(numOfHouses);
 
 	// Prelimineries
@@ -389,29 +353,10 @@ void TournamentMaker::RunTournament(int numOfHouses)
 	}
 
 	std::vector<AlgoData> topPlayersVec(winnersVec.size() * 2);
-	if (numOfHouses > 1)
-	{
-		// Top MIN_PLAYERS teams - First of house X with Second of house Y and vice versa
-		for(size_t i = 0; i < winnersVec.size(); i += 2)
-		{
-			topPlayersVec[2 * i]	 = winnersVec[i]	.first;
-			topPlayersVec[2 * i + 1] = winnersVec[i + 1].second;
-			topPlayersVec[2 * i + 2] = winnersVec[i + 1].first;
-			topPlayersVec[2 * i + 3] = winnersVec[i]	.second;
-		}
 
-		while(topPlayersVec.size() > 1)
-		{
-			topPlayersVec = PlayTournamentStage(topPlayersVec);
-		}
-	}
-	else
-	{
-		topPlayersVec[0] = winnersVec[0].first;
-		topPlayersVec[1] = winnersVec[0].second;
-	}
+	topPlayersVec[0] = winnersVec[0].first;
+	topPlayersVec[1] = winnersVec[0].second;
 	
-
 	// We Have A Winner!!!
 	PrintHandler::PrintWinner(topPlayersVec[0]);
 		

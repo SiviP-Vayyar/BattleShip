@@ -1,7 +1,7 @@
 #include "MatchGenerator.h"
 
 
-MatchGenerator::MatchGenerator(const std::vector<AlgoData>& house): _players(house)
+MatchGenerator::MatchGenerator(const std::vector<AlgoData>& house, const std::vector<GameBoard>& boardsVec): _players(house), _boardsVec(boardsVec)
 {
 	ResetIterators();
 	for (auto& data : house)
@@ -36,7 +36,7 @@ std::pair<std::vector<AlgoData>::const_iterator, std::vector<AlgoData>::const_it
 
 boolean MatchGenerator::IsValidMatch(const std::vector<AlgoData>::const_iterator& playerAiter, const std::vector<AlgoData>::const_iterator& playerBiter) const
 {
-	return playerAiter != _players.cbegin() && playerBiter != _players.cbegin();
+	return playerAiter != _players.cend() && playerBiter != _players.cend();
 }
 
 void MatchGenerator::updateHouseEntry(const std::string& name, const GameResult& result, int player)
