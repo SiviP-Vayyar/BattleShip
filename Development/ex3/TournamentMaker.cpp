@@ -53,34 +53,19 @@ bool TournamentMaker::ParseInput(int argc, char* argv[])
 {
 	std::string path = ".";
 	bool printEnabled = PRINT_ENABLED_DEFAULT;
-	int printDelay = PRINT_DELAY_DEFAULT;
 
-	if(argc > 5) // at most 5 args - name, path, -quiet, -delay + amount
+	if(argc > 3) // at most 5 args - name, path, -threads
 	{
 		//In case more that 1 argument was given - we choose to stop the program
-		throw std::exception("Program takes at most 4 arguments!");
+		throw std::exception("Program takes at most 2 arguments!");
 	}
 
 	// set path and print parameters according to argv
 	for(int i = 1; i < argc; i++)
 	{
-		if(strcmp(argv[i], "-quiet") == 0)
+		if(strcmp(argv[i], "-threads") == 0)
 		{
-			printEnabled = false;
-		}
-		else if(strcmp(argv[i], "-delay") == 0)
-		{
-			i++;
-			if(i == argc)
-			{
-				throw std::exception("Missing delay amount argument!");
-			}
-			char* endPtr;
-			printDelay = int(strtol(argv[i], &endPtr, 10));
-			if(*endPtr)
-			{
-				throw std::exception("Delay argument must be an integer!");
-			}
+			_threadLimit = std::stoi(argv[i+1]);
 		}
 		else
 		{
@@ -92,7 +77,7 @@ bool TournamentMaker::ParseInput(int argc, char* argv[])
 	if(GameUtils::isDirectory(path))
 	{
 		_inputFolder = path;
-		PrintHandler::init(printEnabled, printDelay);
+		PrintHandler::init(printEnabled);
 		return true;
 	}
 

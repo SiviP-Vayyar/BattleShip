@@ -12,7 +12,7 @@
 #define MIN_HOUSES (MIN_PLAYERS/2)
 #define DEFAULT_BEST_OF 3
 #define PLAYING_ROUNDS 25
-#define DEFAULT_THREAD_LIMIT 8
+#define DEFAULT_THREAD_LIMIT 4
 
 class TournamentMaker
 {

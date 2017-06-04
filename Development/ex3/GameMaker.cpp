@@ -38,8 +38,6 @@ GameResult GameMaker::RunGame()
 	// game loop
 	while (remainingShipsA > 0 && remainingShipsB > 0 && (movesRemainingA || movesRemainingB))
 	{
-		PrintHandler::delay();
-
 		// get attack from player and play it on the board
 		__try
 		{
