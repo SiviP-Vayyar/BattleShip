@@ -3,6 +3,11 @@
 #include <vector>
 #include "GameBoard.h"
 
+/*Player Macros*/
+#define PLAYER_NOT_YET_KNOWN	-1
+#define PLAYER_A				0
+#define PLAYER_B				1
+
 class GameUtils
 {
 public:

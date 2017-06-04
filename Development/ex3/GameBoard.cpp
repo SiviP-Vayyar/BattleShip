@@ -190,12 +190,12 @@ Coordinate GameBoard::getShipDimensions(const std::unordered_set<Coordinate>& co
 
 	for (auto pos : coords)
 	{
-		rowMin = min(rowMin, pos.row);
-		colMin = min(colMin, pos.col);
-		depthMin = min(depthMin, pos.depth);
-		rowMax = max(rowMax, pos.row);
-		colMax = max(colMax, pos.col);
-		depthMax = max(depthMax, pos.depth);
+		rowMin = std::min(rowMin, pos.row);
+		colMin = std::min(colMin, pos.col);
+		depthMin = std::min(depthMin, pos.depth);
+		rowMax = std::max(rowMax, pos.row);
+		colMax = std::max(colMax, pos.col);
+		depthMax = std::max(depthMax, pos.depth);
 	}
 
 	return Coordinate(rowMax - rowMin + 1, colMax - colMin + 1, depthMax - depthMin + 1);
