@@ -15,6 +15,7 @@ const int GameBoard::_shipScores[] = {RUBBER_SCORE, MISSILE_SCORE, SUB_SCORE, DE
 GameBoard::GameBoard(const std::string& path) : GameBoard()
 {
 	GameBoard& thisBoard = *this;
+	_boardName = path;
 
 	//start reading from file
 	std::ifstream inputFileStream(path);

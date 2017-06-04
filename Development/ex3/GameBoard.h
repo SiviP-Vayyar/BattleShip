@@ -104,6 +104,7 @@ private:
 	int _cols;
 	int _depth;
 	bool _isSet;
+	std::string _boardName = "";
 
 	static const int _numShipTypes = 4;
 	static const char _shipTypes[];
@@ -113,5 +114,5 @@ private:
 
 	void setBoard(const cube& board, int rows, int cols, int depth);
 	int numel() const { return _rows * _cols * _depth; }
-	char& operator()(int row, int col, int depth) { return _board[((depth - 1)*_cols + (col - 1))*_rows + (row - 1)]; } // used as setter, e.g. board(1,2) = 'M'
+	char& operator()(int row, int col, int depth) { return _board[((depth - 1)*_cols + (col - 1))*_rows + (row - 1)]; } // used as setter, e.g. board(1,2,3) = 'M'
 };
