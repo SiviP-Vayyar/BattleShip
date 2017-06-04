@@ -124,7 +124,7 @@ bool TournamentMaker::SetAndValidateBoardsAndAlgos()
 			}
 			else if(GameUtils::endsWith(fileName, ".dll"))
 			{
-				misAlgo = (++algoCnt) >= 2;
+				misAlgo = (++algoCnt) < 2;
 				_dllNamesVec.push_back(fullFileName);
 			}
 		} while(FindNextFileA(dir, &fileData));
