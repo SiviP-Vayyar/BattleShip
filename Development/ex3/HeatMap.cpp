@@ -58,7 +58,7 @@ void HeatMap::updateHeatMap()
 /*return a vector of Coordinates sets - with each set holding coordinates of a ship that intercects with the given coordinate
 *@Post: the sets returned might hold invalid cordinates (i.e. coordinates out of board limits and cordinates of non empty cells on the board)
 */
-std::vector<std::unordered_set<Coordinate>> HeatMap::getUnCheckedCoordsSetListForCoord(Coordinate coord)
+std::vector<std::unordered_set<Coordinate>> HeatMap::getUnCheckedCoordsSetListForCoord(Coordinate coord) const
 {
 	std::vector<std::unordered_set<Coordinate>> retVector = std::vector<std::unordered_set<Coordinate>>();
 	for (int shipSize : _shipsLengthsVector)
@@ -106,7 +106,7 @@ std::vector<std::unordered_set<Coordinate>> HeatMap::getUnCheckedCoordsSetListFo
 
 
 /*returns the amount of possibilities to locate a ship on the given coordinate on the opponent board*/
-int HeatMap::countPossibleShipsForCoordinate(Coordinate coord) 
+int HeatMap::countPossibleShipsForCoordinate(Coordinate coord) const
 {
 	int possibleShipCount = 0;
 	std::vector<std::unordered_set<Coordinate>> unCheckedShipsCoordsSetList = getUnCheckedCoordsSetListForCoord(coord);

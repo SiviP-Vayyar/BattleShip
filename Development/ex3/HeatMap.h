@@ -10,14 +10,14 @@ public:
 	HeatMap(GameBoard myBoard, GameBoard opponentBoard);
 	~HeatMap() = default;	
 
-	/* When I want to make a move on opponent's board*/
-	Coordinate hottestCoordinate();
 	
+	Coordinate hottestCoordinate();
+	int countPossibleShipsForCoordinate(Coordinate coord) const;
 
 private:
-	int countPossibleShipsForCoordinate(Coordinate coord);
 	void updateHeatMap();
-	std::vector<std::unordered_set<Coordinate>> getUnCheckedCoordsSetListForCoord(Coordinate coord);
+	std::vector<std::unordered_set<Coordinate>> getUnCheckedCoordsSetListForCoord(Coordinate coord) const;
+
 
 	int& operator()(int row, int col, int depth) { return _heatMap[((depth - 1)*_cols + (col - 1))*_rows + (row - 1)]; } // used as getter, e.g. char piece = board(1,2,3)
 	int& operator()(const Coordinate& c) { return (*this)(c.row, c.col, c.depth); }
