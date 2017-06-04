@@ -47,7 +47,7 @@ public:
 	GameBoard() : _rows(0), _cols(0), _depth(0), _isSet(false) {}
 	explicit GameBoard(const std::string& path); //c'tor from file
 	explicit GameBoard(const cube& board, int rows, int cols, int depth) : GameBoard() { setBoard(board, rows, cols, depth); }
-	
+	explicit GameBoard(const BoardData& boardData);
 	//GameBoard(const GameBoard& other) : GameBoard(other._board, other._rows, other._cols, other._depth) {} // copy c'tor
 	//GameBoard(GameBoard&& other) noexcept : _board(std::move(other._board)), _rows(other._rows), _cols(other._cols), _depth(other._depth), _isSet(other._isSet) {} // move c'tor
 	//GameBoard& operator=(const GameBoard& other); // copy assignment

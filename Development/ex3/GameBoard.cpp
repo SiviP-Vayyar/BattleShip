@@ -5,8 +5,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "TournamentMaker.h"
 #include <iterator>
+#include <tuple>
 
 const char GameBoard::_shipTypes[] = {RUBBER, MISSILE, SUB, DESTROYER};
 const int GameBoard::_shipLengths[] = {RUBBER_LEN, MISSILE_LEN, SUB_LEN, DESTROYER_LEN};
@@ -44,6 +44,19 @@ GameBoard::GameBoard(const std::string& path) : GameBoard()
 	inputFileStream.close();
 }
 
+GameBoard::GameBoard(const BoardData& boardData) : _rows(boardData.rows()), _cols(boardData.cols()), _depth(boardData.depth()), _isSet(true)
+{
+	for(int depth = 1; depth <= _depth; depth++)
+	{
+		for(int col = 1; col <= _cols; col++)
+		{
+			for(int row = 1; row <= _rows; row++)
+			{
+				_board.push_back(boardData.charAt(Coordinate(row, col, depth)));
+			}
+		}
+	}
+}
 
 cube GameBoard::newEmptyRawBoard(int rows, int cols, int depth)
 {
