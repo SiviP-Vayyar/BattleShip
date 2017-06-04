@@ -102,7 +102,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;EX3SMART_EXPORTS;_DEBUG;_WINDOWS;_USRDLL;EX3SMART_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;EX3SMART_EXPORTS;_DEBUG;_WINDOWS;_USRDLL;EX3SMART_EXPORTS;%(PreprocessorDefinitions);ALGO_EXPORTS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,7 +136,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;EX3SMART_EXPORTS;NDEBUG;_WINDOWS;_USRDLL;EX3SMART_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;EX3SMART_EXPORTS;NDEBUG;_WINDOWS;_USRDLL;EX3SMART_EXPORTS;%(PreprocessorDefinitions);ALGO_EXPORTS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -146,13 +146,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\ex3\GameBoard.cpp" />
-    <ClCompile Include="..\..\ex3\HeatMap.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\ex3\GameBoard.h" />
     <ClInclude Include="..\..\ex3\HeatMap.h" />
     <ClInclude Include="..\..\ex3\IBattleshipGameAlgo.h" />
+    <ClInclude Include="..\..\ex3\PlayerBase.h" />
+    <ClInclude Include="..\..\ex3\PlayerSmart.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\ex3\GameBoard.cpp" />
+    <ClCompile Include="..\..\ex3\HeatMap.cpp" />
+    <ClCompile Include="..\..\ex3\PlayerBase.cpp" />
+    <ClCompile Include="..\..\ex3\PlayerSmart.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
