@@ -29,5 +29,6 @@ struct AlgoData
 		handle = other.handle;
 		GetPlayerUnsafe = other.GetPlayerUnsafe;
 		return *this;
+		// TODO: mutex is not copied - consider a static mutex vector and pass refrences for copies
 	}
 };
