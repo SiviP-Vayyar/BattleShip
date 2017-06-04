@@ -86,8 +86,9 @@ bool TournamentMaker::ParseInput(int argc, char* argv[])
 
 bool TournamentMaker::SetAndValidateBoardsAndAlgos()
 {
-	bool misGoodBoard, misAlgo;
-	misGoodBoard = misAlgo = true;
+	bool misGoodBoard, misAlgo, misBoards;
+	misGoodBoard = misAlgo = misBoards = true;
+	size_t algoCnt = 0;
 	
 	HANDLE dir;
 	WIN32_FIND_DATAA fileData;
@@ -107,6 +108,7 @@ bool TournamentMaker::SetAndValidateBoardsAndAlgos()
 
 			if(GameUtils::endsWith(fileName, ".sboard"))
 			{
+				misBoards = false;
 				_boardFilePath = fullFileName;
 				GameBoard newBoard(fullFileName);
 				auto errors = ValidateBoard(newBoard);
@@ -122,7 +124,7 @@ bool TournamentMaker::SetAndValidateBoardsAndAlgos()
 			}
 			else if(GameUtils::endsWith(fileName, ".dll"))
 			{
-				misAlgo = false;
+				misAlgo = (++algoCnt) >= 2;
 				_dllNamesVec.push_back(fullFileName);
 			}
 		} while(FindNextFileA(dir, &fileData));
@@ -130,15 +132,19 @@ bool TournamentMaker::SetAndValidateBoardsAndAlgos()
 	FindClose(dir);
 
 	/*Validate input by an exact order*/
-	if(misGoodBoard || misAlgo)
+	if(misGoodBoard || misAlgo || misBoards)
 	{
-		if(misGoodBoard)
+		if(misBoards)
 		{
-			std::cout << "Missing good board file (*.sboard) looking in path: " << _inputFolder.c_str() << std::endl;
+			std::cout << "No board files (*.sboard) looking in path: " << _inputFolder.c_str() << std::endl;
 		}
 		if(misAlgo)
 		{
-			std::cout << "Missing an algorithm (dll) file looking in path: " << _inputFolder.c_str() << std::endl;
+			std::cout << "Missing algorithm (dll) files looking in path: " << _inputFolder.c_str() << std::endl;
+		}
+		if(misGoodBoard)
+		{
+			std::cout << "Missing good board file (*.sboard) looking in path: " << _inputFolder.c_str() << " (needs at least two)" << std::endl;
 		}
 		return false;
 	}
