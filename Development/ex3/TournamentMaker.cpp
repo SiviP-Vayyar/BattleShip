@@ -279,7 +279,7 @@ void TournamentMaker::RunGames(MatchGenerator* matches)
  * This way he has no advantage in starting against him
  */
 std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>>
-TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds)
+TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds) const
 {
 	// match generator handles player matching and scoring thread safe
 	MatchGenerator matches(house, _boardsVec);

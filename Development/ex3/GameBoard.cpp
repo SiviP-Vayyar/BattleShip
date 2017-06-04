@@ -207,7 +207,7 @@ std::vector<int> GameBoard::getShipsOnBoardSizes()
 {
 	std::vector<int> retVector = std::vector<int>();
 	std::unordered_set<Coordinate> shipsCoordsSet = std::unordered_set<Coordinate>();
-	bool skip;
+	bool skip = false;
 
 	for (int row = 1; row <= _rows; row++)
 	{

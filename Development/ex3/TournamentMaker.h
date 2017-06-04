@@ -23,7 +23,7 @@ public:
 	TournamentMaker(const TournamentMaker&) = delete;
 	TournamentMaker& operator= (const TournamentMaker&) = delete;
 	std::vector<std::vector<AlgoData>> DividePlayersToHouses(int numOfHouses = 1);
-	std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds = 1);
+	std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds = 1) const;
 	void RunTournament();
 
 	static void RunGames(MatchGenerator* matches);
