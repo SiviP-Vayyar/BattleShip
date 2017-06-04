@@ -8,6 +8,7 @@
 #include "GameBoardData.h"
 #include <thread>
 #include "MatchGenerator.h"
+#include <algorithm>
 
 TournamentMaker::TournamentMaker(int argc, char* argv[])
 {
