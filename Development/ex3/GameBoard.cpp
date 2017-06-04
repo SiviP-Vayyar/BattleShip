@@ -297,7 +297,7 @@ std::pair<int, std::set<char>> GameBoard::analyseShips(int player)
 				bool cWiseShip = r1Dim && d1Dim;
 				bool dWiseShip = r1Dim && c1Dim;
 
-				if((size != dim.row * dim.col * dim.depth) || (rWiseShip || cWiseShip || dWiseShip))
+				if((size != dim.row * dim.col * dim.depth) || !(rWiseShip || cWiseShip || dWiseShip))
 				{
 					illegalShips.insert(piece);
 				}
@@ -323,7 +323,7 @@ bool GameBoard::isAdjacent() const
 	{
 		for (int col = 1; col <= _cols; col++)
 		{
-			for(int depth = 1; col <= _depth; depth++)
+			for(int depth = 1; depth <= _depth; depth++)
 			{
 				char center = thisBoard(row, col, depth);
 				if(!isShip(center))
@@ -405,10 +405,10 @@ std::tuple<int, int, int> GameBoard::GetDimentionsFromLine(const std::string& cs
 		dims.push_back(stoi(token));
 		s.erase(0, pos + delimiter.length());
 	}
-
+	dims.push_back(stoi(s));
 	if(dims.size() < 3)
 	{
-		//TODO: not enough dims - do something
+		throw std::runtime_error("Dimentions line with less than 3 sizes");
 	}
 
 	return std::make_tuple(dims[0], dims[1], dims[2]);
