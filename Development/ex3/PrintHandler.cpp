@@ -3,16 +3,10 @@
 #include <iostream>
 #include <iomanip>
 
-bool PrintHandler::_printEnabled;
-
 void PrintHandler::cleanOutput()
 {
-	if (!_printEnabled)
-		return;
-
 	// cool way
 	std::cout << "\x1B[2J\x1B[H";
-
 }
 
 void PrintHandler::PrintWinner(const AlgoData& algoData)
@@ -22,23 +16,6 @@ void PrintHandler::PrintWinner(const AlgoData& algoData)
 	std::cout << "###########################################" << std::endl;
 	std::cout << "####    Winner Is: " << algoData.name << " #####" << std::endl;
 	std::cout << "###########################################" << std::endl;
-}
-
-void PrintHandler::PrintSingleGameWinner(const GameResult& result)
-{
-	if(!_printEnabled) // TODO: not necesarrily how we want to print!
-		return;
-	// print end game results
-	cleanOutput();
-	int winner = result.Winner();
-	if (winner == PLAYER_A || winner == PLAYER_B)
-	{
-		std::cout << "Player " << (winner == PLAYER_B ? 'B' : 'A') << " won" << std::endl;
-	}
-	
-	std::cout << "Points:" << std::endl;
-	std::cout << "Player A: " << result.scoreA << std::endl;
-	std::cout << "Player B: " << result.scoreB << std::endl;
 }
 
 void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standings)
@@ -69,29 +46,10 @@ void PrintHandler::gotoxy(SHORT x, SHORT y)
 
 void PrintHandler::hideCursor()
 {
-	if (!_printEnabled)
-		return;
-
 	HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO cursorInfo;
 
 	GetConsoleCursorInfo(out, &cursorInfo);
 	cursorInfo.bVisible = false; // set the cursor visibility
 	SetConsoleCursorInfo(out, &cursorInfo);
-}
-
-void PrintHandler::setTextColor(const WORD color)
-{
-	HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	SetConsoleTextAttribute(hstdout, color);
-}
-
-WORD PrintHandler::getTextColor()
-{
-	HANDLE hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-
-	GetConsoleScreenBufferInfo(hstdout, &csbi);
-	return csbi.wAttributes;
 }

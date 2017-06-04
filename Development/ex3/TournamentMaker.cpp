@@ -53,9 +53,8 @@ TournamentMaker::~TournamentMaker()
 bool TournamentMaker::ParseInput(int argc, char* argv[])
 {
 	std::string path = ".";
-	bool printEnabled = PRINT_ENABLED_DEFAULT;
 
-	if(argc > 3) // at most 5 args - name, path, -threads
+	if(argc > 3) // at most 3 args - name, path, -threads
 	{
 		//In case more that 1 argument was given - we choose to stop the program
 		throw std::exception("Program takes at most 2 arguments!");
@@ -78,7 +77,6 @@ bool TournamentMaker::ParseInput(int argc, char* argv[])
 	if(GameUtils::isDirectory(path))
 	{
 		_inputFolder = path;
-		PrintHandler::init(printEnabled);
 		return true;
 	}
 
@@ -337,6 +335,7 @@ void TournamentMaker::RunTournament(int numOfHouses)
 	{
 		auto winners = GetWinnersFromHouse(house, PLAYING_ROUNDS);
 		winnersVec.push_back(std::make_pair(std::get<0>(winners), std::get<1>(winners)));
+		PrintHandler::cleanOutput();
 		PrintHandler::PrintHouseStandings(std::get<2>(winners));
 	}
 

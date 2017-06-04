@@ -114,7 +114,6 @@ GameResult GameMaker::RunGame()
 	}
 
 	GameResult result(scorePlayerA, scorePlayerB);
-	PrintHandler::PrintSingleGameWinner(result);
 	return result;
 }
 
