@@ -9,7 +9,6 @@
 
 #define GET_ALGORITHM_STR "GetAlgorithm"
 #define MIN_PLAYERS 2
-#define MIN_HOUSES (MIN_PLAYERS/2)
 #define DEFAULT_BEST_OF 3
 #define PLAYING_ROUNDS 25
 #define DEFAULT_THREAD_LIMIT 4
@@ -23,9 +22,9 @@ public:
 
 	TournamentMaker(const TournamentMaker&) = delete;
 	TournamentMaker& operator= (const TournamentMaker&) = delete;
-	std::vector<std::vector<AlgoData>> DividePlayersToHouses(int numOfHouses = MIN_HOUSES);
+	std::vector<std::vector<AlgoData>> DividePlayersToHouses(int numOfHouses = 1);
 	std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds = 1);
-	void RunTournament(int numOfHouses = MIN_HOUSES);
+	void RunTournament();
 
 	static void RunGames(MatchGenerator* matches);
 	static GameResult RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard);

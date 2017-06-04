@@ -25,9 +25,7 @@ int main(int argc, char* argv[])
 		{
 			return -1;
 		}
-		int numOfHouses = 1; // All in one house
-		//int numOfHouses = MIN_HOUSES; // Tournament
-		tMaker.RunTournament(numOfHouses);
+		tMaker.RunTournament();
 	}
 	catch (GameException ex)
 	{

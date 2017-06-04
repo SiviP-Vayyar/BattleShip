@@ -317,37 +317,24 @@ TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t 
 	return std::make_tuple(firstPlace.data, std::next(mapCopy.begin())->second.data, mapCopy);
 }
 
-void TournamentMaker::RunTournament(int numOfHouses)
+void TournamentMaker::RunTournament()
 {
 	if (_algoDataVec.size() < MIN_PLAYERS)
 	{
-		std::cout << "Not enough players for the preliminaries: " << _algoDataVec.size() << " Players" << std::endl;
-		throw GameException("");
+		std::string err("Not enough good players for the preliminaries: " + std::to_string(_algoDataVec.size()) + " Players");
+		throw std::runtime_error(err);
 	}
 
-	std::vector<std::pair<AlgoData,AlgoData>> winnersVec;
-
 	// Divide into houses
-	numOfHouses = 1; // Originally played a preliminaries + finalts stages
-	std::vector<std::vector<AlgoData>> houses = DividePlayersToHouses(numOfHouses);
+	std::vector<std::vector<AlgoData>> houses = DividePlayersToHouses();
 
 	// Prelimineries
 	for (auto& house : houses)
 	{
 		auto winners = GetWinnersFromHouse(house, PLAYING_ROUNDS);
-		winnersVec.push_back(std::make_pair(std::get<0>(winners), std::get<1>(winners)));
 		PrintHandler::cleanOutput();
 		PrintHandler::PrintHouseStandings(std::get<2>(winners));
-	}
-
-	std::vector<AlgoData> topPlayersVec(winnersVec.size() * 2);
-
-	topPlayersVec[0] = winnersVec[0].first;
-	topPlayersVec[1] = winnersVec[0].second;
-	
-	// We Have A Winner!!!
-	PrintHandler::PrintWinner(topPlayersVec[0]);
-		
+	}	
 }
 
 GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard)
