@@ -186,7 +186,9 @@ bool TournamentMaker::LoadAndInitAlgos()
 					// Set boards for player - Sanity Check
 					GameBoardData boardData(PLAYER_A, dummyBoard);
 					player->setBoard(boardData);
+					player->setPlayer(PLAYER_A);
 					delete player;
+					failedInitPlayer = false;
 				}
 				catch(std::exception ex)
 				{
