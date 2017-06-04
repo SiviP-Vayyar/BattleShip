@@ -481,3 +481,29 @@ int GameBoard::GetMaxScore(int player) const
 	}
 	return score;
 }
+
+
+/*returns a vector of all diagonal Coordinates (does not include diagonal Coordinates)*/
+std::vector<Coordinate> GameBoard::getDiagonalCoordinatesAsVector(Coordinate coord) const
+{
+	std::vector<Coordinate> diagonalCoordinates;
+	auto increments = {
+		Coordinate(1, 1, 0), Coordinate(1, 1, -1), Coordinate(1, 1, 1),
+		Coordinate(-1, 1, 0), Coordinate(-1, 1, -1), Coordinate(-1, 1, 1),
+		Coordinate(-1, -1, 0), Coordinate(-1, -1, -1), Coordinate(-1, -1, 1),
+		Coordinate(1, -1, 0), Coordinate(1, -1, -1), Coordinate(1, -1, 1),
+		Coordinate(-1, 0, 1), Coordinate(-1, 0, -1),
+		Coordinate(1, 0, 1), Coordinate(1, 0, -1),
+		Coordinate(0, 1, 1), Coordinate(0, 1, -1),
+		Coordinate(0, -1, 1), Coordinate(0, -1, -1)
+	};
+	for (auto inc : increments)
+	{
+		Coordinate tempCoord = Coordinate(coord.row + inc.row, coord.col = inc.col, coord.depth + inc.depth);
+		if (isInBoard(tempCoord))
+		{
+			diagonalCoordinates.push_back(tempCoord);
+		}
+	}
+	return diagonalCoordinates;
+}

@@ -44,6 +44,7 @@ class GameBoard
 {
 public:
 	friend class PlayerBase;
+	friend class PlayerSmart;
 	GameBoard() : _rows(0), _cols(0), _depth(0), _isSet(false) {}
 	explicit GameBoard(const std::string& path); //c'tor from file
 	explicit GameBoard(const cube& board, int rows, int cols, int depth) : GameBoard() { setBoard(board, rows, cols, depth); }
@@ -79,6 +80,7 @@ public:
 	Coordinate getShipDimensions(const std::unordered_set<Coordinate>& coords) const;
 	void getShipCoordinates(int row, int col, int depth, std::unordered_set<Coordinate>& coords) const;
 	std::vector<Coordinate> getAdjacentCoordinatesAsVector(int row, int col, int depth) const;
+	std::vector<Coordinate> getDiagonalCoordinatesAsVector(Coordinate coord) const;
 	int GetMaxScore(int player) const;
 
 	/*Board static methods*/
@@ -106,6 +108,7 @@ private:
 	bool _isSet;
 	std::string _boardName = "";
 
+
 	static const int _numShipTypes = 4;
 	static const char _shipTypes[];
 	static const int _shipLengths[];
@@ -115,4 +118,5 @@ private:
 	void setBoard(const cube& board, int rows, int cols, int depth);
 	int numel() const { return _rows * _cols * _depth; }
 	char& operator()(int row, int col, int depth) { return _board[((depth - 1)*_cols + (col - 1))*_rows + (row - 1)]; } // used as setter, e.g. board(1,2,3) = 'M'
+	char& operator()(const Coordinate& coord) { return _board[((coord.depth - 1)*_cols + (coord.col - 1))*_rows + (coord.row - 1)]; } // used as setter, e.g.board(coord) = 'M'
 };
