@@ -8,8 +8,6 @@ class PrintHandler
 {
 public:
 	static void cleanOutput();
-
-	static void PrintWinner(const AlgoData& algoData);
 	static void PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standings);
 	static void PrintHouseStandings(const std::map<std::string, HouseEntry>& standings);
 

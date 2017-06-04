@@ -9,15 +9,6 @@ void PrintHandler::cleanOutput()
 	system("cls");
 }
 
-void PrintHandler::PrintWinner(const AlgoData& algoData)
-{
-	//TODO: implement print
-	std::cout << std::endl;
-	std::cout << "###########################################" << std::endl;
-	std::cout << "####    Winner Is: " << algoData.name << " #####" << std::endl;
-	std::cout << "###########################################" << std::endl;
-}
-
 void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standings)
 {
 	std::cout << "#\tTeam Name\t\tWins\tLosses\t%\tPts For\tPts Against" << std::endl << std::endl; //TODO: use iomanip
