@@ -43,7 +43,7 @@ void PrintHandler::PrintSingleGameWinner(const GameResult& result)
 
 void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standings)
 {
-	std::cout << "#\tTeam Name\t\tWins\tLosses\t%\tPts For\tPts Against" << std::endl << std::endl;
+	std::cout << "#\tTeam Name\t\tWins\tLosses\t%\tPts For\tPts Against" << std::endl << std::endl; //TODO: use iomanip
 	size_t place = 1;
 	for (auto& line : standings)
 	{

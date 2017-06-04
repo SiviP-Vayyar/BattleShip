@@ -3,7 +3,6 @@
 #include "GameBoard.h"
 #include "TournamentMaker.h"
 #include <windows.h>
-#include <algorithm>
 
 #define PRINT_ENABLED_DEFAULT	true
 
