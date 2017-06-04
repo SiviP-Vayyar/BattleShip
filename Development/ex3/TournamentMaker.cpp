@@ -295,6 +295,7 @@ TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t 
 		// NOTICE: parallelism is currently limited for each round, no need for thread safety in score printing
 		PrintHandler::cleanOutput();
 		PrintHandler::PrintHouseStandings(matches._houseEntries);
+		Sleep(HOUSE_PRINT_INTERVAL);
 	}	
 
 	// Sort house entries

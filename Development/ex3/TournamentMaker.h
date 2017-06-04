@@ -13,6 +13,7 @@
 #define DEFAULT_BEST_OF 3
 #define PLAYING_ROUNDS 25
 #define DEFAULT_THREAD_LIMIT 4
+#define HOUSE_PRINT_INTERVAL 1000
 
 class TournamentMaker
 {

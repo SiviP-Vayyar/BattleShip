@@ -5,8 +5,8 @@
 
 void PrintHandler::cleanOutput()
 {
-	// cool way
-	std::cout << "\x1B[2J\x1B[H";
+	// evil way
+	system("cls");
 }
 
 void PrintHandler::PrintWinner(const AlgoData& algoData)
