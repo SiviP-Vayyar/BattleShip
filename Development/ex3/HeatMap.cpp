@@ -1,12 +1,12 @@
 #include "HeatMap.h"
 
-HeatMap::HeatMap(GameBoard myBoard, GameBoard opponentBoard) :_myBoard(myBoard), _opponentBoard(opponentBoard) 
+HeatMap::HeatMap(GameBoard myBoard, GameBoard opponentBoard, std::vector<int> shipsLengthsVector) :_myBoard(myBoard), _opponentBoard(opponentBoard)
 {
 	_rows = myBoard.rows();
 	_cols = myBoard.cols();
 	_depth = myBoard.depth();
 	_heatMap = heatCube(_rows * _cols * _depth, -1);
-	_shipsLengthsVector = myBoard.getShipsOnBoardSizes();
+	_shipsLengthsVector = shipsLengthsVector;
 }
 
 /*returns the coordinate with the highest possible ships positioning options

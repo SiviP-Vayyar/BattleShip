@@ -7,7 +7,7 @@ typedef std::vector<int> heatCube;
 class HeatMap
 {
 public:
-	HeatMap(GameBoard myBoard, GameBoard opponentBoard);
+	HeatMap(GameBoard myBoard, GameBoard opponentBoard, std::vector<int> shipsLengthsVector);
 	~HeatMap() = default;	
 
 	

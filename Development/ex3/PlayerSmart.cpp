@@ -23,7 +23,10 @@ void  PlayerSmart::notifyOnAttackResult(int player, Coordinate coord, AttackResu
 		case AttackResult::Sink:
 		{
 			_state = AttackState::Seeking;
+			int shipSize = _lastHitCoords.size() + 1;
 			_lastHitCoords.empty();
+			auto elemToRemove = std::find(_shipsLengthsVector.begin(), _shipsLengthsVector.end(), shipSize);
+			_shipsLengthsVector.erase(elemToRemove);
 			break;
 		}
 		default:
@@ -39,6 +42,7 @@ void PlayerSmart::setBoard(const BoardData& board) {
 	PlayerBase::setBoard(board);
 	_lastHitCoords.empty();
 	_state = AttackState::Seeking;
+	_shipsLengthsVector = _myBoard.getShipsOnBoardSizes();
 }
 
 
@@ -53,7 +57,7 @@ Coordinate PlayerSmart::attack()
 	{
 	case AttackState::Seeking:
 	{
-		HeatMap heatmap = HeatMap(_myBoard, _opponentBoard);
+		HeatMap heatmap = HeatMap(_myBoard, _opponentBoard, _shipsLengthsVector);
 		retCoord = heatmap.hottestCoordinate();
 		break;
 	}
@@ -83,7 +87,7 @@ Coordinate PlayerSmart::getNextCoordAfterHit()
 		}
 	}
 
-	HeatMap heatmap = HeatMap(_myBoard, _opponentBoard);
+	HeatMap heatmap = HeatMap(_myBoard, _opponentBoard, _shipsLengthsVector);
 	Coordinate retCoord = ATTACK_END;
 	int maxHeat = 0;
 	for (auto possibleCoord : possibleCoords)

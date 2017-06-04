@@ -6,6 +6,7 @@
 #include "GameUtils.h"
 #include "HeatMap.h"
 #include <vector>
+#include <algorithm>  
 
 
 enum class AttackState
@@ -31,6 +32,7 @@ public:
 
 protected:
 	std::vector<Coordinate> _lastHitCoords;
+	std::vector<int> _shipsLengthsVector;
 	AttackState _state;
 
 	Coordinate getNextCoordAfterHit();
