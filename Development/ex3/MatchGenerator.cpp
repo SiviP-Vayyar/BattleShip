@@ -19,7 +19,7 @@ std::pair<std::vector<AlgoData>::const_iterator, std::vector<AlgoData>::const_it
 	{
 		++_playerAiter;
 	}
-	else
+	if (_playerAiter == _players.cend())
 	{
 		if (_playerBiter != _players.cend())
 		{
