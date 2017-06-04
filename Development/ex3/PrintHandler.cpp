@@ -10,16 +10,6 @@ void PrintHandler::cleanOutput()
 	system("cls");
 }
 
-void PrintHandler::PrintWinner(const AlgoData& algoData)
-{
-	auto winnerLine = "####    Winner Is : " + algoData.name + "    ####";
-
-	std::cout << std::endl;
-	std::cout << std::setfill('#') << std::setw(winnerLine.size()) << '#' << std::endl;
-	std::cout << winnerLine << std::endl;
-	std::cout << std::setfill('#') << std::setw(winnerLine.size()) << '#' << std::endl;
-}
-
 void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standings)
 {
 	size_t countWidth = standings.size() + 2;
