@@ -22,7 +22,7 @@ GameBoard::GameBoard(const std::string& path) : GameBoard()
 	std::string line;
 
 	std::getline(inputFileStream, line); // read dimentions
-	std::tie(_rows, _cols, _depth) = GetDimentionsFromLine(line);
+	std::tie(_cols, _rows, _depth) = GetDimentionsFromLine(line);
 
 	_board = std::move(newEmptyRawBoard(_rows, _cols, _depth));
 
