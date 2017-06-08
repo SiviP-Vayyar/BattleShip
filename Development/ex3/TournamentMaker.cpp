@@ -358,6 +358,7 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 		playerA = playerAData.GetPlayer();
 		GameBoardData boardData(PLAYER_A, gameBoard);
 		playerA->setBoard(boardData);
+		playerA->setPlayer(PLAYER_A);
 	}
 	catch(...)
 	{
@@ -369,6 +370,7 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 		playerB = playerBData.GetPlayer();
 		GameBoardData boardData(PLAYER_B, gameBoard);
 		playerB->setBoard(boardData);
+		playerB->setPlayer(PLAYER_B);
 	}
 	catch(...)
 	{
