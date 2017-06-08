@@ -42,6 +42,11 @@
     <ClInclude Include="..\..\ex3\PrintHandler.h" />
     <ClInclude Include="..\..\ex3\TournamentMaker.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ex3.smart\ex3.smart.vcxproj">
+      <Project>{9b7f2f5b-725b-4b9d-84fb-d31108370f62}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F9DB9E8A-B407-41DD-8341-0F795275760A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
