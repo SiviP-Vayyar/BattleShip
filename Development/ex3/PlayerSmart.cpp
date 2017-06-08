@@ -24,7 +24,7 @@ void  PlayerSmart::notifyOnAttackResult(int player, Coordinate coord, AttackResu
 		{
 			_state = AttackState::Seeking;
 			int shipSize = _lastHitCoords.size() + 1;
-			_lastHitCoords.empty();
+			_lastHitCoords.clear();
 			auto elemToRemove = std::find(_shipsLengthsVector.begin(), _shipsLengthsVector.end(), shipSize);
 			_shipsLengthsVector.erase(elemToRemove);
 			break;
