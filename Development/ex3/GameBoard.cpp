@@ -180,7 +180,7 @@ bool GameBoard::isShipSunk(int row, int col, int depth)
  *least one the will catch an illegal ship 
  * Abuse of Coordinate to send back 3D dims
  */
-Coordinate GameBoard::getShipDimensions(const std::unordered_set<Coordinate>& coords) const //TODO: implelemnt
+Coordinate GameBoard::getShipDimensions(const std::unordered_set<Coordinate>& coords) const
 {
 	int rowMin, rowMax, colMin, colMax, depthMin, depthMax;
 	rowMin = _rows + 1;
