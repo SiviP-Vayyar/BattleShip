@@ -9,12 +9,11 @@
 class MatchGenerator
 {
 public:
-	explicit MatchGenerator(const std::vector<AlgoData>& house, const std::vector<GameBoard>& boardsVec);
+	explicit MatchGenerator(const std::vector<AlgoData>& house);
 	std::pair<std::vector<AlgoData>::const_iterator, std::vector<AlgoData>::const_iterator> GetNextMatch();
 	boolean IsValidMatch(const std::vector<AlgoData>::const_iterator& playerAiter, const std::vector<AlgoData>::const_iterator& playerBiter) const;
 	void ResetIterators() { _playerAiter = _players.cbegin(); _playerBiter = _players.cbegin(); }
 	void updateHouseEntry(const std::string& name, const GameResult& result, int player);
-	GameBoard GetNextBoard() { std::lock_guard<std::mutex> guard(board_lock);  return _boardsVec[_currBoardIdx++ % _boardsVec.size()]; }
 
 private:
 	friend class TournamentMaker;
@@ -26,5 +25,4 @@ private:
 
 	// GetNextBoard members
 	size_t _currBoardIdx;
-	const std::vector<GameBoard>& _boardsVec;
 };

@@ -261,15 +261,18 @@ std::vector<std::vector<AlgoData>> TournamentMaker::DividePlayersToHouses(int nu
 }
 
 // run all house games multithreaded and keep score
-void TournamentMaker::RunGames(MatchGenerator* matches)
+void TournamentMaker::RunGames(const GameBoard& board, MatchGenerator* matches)
 {
 	for (auto match = matches->GetNextMatch(); matches->IsValidMatch(match.first, match.second); match = matches->GetNextMatch())
 	{
 		auto& dataA = match.first;
 		auto& dataB = match.second;
-		GameResult result = RunGame(*dataA, *dataB, matches->GetNextBoard());
-		matches->updateHouseEntry(dataA->name, result, PLAYER_A);
-		matches->updateHouseEntry(dataB->name, result, PLAYER_B);
+		if (dataA->name != dataB->name)
+		{
+			GameResult result = RunGame(*dataA, *dataB, board);
+			matches->updateHouseEntry(dataA->name, result, PLAYER_A);
+			matches->updateHouseEntry(dataB->name, result, PLAYER_B);
+		}
 	}
 }
 
@@ -279,29 +282,31 @@ void TournamentMaker::RunGames(MatchGenerator* matches)
  * This way he has no advantage in starting against him
  */
 std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>>
-TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house, size_t playingRounds) const
+TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house) const
 {
 	// match generator handles player matching and scoring thread safe
-	MatchGenerator matches(house, _boardsVec);
+	MatchGenerator matches(house);
 
 	// Prelimineries - Play all house games
-	for (auto round = 0; round < playingRounds; round++, matches.ResetIterators())
+	for(const auto& board : _boardsVec)
 	{
+		std::cout << "Now playing on board: " << board.GetName() << " ..." << std::endl << std::endl;
+		Sleep(HOUSE_PRINT_INTERVAL);
 		std::vector<std::thread> workers;
 		workers.reserve(_threadLimit);
 		for (int i = 0 ; i < _threadLimit ; i++)
 		{
-			workers.push_back(std::thread(RunGames, &matches));
+			workers.push_back(std::thread(RunGames, board, &matches));
 		}
 		for (auto& worker : workers)
 		{
 			worker.join();
 		}
+		matches.ResetIterators();
 
 		// NOTICE: parallelism is currently limited for each round, no need for thread safety in score printing
 		PrintHandler::cleanOutput();
 		PrintHandler::PrintHouseStandings(matches._houseEntries);
-		Sleep(HOUSE_PRINT_INTERVAL);
 	}	
 
 	// Sort house entries
@@ -337,7 +342,7 @@ void TournamentMaker::RunTournament()
 	// Prelimineries
 	for (auto& house : houses)
 	{
-		auto winners = GetWinnersFromHouse(house, PLAYING_ROUNDS);
+		auto winners = GetWinnersFromHouse(house);
 		PrintHandler::cleanOutput();
 		PrintHandler::PrintHouseStandings(std::get<2>(winners));
 	}	

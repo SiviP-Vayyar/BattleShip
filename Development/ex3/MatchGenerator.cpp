@@ -1,7 +1,7 @@
 #include "MatchGenerator.h"
 
 
-MatchGenerator::MatchGenerator(const std::vector<AlgoData>& house, const std::vector<GameBoard>& boardsVec): _players(house), _boardsVec(boardsVec)
+MatchGenerator::MatchGenerator(const std::vector<AlgoData>& house): _players(house)
 {
 	ResetIterators();
 	for (auto& data : house)
