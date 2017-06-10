@@ -52,8 +52,37 @@ namespace std
 	{
 		size_t operator()(Coordinate const& c) const
 		{
-			return static_cast<size_t>(5 * c.row + 17 * c.col + 1023 * c.depth + 89); //TODO: better hash function?
+			return std::hash<std::string>()(std::string(std::to_string(c.row) + "," + std::to_string(c.col) + "," + std::to_string(c.depth)));
 		}
 	};
 }
 
+inline Coordinate& operator+=(Coordinate& lhs, const Coordinate& rhs)
+{
+	lhs.row		+= rhs.row;
+	lhs.col		+= rhs.col;
+	lhs.depth	+= rhs.depth;
+	return lhs;
+}
+
+inline Coordinate& operator-=(Coordinate& lhs, const Coordinate& rhs)
+{
+	lhs.row -= rhs.row;
+	lhs.col -= rhs.col;
+	lhs.depth -= rhs.depth;
+	return lhs;
+}
+
+template <class T>
+std::unordered_set<T>& operator-=(std::unordered_set<T>& lhs, const std::unordered_set<T>& rhs)
+{
+	for (auto& elem : rhs)
+	{
+		auto& toDelete = std::find(lhs.begin(), lhs.end(), elem);
+		if(!(toDelete == lhs.end()))
+		{
+			lhs.erase(toDelete);
+		}
+	}
+	return lhs;
+}

@@ -1,13 +1,16 @@
 #include "HeatMap.h"
+#include <map>
+#include <unordered_map>
 
-HeatMap::HeatMap(GameBoard myBoard, GameBoard opponentBoard, std::vector<int> shipsLengthsVector) :_myBoard(myBoard), _opponentBoard(opponentBoard)
-{
-	_rows = myBoard.rows();
-	_cols = myBoard.cols();
-	_depth = myBoard.depth();
-	_heatMap = heatCube(_rows * _cols * _depth, -1);
-	_shipsLengthsVector = shipsLengthsVector;
-}
+HeatMap::HeatMap(const GameBoard& opponentBoard, const std::vector<int>& shipsLengthsVector)
+	: _rows(opponentBoard.rows())
+	, _cols(opponentBoard.cols())
+	, _depth(opponentBoard.depth())
+	, _shipsLengthsVector(shipsLengthsVector)
+	, _heatMap(heatCube(_rows * _cols * _depth, -1))
+	, _opponentBoard(opponentBoard)
+	, _allLegalCoords(opponentBoard.GetAllLegalCoords())
+{}
 
 /*returns the coordinate with the highest possible ships positioning options
 *@Pre: can only be called once on a HeatMap object
@@ -17,14 +20,14 @@ Coordinate HeatMap::hottestCoordinate()
 {
 	updateHeatMap();
 	int maxHeat = -1;
-	Coordinate retCoord = Coordinate(1, 1, 1);
+	Coordinate retCoord(1, 1, 1);
 	for (int row = 1; row <= _rows; row++)
 	{
 		for (int col = 1; col <= _cols; col++)
 		{
 			for (int depth = 1; depth <= _depth; depth++)
 			{
-				if (maxHeat <= (*this)(row, col, depth))
+				if (maxHeat < (*this)(row, col, depth))
 				{
 					maxHeat = (*this)(row, col, depth);
 					retCoord = Coordinate(row, col, depth);
@@ -55,82 +58,81 @@ void HeatMap::updateHeatMap()
 }
 
 
-/*return a vector of Coordinates sets - with each set holding coordinates of a ship that intercects with the given coordinate
-*@Post: the sets returned might hold invalid cordinates (i.e. coordinates out of board limits and cordinates of non empty cells on the board)
-*/
-std::vector<std::unordered_set<Coordinate>> HeatMap::getUnCheckedCoordsSetListForCoord(Coordinate coord) const
+/*returns the amount of possibilities to locate a ship on the given coordinate on the opponent board*/
+int HeatMap::countPossibleShipsForCoordinate(const Coordinate& c) const
 {
-	std::vector<std::unordered_set<Coordinate>> retVector = std::vector<std::unordered_set<Coordinate>>();
-	for (int shipSize : _shipsLengthsVector)
+	//std::vector<std::unordered_set<Coordinate>> checkedShipsCoordsSetList;
+	int possibleShipsForCoordinate = 0;
+	if (!isLegalCoord(c))
 	{
-		if (shipSize == 1)//if ship size is 1 no possible shifts
+		return possibleShipsForCoordinate;
+	}
+
+	//preprocessing - counting same ships' lengths
+	std::unordered_map<int, int> uniqueShipLengthsWithCount;
+	for(int length : _shipsLengthsVector)
+	{
+		if(uniqueShipLengthsWithCount.count(length) != 0)
 		{
-			std::unordered_set<Coordinate> locationCoords = std::unordered_set<Coordinate>();
-			locationCoords.insert(coord);
-			retVector.push_back(locationCoords);
+			uniqueShipLengthsWithCount[length]++;
+		}
+		else
+		{
+			uniqueShipLengthsWithCount[length] = 1;
+		}
+	}
+
+	for(auto& shipSizeAndCount : uniqueShipLengthsWithCount)
+	{
+		int shipSize = shipSizeAndCount.first;
+		int shipCount = shipSizeAndCount.second;
+
+		//if ship size is 1 no possible shifts.
+		// c is definately a legal coordinate
+		if(shipSize == 1)
+		{
+			possibleShipsForCoordinate += shipCount;
 			continue;
 		}
-		std::unordered_set<Coordinate> startRowShiftSet = std::unordered_set<Coordinate>();
-		std::unordered_set<Coordinate> startColShiftSet = std::unordered_set<Coordinate>();
-		std::unordered_set<Coordinate> startDepthShiftSet = std::unordered_set<Coordinate>();
-		for (int increment = 0; increment < shipSize; increment++)
+
+		std::vector<Coordinate> directions{ Coordinate(1, 0, 0), Coordinate(0, 1, 0), Coordinate(0, 0, 1) };
+
+		// For each dimention (orientation)
+		for(auto& dir : directions)
 		{
-			startRowShiftSet.insert(Coordinate(coord.row - increment, coord.col, coord.depth));
-			startColShiftSet.insert(Coordinate(coord.row, coord.col - increment, coord.depth));
-			startDepthShiftSet.insert(Coordinate(coord.row, coord.col, coord.depth - increment));
-		}
-		for (int increment = 0; increment < shipSize; increment++)
-		{
-			std::unordered_set<Coordinate> rowSetToAdd = std::unordered_set<Coordinate>();
-			for (auto tempCoord: startRowShiftSet)
+			// Create a set of all starting positions in that orientation
+			std::unordered_set<Coordinate> startPosShiftSet;
+			Coordinate incCoord = c;
+			for(int i = 0; i < shipSize; i++, incCoord -= dir)
 			{
-				rowSetToAdd.insert(Coordinate(tempCoord.row + increment, tempCoord.col, tempCoord.depth));
+				startPosShiftSet.insert(incCoord);
 			}
-			std::unordered_set<Coordinate> colSetToAdd = std::unordered_set<Coordinate>();
-			for (auto tempCoord : startColShiftSet)
+
+			// For each position of a ship
+			Coordinate inc(0, 0, 0);
+			for(int i = 0; i < shipSize; i++)
 			{
-				colSetToAdd.insert(Coordinate(tempCoord.row, tempCoord.col + increment, tempCoord.depth));
+				// Check all ships' coordinates legality - with a shift of 'inc'
+				std::unordered_set<Coordinate> shipSetToAdd;
+				for(auto tempCoord : startPosShiftSet)
+				{
+					tempCoord += inc;
+					if(!isLegalCoord(tempCoord))
+					{
+						break;
+					}
+					shipSetToAdd.insert(tempCoord);
+				}
+				inc += dir;
+
+				// If legal ship - add to count
+				if(shipSetToAdd.size() == shipSize)
+				{
+					possibleShipsForCoordinate += shipCount;
+				}
 			}
-			std::unordered_set<Coordinate> depthSetToAdd = std::unordered_set<Coordinate>();
-			for (auto tempCoord : startDepthShiftSet)
-			{
-				depthSetToAdd.insert(Coordinate(tempCoord.row, tempCoord.col, tempCoord.depth + increment));
-			}
-			retVector.push_back(rowSetToAdd);
-			retVector.push_back(colSetToAdd);
-			retVector.push_back(depthSetToAdd);
 		}
 	}
-	return retVector;
-}
 
-
-/*returns the amount of possibilities to locate a ship on the given coordinate on the opponent board*/
-int HeatMap::countPossibleShipsForCoordinate(Coordinate coord) const
-{
-	int possibleShipCount = 0;
-	std::vector<std::unordered_set<Coordinate>> unCheckedShipsCoordsSetList = getUnCheckedCoordsSetListForCoord(coord);
-	
-	for (auto coordSet: unCheckedShipsCoordsSetList)
-	{
-		bool validCoordsForShip = true;
-		for (auto coord: coordSet)
-		{
-			if (!_opponentBoard.isInBoard(coord))
-			{
-				validCoordsForShip = false;
-				break;
-			}
-			if (_opponentBoard(coord) != EMPTY)
-			{
-				validCoordsForShip = false;
-				break;
-			}
-		}
-		if (validCoordsForShip)
-		{
-			possibleShipCount++;
-		}
-	}
-	return possibleShipCount;
+	return possibleShipsForCoordinate;
 }

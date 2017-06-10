@@ -6,33 +6,22 @@ void  PlayerSmart::notifyOnAttackResult(int player, Coordinate coord, AttackResu
 {
 	PlayerBase::notifyOnAttackResult(player, coord, result);
 	bool myShip = GameBoard::isPlayerShip(_player, _myBoard(coord)); // If not self attack - Assuming one square can be occupied by one player only
-	if (!myShip) // The common case
+	if (!myShip)
 	{
-		switch (result)
+		std::unordered_set<Coordinate> coords;
+		switch(result)
 		{
-		case AttackResult::Hit:
-		{
-			_lastHitCoords.push_back(coord);
-			_state = AttackState::Found;
+		case(AttackResult::Hit):
+			_allHitCoords.insert(coord);
 			break;
-		}
-		case AttackResult::Miss:
-		{
+					
+		case(AttackResult::Sink):
+			_opponentBoard.getShipCoordinates(coord.row, coord.col, coord.depth, coords);
+			_shipsLengthsVector.erase(std::find(_shipsLengthsVector.begin(), _shipsLengthsVector.end(), coords.size()));
+			_allHitCoords -= coords;
 			break;
-		}
-		case AttackResult::Sink:
-		{
-			_state = AttackState::Seeking;
-			int shipSize = _lastHitCoords.size() + 1;
-			_lastHitCoords.clear();
-			auto elemToRemove = std::find(_shipsLengthsVector.begin(), _shipsLengthsVector.end(), shipSize);
-			_shipsLengthsVector.erase(elemToRemove);
+		default: 
 			break;
-		}
-		default:
-		{
-			break; // Just so all paths has return values
-		}
 		}
 	}
 }
@@ -40,45 +29,37 @@ void  PlayerSmart::notifyOnAttackResult(int player, Coordinate coord, AttackResu
 
 void PlayerSmart::setBoard(const BoardData& board) {
 	PlayerBase::setBoard(board);
-	_lastHitCoords.empty();
-	_state = AttackState::Seeking;
 	_shipsLengthsVector = _myBoard.getShipsOnBoardSizes();
 }
 
 
 Coordinate PlayerSmart::attack()
 {
-	if (_player == PLAYER_NOT_YET_KNOWN)
+	if(_player == PLAYER_NOT_YET_KNOWN)
 	{
 		throw std::exception("attack() was called before setBoard was called!");
 	}
-	Coordinate retCoord = ATTACK_END;
-	switch (_state)
+
+	// first search for hit on the board and try to expand it
+	if (!_allHitCoords.empty())
 	{
-	case AttackState::Seeking:
-	{
-		HeatMap heatmap = HeatMap(_myBoard, _opponentBoard, _shipsLengthsVector);
-		retCoord = heatmap.hottestCoordinate();
-		break;
+		return getNextCoordAfterHit();
 	}
-	case AttackState::Found:
-	{
-		retCoord = getNextCoordAfterHit();
-		break;
-	}
-	}
-	return retCoord;
+
+	//else search entire board
+	HeatMap heatmap(_opponentBoard, _shipsLengthsVector);
+	return heatmap.hottestCoordinate();
 }
 
 
 Coordinate PlayerSmart::getNextCoordAfterHit()
 {
-	std::vector<Coordinate> possibleCoords = std::vector<Coordinate>();
+	std::vector<Coordinate> possibleCoords;
 
-	for (auto coord : _lastHitCoords)
+	for (auto& coord : _allHitCoords)
 	{
 		auto adjCoords = _opponentBoard.getAdjacentCoordinatesAsVector(coord.row, coord.col, coord.depth);
-		for (auto adjCoord : adjCoords)
+		for (auto& adjCoord : adjCoords)
 		{
 			if (_opponentBoard(adjCoord) == EMPTY)
 			{
@@ -87,10 +68,10 @@ Coordinate PlayerSmart::getNextCoordAfterHit()
 		}
 	}
 
-	HeatMap heatmap = HeatMap(_myBoard, _opponentBoard, _shipsLengthsVector);
+	HeatMap heatmap(_opponentBoard, _shipsLengthsVector);
 	Coordinate retCoord = ATTACK_END;
 	int maxHeat = 0;
-	for (auto possibleCoord : possibleCoords)
+	for (auto& possibleCoord : possibleCoords)
 	{
 		int coordHeat = heatmap.countPossibleShipsForCoordinate(possibleCoord);
 		if (coordHeat > maxHeat)
@@ -103,9 +84,9 @@ Coordinate PlayerSmart::getNextCoordAfterHit()
 }
 
 
-std::vector<Coordinate> PlayerSmart::getAllPositions(char type) const
+std::unordered_set<Coordinate> PlayerSmart::getAllPositions(char type) const
 {
-	std::vector<Coordinate> positions;
+	std::unordered_set<Coordinate> positions;
 	const GameBoard& opponentBoard = _opponentBoard;
 
 	for (int row = 1; row <= opponentBoard.rows(); row++)
@@ -116,7 +97,7 @@ std::vector<Coordinate> PlayerSmart::getAllPositions(char type) const
 			{
 				if (opponentBoard(row, col, depth) == type)
 				{
-					positions.push_back(Coordinate(row, col, depth));
+					positions.insert(Coordinate(row, col, depth));
 				}
 			}
 		}
