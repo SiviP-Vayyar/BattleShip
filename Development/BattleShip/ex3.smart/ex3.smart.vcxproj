@@ -150,6 +150,10 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>COPY /V /Y $(TargetDir)$(ProjectName).dll /B $(TargetDir)$(ProjectName).copy.dll /B</Command>
+      <Message>copy the dll after build to have at least 2 players</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\ex3\GameBoard.h" />
