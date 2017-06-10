@@ -7,7 +7,7 @@ import shutil
 from cmake_authenticator import authenticate_cmake_files
 
 ###############
-EXCERSICE = 'ex2'
+EXCERSICE = 'ex3'
 ###############
 
 zip_folder = 'C:/Git/BattleShip/Development/Testing/{}'.format(EXCERSICE)
