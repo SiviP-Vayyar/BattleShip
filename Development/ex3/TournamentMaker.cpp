@@ -9,6 +9,7 @@
 #include <thread>
 #include "MatchGenerator.h"
 #include <algorithm>
+#include <xatomic.h>
 
 TournamentMaker::TournamentMaker(int argc, char* argv[])
 {
@@ -189,8 +190,8 @@ bool TournamentMaker::LoadAndInitAlgos()
 
 					// Set boards for player - Sanity Check
 					GameBoardData boardData(PLAYER_A, dummyBoard);
-					player->setBoard(boardData);
 					player->setPlayer(PLAYER_A);
+					player->setBoard(boardData);
 					delete player;
 					failedInitPlayer = false;
 				}
@@ -350,7 +351,7 @@ void TournamentMaker::RunTournament()
 
 GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard)
 {
-	GameResult result(0, 0);
+	GameResult result;
 	IAlgo *playerA, *playerB;
 	playerA = playerB = nullptr;
 	bool techLossA, techLossB;
@@ -362,8 +363,8 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 	{
 		playerA = playerAData.GetPlayer();
 		GameBoardData boardData(PLAYER_A, gameBoard);
-		playerA->setBoard(boardData);
 		playerA->setPlayer(PLAYER_A);
+		playerA->setBoard(boardData);
 	}
 	catch(...)
 	{
@@ -374,8 +375,8 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 	{
 		playerB = playerBData.GetPlayer();
 		GameBoardData boardData(PLAYER_B, gameBoard);
-		playerB->setBoard(boardData);
 		playerB->setPlayer(PLAYER_B);
+		playerB->setBoard(boardData);
 	}
 	catch(...)
 	{
