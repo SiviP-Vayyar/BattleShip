@@ -2,12 +2,12 @@
 
 struct GameResult
 {
-	GameResult() : GameResult(0, 0)
-	{}
-	GameResult(int A, int B) : scoreA(A), scoreB(B)
+	GameResult() : scoreA(0), scoreB(0), timeA(0.0), timeB(0.0)
 	{}
 	int scoreA;
 	int scoreB;
+	double timeA;
+	double timeB;
 	int Winner() const
 	{
 		if(scoreB == scoreA)

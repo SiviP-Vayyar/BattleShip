@@ -72,6 +72,7 @@ public:
 	bool isInBoard(const Coordinate& c) const { return isInBoard(c.row, c.col, c.depth); }
 	bool isShipSunk(int row, int col, int depth);
 	bool isAdjacent() const;
+	std::string GetName() const { return _boardName; }
 
 	/*Board validation methods*/
 	std::pair<int, std::set<char>> analyseShips(int player);

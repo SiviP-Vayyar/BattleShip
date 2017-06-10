@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "GameBoard.h"
+#include <tuple>
 
 /*Player Macros*/
 #define PLAYER_NOT_YET_KNOWN	-1

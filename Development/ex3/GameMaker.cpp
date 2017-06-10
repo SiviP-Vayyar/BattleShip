@@ -9,15 +9,16 @@ GameMaker::~GameMaker()
 	delete _playerB;
 }
 
-#define TECH_LOSS_CURR_PLAYER   (currentPlayerDef == PLAYER_A) ? (scorePlayerB = maxScoreB) : (scorePlayerA = maxScoreA); break;
-#define TECH_LOSS_A				scorePlayerB = maxScoreB; break;
-#define TECH_LOSS_B				scorePlayerA = maxScoreA; break;
+#define TECH_LOSS_CURR_PLAYER   (currentPlayerDef == PLAYER_A) ? (result.scoreB = maxScoreB) : (result.scoreA = maxScoreA); break;
+#define TECH_LOSS_A				result.scoreB = maxScoreB; break;
+#define TECH_LOSS_B				result.scoreB = maxScoreA; break;
 
 /*@pre: assume players and board were set and validated*/
 GameResult GameMaker::RunGame()
 {
+	GameResult result;
+
 	// counters and flags
-	int scorePlayerA = 0, scorePlayerB = 0;
 	int remainingShipsA = MAX_SHIPS, remainingShipsB = MAX_SHIPS;
 	bool movesRemainingA = true, movesRemainingB = true;
 
@@ -27,8 +28,9 @@ GameResult GameMaker::RunGame()
 	auto currentPlayerMovesRemaining = &movesRemainingA;
 	auto currentShipsCntr = &remainingShipsA;
 	auto opponentShipsCntr = &remainingShipsB;
-	auto currentScore = &scorePlayerA;
-	auto opponentScore = &scorePlayerB;
+	auto currentScore = &result.scoreA;
+	auto opponentScore = &result.scoreB;
+	auto currentPlayerTime = &result.timeA;
 
 	//general parameters
 	Coordinate attackPosition(-1,-1,-1);
@@ -41,7 +43,10 @@ GameResult GameMaker::RunGame()
 		// get attack from player and play it on the board
 		__try
 		{
+			std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 			attackPosition = currentPlayer->attack();
+			std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+			*currentPlayerTime += (end - begin).count() / 10.0e6;
 		}
 		__except(TRUE)
 		{
@@ -71,7 +76,10 @@ GameResult GameMaker::RunGame()
 		{
 			__try
 			{
+				std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 				_playerA->notifyOnAttackResult(currentPlayerDef, attackPosition, attackResult);
+				std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+				result.timeA += (end - begin).count() / 10.0e6;
 			}
 			__except(TRUE)
 			{
@@ -80,7 +88,10 @@ GameResult GameMaker::RunGame()
 			}// if a player crashes - give technical win to other player			
 			__try
 			{
+				std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
 				_playerB->notifyOnAttackResult(currentPlayerDef, attackPosition, attackResult);
+				std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+				result.timeB += (end - begin).count() / 10.0e6;
 			}
 			__except(TRUE)
 			{
@@ -109,11 +120,11 @@ GameResult GameMaker::RunGame()
 		currentPlayerDef = currentPlayerDef == PLAYER_A ? PLAYER_B : PLAYER_A;
 		currentPlayer = currentPlayer == _playerA ? _playerB : _playerA;
 		currentPlayerMovesRemaining = currentPlayerMovesRemaining == &movesRemainingA ? &movesRemainingB : &movesRemainingA;
+		currentPlayerTime = currentPlayerTime == &result.timeA ? &result.timeB : &result.timeA;
 		std::swap(currentShipsCntr, opponentShipsCntr);
 		std::swap(currentScore, opponentScore);
 	}
 
-	GameResult result(scorePlayerA, scorePlayerB);
 	return result;
 }
 

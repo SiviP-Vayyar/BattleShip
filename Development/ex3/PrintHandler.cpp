@@ -10,8 +10,11 @@ void PrintHandler::cleanOutput()
 	system("cls");
 }
 
-void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standings)
+void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standingsUnsortes)
 {
+	std::vector<std::pair<std::string, HouseEntry>> standings(standingsUnsortes.begin(), standingsUnsortes.end());
+	std::sort(standings.begin(), standings.end(), HouseEntry::Compare());
+
 	size_t countWidth = standings.size() + 2;
 	size_t nameWidth = std::max_element(
 		standings.cbegin(), standings.cend(), 
@@ -42,6 +45,7 @@ void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, 
 				<< std::left << std::setw(percentWidth)	<< "%"
 				<< std::left << std::setw(scoreWidth)	<< "Pts For"
 				<< std::left << std::setw(scoreWidth)	<< "Pts Against"
+				<< std::left << "Elapsed Time"
 				<< std::left << std::endl << std::endl;
 
 	size_t place = 1;
@@ -55,6 +59,7 @@ void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, 
 					<< std::left << std::setw(percentWidth)	<< std::setprecision(percentWidth - 2) << precentage * 100
 					<< std::left << std::setw(scoreWidth)	<< line.second.ptsFor
 					<< std::left << std::setw(scoreWidth)	<< line.second.ptsAgainst
+					<< std::left << line.second.time
 					<< std::left << std::endl;
 	}
 	std::cout << std::endl;

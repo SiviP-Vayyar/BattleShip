@@ -7,12 +7,12 @@
 class HouseEntry
 {
 public:
-	HouseEntry(int _wins=0, int _losses=0, int _ptsFor=0, int _ptsAgainst=0)
-	: wins(_wins), losses(_losses), ptsFor(_ptsFor), ptsAgainst(_ptsAgainst) {}
-	explicit HouseEntry(const AlgoData& data_, int _wins=0, int _losses=0, int _ptsFor=0, int _ptsAgainst=0)
-	: HouseEntry(_wins, _losses, _ptsFor, _ptsAgainst) { data = data_; }
+	HouseEntry(int _wins=0, int _losses=0, int _ptsFor=0, int _ptsAgainst=0, double _time=0.0)
+	: wins(_wins), losses(_losses), ptsFor(_ptsFor), ptsAgainst(_ptsAgainst), time(_time) {}
+	explicit HouseEntry(const AlgoData& data_, int _wins=0, int _losses=0, int _ptsFor=0, int _ptsAgainst=0, double _time = 0.0)
+	: HouseEntry(_wins, _losses, _ptsFor, _ptsAgainst, _time) { data = data_; }
 	HouseEntry(const HouseEntry& other) 
-	: HouseEntry(other.data, other.wins, other.losses, other.ptsFor, other.ptsAgainst) {}
+	: HouseEntry(other.data, other.wins, other.losses, other.ptsFor, other.ptsAgainst, other.time) {}
 	std::string GetTeamName() const	{ return data.name; }
 	void Update(const GameResult& result, int player);
 	
@@ -21,6 +21,7 @@ public:
 	int losses;
 	int ptsFor;
 	int ptsAgainst;
+	double time;
 
 	struct Compare
 	{
