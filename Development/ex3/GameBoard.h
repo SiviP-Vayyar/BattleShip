@@ -82,6 +82,7 @@ public:
 	std::vector<Coordinate> getAdjacentCoordinatesAsVector(int row, int col, int depth) const;
 	std::vector<Coordinate> getDiagonalCoordinatesAsVector(Coordinate coord) const;
 	int GetMaxScore(int player) const;
+	std::unordered_set<Coordinate> GetAllLegalCoords() const;
 
 	/*Board static methods*/
 	static int getShipScore(char piece);

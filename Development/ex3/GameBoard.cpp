@@ -482,6 +482,26 @@ int GameBoard::GetMaxScore(int player) const
 	return score;
 }
 
+std::unordered_set<Coordinate> GameBoard::GetAllLegalCoords() const
+{
+	std::unordered_set<Coordinate> allLegalCoords;
+
+	for(int row = 1; row <= _rows; row++)
+	{
+		for(int col = 1; col <= _cols; col++)
+		{
+			for(int depth = 1; depth <= _depth; depth++)
+			{
+				Coordinate coord(row, col, depth);
+				if(isInBoard(coord) && (*this)(coord) == EMPTY)
+				{
+					allLegalCoords.insert(coord);
+				}
+			}
+		}
+	}
+	return allLegalCoords;
+}
 
 /*returns a vector of all diagonal Coordinates (does not include diagonal Coordinates)*/
 std::vector<Coordinate> GameBoard::getDiagonalCoordinatesAsVector(Coordinate coord) const
