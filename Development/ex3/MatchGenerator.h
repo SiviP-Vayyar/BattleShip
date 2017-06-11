@@ -9,17 +9,17 @@
 class MatchGenerator
 {
 public:
-	explicit MatchGenerator(const std::vector<std::shared_ptr<AlgoData>>& house);
-	std::pair<std::vector<std::shared_ptr<AlgoData>>::const_iterator, std::vector<std::shared_ptr<AlgoData>>::const_iterator> GetNextMatch();
-	boolean IsValidMatch(const std::vector<std::shared_ptr<AlgoData>>::const_iterator& playerAiter, const std::vector<std::shared_ptr<AlgoData>>::const_iterator& playerBiter) const;
-	void ResetIterators() { _playerAiter = _players.cbegin(); _playerBiter = _players.cbegin(); }
+	explicit MatchGenerator(const std::vector<std::shared_ptr<AlgoData>>& house, bool playModePersistentPlayers);
+	std::pair<std::shared_ptr<const AlgoData>, std::shared_ptr<const AlgoData>> GetNextMatch();
+	static bool IsValidMatch(std::shared_ptr<const AlgoData>> playerAptr, std::shared_ptr<const AlgoData>> playerBptr);
+	void ResetIterators();
 	void updateHouseEntry(const std::string& name, const GameResult& result, int player);
 
 private:
 	friend class TournamentMaker;
 	const std::vector<std::shared_ptr<AlgoData>>& _players;
-	std::vector<std::shared_ptr<AlgoData>>::const_iterator _playerAiter;
-	std::vector<std::shared_ptr<AlgoData>>::const_iterator _playerBiter;
+	bool _gameModeReuse;
+	std::vector<std::pair<std::shared_ptr<const AlgoData>, std::shared_ptr<const AlgoData>>> _possibleMatches;
 	std::map<std::string, HouseEntry> _houseEntries;
 	std::mutex matches_lock, score_lock, board_lock;
 

@@ -13,6 +13,7 @@
 #define PLAYING_ROUNDS 25
 #define DEFAULT_THREAD_LIMIT 4
 #define HOUSE_PRINT_INTERVAL 500
+#define GAME_MODE_REUSE_DEFAULT false
 
 class TournamentMaker
 {
@@ -40,6 +41,7 @@ private:
 
 	bool _initSuccess;
 	size_t _threadLimit = DEFAULT_THREAD_LIMIT;
+	const static bool _gameModeReuse = GAME_MODE_REUSE_DEFAULT;
 
 	bool ParseInput(int argc, char* argv[]);
 	bool SetAndValidateBoardsAndAlgos();

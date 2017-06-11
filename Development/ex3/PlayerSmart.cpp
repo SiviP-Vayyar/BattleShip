@@ -75,7 +75,7 @@ Coordinate PlayerSmart::getNextCoordAfterHit()
 	int maxHeat = 0;
 	for (auto& possibleCoord : possibleCoords)
 	{
-		int coordHeat = heatmap.countPossibleShipsForCoordinate(possibleCoord);
+		int coordHeat = heatmap.countPossibleShipsForCoordinate(possibleCoord, true);
 		if (coordHeat > maxHeat)
 		{
 			maxHeat = coordHeat;

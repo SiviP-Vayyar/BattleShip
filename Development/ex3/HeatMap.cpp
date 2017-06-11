@@ -59,7 +59,7 @@ void HeatMap::updateHeatMap()
 
 
 /*returns the amount of possibilities to locate a ship on the given coordinate on the opponent board*/
-int HeatMap::countPossibleShipsForCoordinate(const Coordinate& c) const
+int HeatMap::countPossibleShipsForCoordinate(const Coordinate& c, bool extendHit) const
 {
 	//std::vector<std::unordered_set<Coordinate>> checkedShipsCoordsSetList;
 	int possibleShipsForCoordinate = 0;
@@ -91,7 +91,11 @@ int HeatMap::countPossibleShipsForCoordinate(const Coordinate& c) const
 		// c is definately a legal coordinate
 		if(shipSize == 1)
 		{
-			possibleShipsForCoordinate += shipCount;
+			// if trying to extend hit - can't have ship of size one adjacent to a hit
+			if (!extendHit)
+			{
+				possibleShipsForCoordinate += shipCount;
+			}
 			continue;
 		}
 
@@ -117,8 +121,9 @@ int HeatMap::countPossibleShipsForCoordinate(const Coordinate& c) const
 				for(auto tempCoord : startPosShiftSet)
 				{
 					tempCoord += inc;
-					if(!isLegalCoord(tempCoord))
+					if(!isLegalCoord(tempCoord) && (!extendHit || _opponentBoard(tempCoord) != HIT))
 					{
+						// if extending hit - allow adding hit coords as well
 						break;
 					}
 					shipSetToAdd.insert(tempCoord);
@@ -126,7 +131,7 @@ int HeatMap::countPossibleShipsForCoordinate(const Coordinate& c) const
 				inc += dir;
 
 				// If legal ship - add to count
-				if(shipSetToAdd.size() == shipSize)
+				if(shipSetToAdd.size() == shipSize && (!extendHit || IsHitInSet(shipSetToAdd)))
 				{
 					possibleShipsForCoordinate += shipCount;
 				}
@@ -135,4 +140,16 @@ int HeatMap::countPossibleShipsForCoordinate(const Coordinate& c) const
 	}
 
 	return possibleShipsForCoordinate;
+}
+
+bool HeatMap::IsHitInSet(const std::unordered_set<Coordinate>& coords) const
+{
+	for (auto& coord : coords)
+	{
+		if (_opponentBoard(coord) == HIT)
+		{
+			return true;
+		}
+	}
+	return false;
 }

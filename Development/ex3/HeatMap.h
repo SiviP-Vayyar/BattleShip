@@ -13,7 +13,8 @@ public:
 	HeatMap() = delete;
 	
 	Coordinate hottestCoordinate();
-	int countPossibleShipsForCoordinate(const Coordinate &coord) const;
+	int countPossibleShipsForCoordinate(const Coordinate &coord, bool extendHit = false) const;
+	bool IsHitInSet(const std::unordered_set<Coordinate>& coords) const;
 
 private:
 	void updateHeatMap();
