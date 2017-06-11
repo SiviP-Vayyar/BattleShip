@@ -9,17 +9,17 @@
 class MatchGenerator
 {
 public:
-	explicit MatchGenerator(const std::vector<AlgoData>& house);
-	std::pair<std::vector<AlgoData>::const_iterator, std::vector<AlgoData>::const_iterator> GetNextMatch();
-	boolean IsValidMatch(const std::vector<AlgoData>::const_iterator& playerAiter, const std::vector<AlgoData>::const_iterator& playerBiter) const;
-	void ResetIterators() { _playerAiter = _players.cbegin(); _playerBiter = _players.cbegin(); }
+	explicit MatchGenerator(const std::vector<AlgoData>& house, bool playModePersistentPlayers);
+	std::pair<const AlgoData*, const AlgoData*> GetNextMatch();
+	static bool IsValidMatch(const AlgoData* playerAptr, const AlgoData* playerBptr);
+	void ResetIterators();
 	void updateHouseEntry(const std::string& name, const GameResult& result, int player);
 
 private:
 	friend class TournamentMaker;
+	bool _gameModeReuse;
 	const std::vector<AlgoData>& _players;
-	std::vector<AlgoData>::const_iterator _playerAiter;
-	std::vector<AlgoData>::const_iterator _playerBiter;
+	std::vector<std::pair<const AlgoData*, const AlgoData*>> _possibleMatches;
 	std::map<std::string, HouseEntry> _houseEntries;
 	std::mutex matches_lock, score_lock, board_lock;
 

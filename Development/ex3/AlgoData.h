@@ -12,6 +12,7 @@ struct AlgoData
 	std::string algoFile;
 	HINSTANCE handle;
 	mutable std::mutex get_player_lock;
+	mutable std::mutex match_lock;
 	GetAlgoFuncType GetPlayerUnsafe;	// not thread safe
 	IAlgo* GetPlayer() const			// thread safe wrapper
 	{

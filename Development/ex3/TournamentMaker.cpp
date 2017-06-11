@@ -268,12 +268,14 @@ void TournamentMaker::RunGames(const GameBoard& board, MatchGenerator* matches)
 	{
 		auto& dataA = match.first;
 		auto& dataB = match.second;
-		if (dataA->name != dataB->name)
+		GameResult result = RunGame(*dataA, *dataB, board);
+		if (_gameModeReuse)
 		{
-			GameResult result = RunGame(*dataA, *dataB, board);
-			matches->updateHouseEntry(dataA->name, result, PLAYER_A);
-			matches->updateHouseEntry(dataB->name, result, PLAYER_B);
+			dataA->match_lock.unlock();
+			dataB->match_lock.unlock();
 		}
+		matches->updateHouseEntry(dataA->name, result, PLAYER_A);
+		matches->updateHouseEntry(dataB->name, result, PLAYER_B);
 	}
 }
 
@@ -286,7 +288,7 @@ std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>>
 TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house) const
 {
 	// match generator handles player matching and scoring thread safe
-	MatchGenerator matches(house);
+	MatchGenerator matches(house, _gameModeReuse);
 
 	// Prelimineries - Play all house games
 	for(const auto& board : _boardsVec)
