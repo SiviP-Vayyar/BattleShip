@@ -1,7 +1,7 @@
 #include "MatchGenerator.h"
 
 
-MatchGenerator::MatchGenerator(const std::vector<AlgoData>& house, bool gameModeReuse)
+MatchGenerator::MatchGenerator(const std::vector<std::shared_ptr<AlgoData>>& house, bool gameModeReuse)
 : _gameModeReuse(gameModeReuse), _players(house)
 {
 	ResetIterators();
@@ -15,21 +15,21 @@ void MatchGenerator::ResetIterators()
 {
 	// claer and populate possible maches vector
 	_possibleMatches.clear();
-	for (auto& playerA : _players)
+	for (auto playerA : _players)
 	{
-		for (auto& playerB : _players)
+		for (auto playerB : _players)
 		{
-			if (playerA.name != playerB.name)
+			if (playerA->name != playerB->name)
 			{
-				_possibleMatches.emplace_back(&playerA, &playerB);
+				_possibleMatches.emplace_back(playerA, playerB);
 			}
 		}
 	}
 }
 
-std::pair<const AlgoData*, const AlgoData*> MatchGenerator::GetNextMatch()
+std::pair<std::shared_ptr<const AlgoData>, std::shared_ptr<const AlgoData>> MatchGenerator::GetNextMatch()
 {
-	std::pair<AlgoData*, AlgoData*> noMoreMatches(nullptr, nullptr);
+	std::pair<std::shared_ptr<const AlgoData>, std::shared_ptr<const AlgoData>> noMoreMatches(nullptr, nullptr);
 
 	// when we know each player is a new instance - can have same player in multiple matche simultaneously
 	if (!_gameModeReuse)
@@ -74,7 +74,7 @@ std::pair<const AlgoData*, const AlgoData*> MatchGenerator::GetNextMatch()
 	return noMoreMatches;
 }
 
-bool MatchGenerator::IsValidMatch(const AlgoData* playerAptr, const AlgoData* playerBptr)
+bool MatchGenerator::IsValidMatch(std::shared_ptr<const AlgoData> playerAptr, std::shared_ptr<const AlgoData> playerBptr)
 {
 	return playerAptr != nullptr && playerBptr != nullptr;
 }

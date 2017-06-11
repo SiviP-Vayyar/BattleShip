@@ -5,7 +5,7 @@
 #include <mutex>
 
 typedef IAlgo*(*GetAlgoFuncType)();
-#define GAME_MODE_REUSE false
+#define GAME_MODE_REUSE true
 
 struct AlgoData
 {
@@ -15,28 +15,22 @@ struct AlgoData
 	mutable std::mutex get_player_lock;
 	mutable std::mutex match_lock;
 	GetAlgoFuncType GetPlayerUnsafe;	// not thread safe
-	IAlgo* AcquirePlayer() const		// thread safe wrapper
+	std::shared_ptr<IAlgo> GetPlayer() const		// thread safe wrapper
 	{
-		//std::lock_guard<std::mutex> guard(this->get_player_lock);
-		get_player_lock.lock();
-		if (!_instance)
+		std::lock_guard<std::mutex> guard(this->get_player_lock);
+
+		if(!GAME_MODE_REUSE)
 		{
-			_instance = GetPlayerUnsafe();
+			return std::shared_ptr<IAlgo>(GetPlayerUnsafe());
 		}
-		return _instance;
-	}
-	void ReleasePlayer() const
-	{
-		if (modeReusePlayers)
+		else
 		{
-			ClearPlayer();
+			if(!_instance)
+			{
+				_instance = std::shared_ptr<IAlgo>(GetPlayerUnsafe());
+			}
+			return _instance;
 		}
-		get_player_lock.unlock();
-	}
-	void ClearPlayer() const
-	{
-		delete _instance;
-		_instance = nullptr;
 	}
 
 	AlgoData() = default;
@@ -46,6 +40,5 @@ struct AlgoData
 	AlgoData& operator=(const AlgoData&& other) = delete;
 
 private:
-	mutable IAlgo* _instance = nullptr;
-	bool modeReusePlayers = GAME_MODE_REUSE;
+	mutable std::shared_ptr<IAlgo> _instance = nullptr;
 };

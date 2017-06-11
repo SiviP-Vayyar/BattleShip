@@ -35,14 +35,7 @@ GameResult GameMaker::RunGame()
 	while (remainingShipsA > 0 && remainingShipsB > 0 && (movesRemainingA || movesRemainingB))
 	{
 		// get attack from player and play it on the board
-		__try
-		{
-			std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-			attackPosition = currentPlayer->attack();
-			std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-			*currentPlayerTime += (end - begin).count() / 10.0e6;
-		}
-		__except(TRUE)
+		if (!AttackSafe(attackPosition, currentPlayer.get(), currentPlayerTime))
 		{
 			std::string playerName = currentPlayerDef == PLAYER_A ? _nameA : _nameB;
 			Logger::log(playerName + ": Technical Loss due to exception in attack(). Player was: Player" + (currentPlayerDef == PLAYER_A ? "A" : "B"));
@@ -54,16 +47,16 @@ GameResult GameMaker::RunGame()
 		{
 			if(!_board.isInBoard(attackPosition))// Not in board -> technical lost
 			{
-				TECH_LOSS_CURR_PLAYER //TODO: add log for technical loss
 				std::string playerName = currentPlayerDef == PLAYER_A ? _nameA : _nameB;
 				Logger::log(playerName + ": Technical Loss due to attack not in board. Coordinate: (" + std::to_string(attackPosition.row) + std::to_string(attackPosition.col) + std::to_string(attackPosition.depth) + "). Player was: Player" + (currentPlayerDef==PLAYER_A? "A" : "B"));
+				TECH_LOSS_CURR_PLAYER
 			}
 		}
 		else
 		{
-			TECH_LOSS_CURR_PLAYER //TODO: add log for technical loss
 			std::string playerName = currentPlayerDef == PLAYER_A ? _nameA : _nameB;
 			Logger::log(playerName + ": Technical Loss due to end of moves. Player was: Player" + (currentPlayerDef == PLAYER_A ? "A" : "B"));
+			TECH_LOSS_CURR_PLAYER
 		}
 
 		auto attackResultInfo = _board.boardAttack(attackPosition);
@@ -74,30 +67,16 @@ GameResult GameMaker::RunGame()
 		// notify the players - only if not ATTACK_END:
 		if (*currentPlayerMovesRemaining)
 		{
-			__try
-			{
-				std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-				_playerA->notifyOnAttackResult(currentPlayerDef, attackPosition, attackResult);
-				std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-				result.timeA += (end - begin).count() / 10.0e6;
-			}
-			__except(TRUE)
+			if(!NotifySafe(_playerA.get(), currentPlayerDef, attackPosition, attackResult, result))
 			{
 				Logger::log("Technical Loss due to exception on call to: _playerA->notifyOnAttackResult(" + std::to_string(currentPlayerDef) + ", (" + std::to_string(attackPosition.row) + ", " + std::to_string(attackPosition.col) + ", " + std::to_string(attackPosition.depth) + "), " + std::to_string(static_cast<int>(attackResult)) + ");", Warning);
 				TECH_LOSS_A
-			}// if a player crashes - give technical win to other player			
-			__try
+			} // if a player crashes - give technical win to other player	
+			if(!NotifySafe(_playerB.get(), currentPlayerDef, attackPosition, attackResult, result))
 			{
-				std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
-				_playerB->notifyOnAttackResult(currentPlayerDef, attackPosition, attackResult);
-				std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-				result.timeB += (end - begin).count() / 10.0e6;
-			}
-			__except(TRUE)
-			{
-				std::cout << "_playerB->notifyOnAttackResult(" << currentPlayerDef << ", (" << attackPosition.row << ", " << attackPosition.col << ", " << attackPosition.depth << "), " << static_cast<int>(attackResult) << ");" << std::endl;
+				Logger::log("Technical Loss due to exception on call to: _playerB->notifyOnAttackResult(" + std::to_string(currentPlayerDef) + ", (" + std::to_string(attackPosition.row) + ", " + std::to_string(attackPosition.col) + ", " + std::to_string(attackPosition.depth) + "), " + std::to_string(static_cast<int>(attackResult)) + ");", Warning);
 				TECH_LOSS_B
-			}// if a player crashes - give technical win to other player	
+			} // if a player crashes - give technical win to other player	
 		}
 
 		// upon hit player gets another turn (if he didn't shoot himself)
@@ -128,3 +107,34 @@ GameResult GameMaker::RunGame()
 	return result;
 }
 
+bool GameMaker::AttackSafe(Coordinate& attackPosition, IAlgo* currentPlayer, double* currentPlayerTime)
+{
+	__try
+	{
+		std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
+		attackPosition = currentPlayer->attack();
+		std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+		*currentPlayerTime += (end - begin).count() / 10.0e6;
+	}
+	__except(TRUE)
+	{
+		return false;
+	}
+	return true;
+}
+
+bool GameMaker::NotifySafe(IAlgo* currentPlayer, int& currentPlayerDef, Coordinate& attackPosition, AttackResult& attackResult, GameResult& result)
+{
+	__try
+	{
+		std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
+		currentPlayer->notifyOnAttackResult(currentPlayerDef, attackPosition, attackResult);
+		std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+		result.timeA += (end - begin).count() / 10.0e6;
+	}
+	__except(TRUE)
+	{
+		return false;
+	}
+	return true;
+}

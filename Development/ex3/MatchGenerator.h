@@ -11,7 +11,7 @@ class MatchGenerator
 public:
 	explicit MatchGenerator(const std::vector<std::shared_ptr<AlgoData>>& house, bool playModePersistentPlayers);
 	std::pair<std::shared_ptr<const AlgoData>, std::shared_ptr<const AlgoData>> GetNextMatch();
-	static bool IsValidMatch(std::shared_ptr<const AlgoData>> playerAptr, std::shared_ptr<const AlgoData>> playerBptr);
+	static bool IsValidMatch(std::shared_ptr<const AlgoData> playerAptr, std::shared_ptr<const AlgoData> playerBptr);
 	void ResetIterators();
 	void updateHouseEntry(const std::string& name, const GameResult& result, int player);
 

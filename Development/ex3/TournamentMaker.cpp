@@ -190,14 +190,12 @@ bool TournamentMaker::LoadAndInitAlgos()
 				{
 					failedGetPlayer = false;
 					// See if player is valid - so he can enter the tournament
-					IAlgo* player = data->AcquirePlayer();
+					auto player = data->GetPlayer();
 
 					// Set boards for player - Sanity Check
 					GameBoardData boardData(PLAYER_A, dummyBoard);
 					player->setPlayer(PLAYER_A);
 					player->setBoard(boardData);
-					data->ReleasePlayer();
-					data->ClearPlayer();
 					failedInitPlayer = false;
 				}
 				catch(std::exception ex)
@@ -255,9 +253,10 @@ void TournamentMaker::RunGames(const GameBoard& board, MatchGenerator* matches)
 {
 	for (auto match = matches->GetNextMatch(); matches->IsValidMatch(match.first, match.second); match = matches->GetNextMatch())
 	{
-		auto& dataA = *(match.first);
-		auto& dataB = *(match.second);
-		GameResult result = RunGame(*dataA, *dataB, board);
+		auto dataA = match.first;
+		auto dataB = match.second;
+
+		GameResult result = RunGame(dataA, dataB, board);
 		if (_gameModeReuse)
 		{
 			dataA->match_lock.unlock();
@@ -313,10 +312,10 @@ void TournamentMaker::RunTournament() const
 	PlayHouse(_algoDataVec);
 }
 
-GameResult TournamentMaker::RunGame(const std::shared_ptr<AlgoData>& playerAData, const std::shared_ptr<AlgoData>& playerBData, const GameBoard& gameBoard)
+GameResult TournamentMaker::RunGame(std::shared_ptr<const AlgoData> playerAData, std::shared_ptr<const AlgoData> playerBData, const GameBoard& gameBoard)
 {
 	GameResult result;
-	IAlgo *playerA, *playerB;
+	std::shared_ptr<IAlgo> playerA, playerB;
 	playerA = playerB = nullptr;
 	bool techLossA, techLossB;
 	techLossA = techLossB = false;
@@ -325,7 +324,7 @@ GameResult TournamentMaker::RunGame(const std::shared_ptr<AlgoData>& playerAData
 
 	try
 	{
-		playerA = playerAData->AcquirePlayer();
+		playerA = playerAData->GetPlayer();
 		GameBoardData boardData(PLAYER_A, gameBoard);
 		playerA->setPlayer(PLAYER_A);
 		playerA->setBoard(boardData);
@@ -337,7 +336,7 @@ GameResult TournamentMaker::RunGame(const std::shared_ptr<AlgoData>& playerAData
 	
 	try
 	{
-		playerB = playerBData->AcquirePlayer();
+		playerB = playerBData->GetPlayer();
 		GameBoardData boardData(PLAYER_B, gameBoard);
 		playerB->setPlayer(PLAYER_B);
 		playerB->setBoard(boardData);

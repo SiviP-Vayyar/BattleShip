@@ -205,8 +205,8 @@ Coordinate GameBoard::getShipDimensions(const std::unordered_set<Coordinate>& co
 /*returns a vector containing all sizes of ships on board*/
 std::vector<int> GameBoard::getShipsOnBoardSizes()
 {
-	std::vector<int> retVector = std::vector<int>();
-	std::unordered_set<Coordinate> shipsCoordsSet = std::unordered_set<Coordinate>();
+	std::vector<int> retVector;
+	std::unordered_set<Coordinate> shipsCoordsSet;
 	bool skip = false;
 
 	for (int row = 1; row <= _rows; row++)
@@ -480,27 +480,6 @@ int GameBoard::GetMaxScore(int player) const
 		}
 	}
 	return score;
-}
-
-std::unordered_set<Coordinate> GameBoard::GetAllLegalCoords() const
-{
-	std::unordered_set<Coordinate> allLegalCoords;
-
-	for(int row = 1; row <= _rows; row++)
-	{
-		for(int col = 1; col <= _cols; col++)
-		{
-			for(int depth = 1; depth <= _depth; depth++)
-			{
-				Coordinate coord(row, col, depth);
-				if(isInBoard(coord) && (*this)(coord) == EMPTY)
-				{
-					allLegalCoords.insert(coord);
-				}
-			}
-		}
-	}
-	return allLegalCoords;
 }
 
 /*returns a vector of all diagonal Coordinates (does not include diagonal Coordinates)*/
