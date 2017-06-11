@@ -22,9 +22,8 @@ public:
 
 	TournamentMaker(const TournamentMaker&) = delete;
 	TournamentMaker& operator= (const TournamentMaker&) = delete;
-	std::vector<std::vector<AlgoData>> DividePlayersToHouses(int numOfHouses = 1);
-	std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>> GetWinnersFromHouse(const std::vector<AlgoData>& house) const;
-	void RunTournament();
+	void PlayHouse(const std::vector<AlgoData>& house) const;
+	void RunTournament() const;
 
 	static void RunGames(const GameBoard& board, MatchGenerator* matches);
 	static GameResult RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard);

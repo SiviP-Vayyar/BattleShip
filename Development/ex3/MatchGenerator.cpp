@@ -6,7 +6,7 @@ MatchGenerator::MatchGenerator(const std::vector<AlgoData>& house): _players(hou
 	ResetIterators();
 	for (auto& data : house)
 	{
-		_houseEntries[data.name] = HouseEntry(data);
+		_houseEntries.emplace(data.name, data);
 	}
 }
 
@@ -42,5 +42,5 @@ boolean MatchGenerator::IsValidMatch(const std::vector<AlgoData>::const_iterator
 void MatchGenerator::updateHouseEntry(const std::string& name, const GameResult& result, int player)
 {
 	std::lock_guard<std::mutex> guard(score_lock);
-	_houseEntries[name].Update(result, player);
+	_houseEntries.at(name).Update(result, player);
 }

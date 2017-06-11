@@ -3,12 +3,6 @@
 #include "GameUtils.h"
 #include "PrintHandler.h"
 
-GameMaker::~GameMaker()
-{
-	delete _playerA;
-	delete _playerB;
-}
-
 #define TECH_LOSS_CURR_PLAYER   (currentPlayerDef == PLAYER_A) ? (result.scoreB = maxScoreB) : (result.scoreA = maxScoreA); break;
 #define TECH_LOSS_A				result.scoreB = maxScoreB; break;
 #define TECH_LOSS_B				result.scoreB = maxScoreA; break;

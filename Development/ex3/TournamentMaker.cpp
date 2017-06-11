@@ -166,7 +166,8 @@ bool TournamentMaker::LoadAndInitAlgos()
 
 	for(auto algoFile : _dllNamesVec)
 	{
-		AlgoData data;
+		_algoDataVec.emplace_back();
+		AlgoData& data = _algoDataVec[_algoDataVec.size() - 1];
 		data.algoFile = algoFile;
 		failedLoadPlayer = failedGetPlayer = failedInitPlayer = true;
 		data.name = GameUtils::GetTeamNameFromFileName(data.algoFile);
@@ -186,13 +187,14 @@ bool TournamentMaker::LoadAndInitAlgos()
 				{
 					failedGetPlayer = false;
 					// See if player is valid - so he can enter the tournament
-					IAlgo* player = data.GetPlayer();
+					IAlgo* player = data.AcquirePlayer();
 
 					// Set boards for player - Sanity Check
 					GameBoardData boardData(PLAYER_A, dummyBoard);
 					player->setPlayer(PLAYER_A);
 					player->setBoard(boardData);
-					delete player;
+					data.ReleasePlayer();
+					data.ClearPlayer();
 					failedInitPlayer = false;
 				}
 				catch(std::exception ex)
@@ -230,9 +232,9 @@ bool TournamentMaker::LoadAndInitAlgos()
 			logBuffer.push_back("Cannot load dll: " + data.algoFile);
 		}
 
-		if(!(failedLoadPlayer || failedGetPlayer || failedInitPlayer)) // Good player
+		if(failedLoadPlayer || failedGetPlayer || failedInitPlayer) // Good player
 		{
-			_algoDataVec.push_back(data);
+			_algoDataVec.pop_back();
 		}
 	}
 
@@ -243,22 +245,6 @@ bool TournamentMaker::LoadAndInitAlgos()
 	}
 
 	return !_algoDataVec.empty();
-}
-
-std::vector<std::vector<AlgoData>> TournamentMaker::DividePlayersToHouses(int numOfHouses)
-{
-	std::vector<std::vector<AlgoData>> houses(numOfHouses);
-#ifndef _DEBUG
-	std::random_shuffle(_algoDataVec.begin(), _algoDataVec.end());
-#endif
-	size_t idx = 0;
-
-	for (auto& data : _algoDataVec)
-	{
-		houses[idx % numOfHouses].push_back(data);
-		++idx;
-	}
-	return houses;
 }
 
 // run all house games multithreaded and keep score
@@ -282,8 +268,7 @@ void TournamentMaker::RunGames(const GameBoard& board, MatchGenerator* matches)
  * 2) As Player B
  * This way he has no advantage in starting against him
  */
-std::tuple<AlgoData, AlgoData, std::vector<std::pair<std::string, HouseEntry>>>
-TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house) const
+void TournamentMaker::PlayHouse(const std::vector<AlgoData>& house) const
 {
 	// match generator handles player matching and scoring thread safe
 	MatchGenerator matches(house);
@@ -309,27 +294,9 @@ TournamentMaker::GetWinnersFromHouse(const std::vector<AlgoData>& house) const
 		PrintHandler::cleanOutput();
 		PrintHandler::PrintHouseStandings(matches._houseEntries);
 	}	
-
-	// Sort house entries
-	auto& houseEntries = matches._houseEntries;
-	std::vector<std::pair<std::string, HouseEntry>> mapCopy(houseEntries.begin(), houseEntries.end());
-	std::sort(mapCopy.begin(), mapCopy.end(), HouseEntry::Compare());
-
-	// Choose first two players - Eliminate duplicates for same team
-	HouseEntry firstPlace = mapCopy.begin()->second;
-	for (auto entry = mapCopy.begin(); entry != mapCopy.end(); ++entry)
-	{
-		if (entry->second.GetTeamName() != firstPlace.GetTeamName())
-		{
-			return std::make_tuple(firstPlace.data, entry->second.data, mapCopy);
-		}
-	}
-
-	// If all of the same player for some reason - just return the first two
-	return std::make_tuple(firstPlace.data, std::next(mapCopy.begin())->second.data, mapCopy);
 }
 
-void TournamentMaker::RunTournament()
+void TournamentMaker::RunTournament() const
 {
 	if (_algoDataVec.size() < MIN_PLAYERS)
 	{
@@ -337,16 +304,7 @@ void TournamentMaker::RunTournament()
 		throw std::runtime_error(err);
 	}
 
-	// Divide into houses
-	std::vector<std::vector<AlgoData>> houses = DividePlayersToHouses();
-
-	// Prelimineries
-	for (auto& house : houses)
-	{
-		auto winners = GetWinnersFromHouse(house);
-		PrintHandler::cleanOutput();
-		PrintHandler::PrintHouseStandings(std::get<2>(winners));
-	}	
+	PlayHouse(_algoDataVec);
 }
 
 GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard)
@@ -361,7 +319,7 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 
 	try
 	{
-		playerA = playerAData.GetPlayer();
+		playerA = playerAData.AcquirePlayer();
 		GameBoardData boardData(PLAYER_A, gameBoard);
 		playerA->setPlayer(PLAYER_A);
 		playerA->setBoard(boardData);
@@ -373,7 +331,7 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 	
 	try
 	{
-		playerB = playerBData.GetPlayer();
+		playerB = playerBData.AcquirePlayer();
 		GameBoardData boardData(PLAYER_B, gameBoard);
 		playerB->setPlayer(PLAYER_B);
 		playerB->setBoard(boardData);
@@ -393,16 +351,17 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 		{
 			result.scoreA = gameBoard.GetMaxScore(PLAYER_A);
 		}
-		return result;
 	}
-	if (techLossA && techLossB) //if both didn't load correctly
+	if (!techLossA || !techLossB) //if both did load correctly
 	{
-		return result;
+		//We have both players - let's start playing:
+		GameMaker maker(playerA, playerB, gameBoard);
+		result = maker.RunGame();
 	}
 
-	//We have both players - let's start playing:
-	GameMaker maker(playerA, playerB, gameBoard);
-	return maker.RunGame();
+	playerAData.ReleasePlayer();
+	playerBData.ReleasePlayer();
+	return result;
 }
 
 GameBoard::BoardErrors TournamentMaker::ValidateBoard(const GameBoard& gameBoard)

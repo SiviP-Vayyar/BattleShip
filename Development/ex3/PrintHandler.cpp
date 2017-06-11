@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <iterator>
 
 void PrintHandler::cleanOutput()
 {
@@ -10,18 +11,17 @@ void PrintHandler::cleanOutput()
 	system("cls");
 }
 
-void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, HouseEntry>>& standingsUnsortes)
+void PrintHandler::PrintHouseStandings(const std::vector<HouseEntry>& standings)
 {
-	std::vector<std::pair<std::string, HouseEntry>> standings(standingsUnsortes.begin(), standingsUnsortes.end());
-	std::sort(standings.begin(), standings.end(), HouseEntry::Compare());
+	// std::sort(standings.begin(), standings.end(), HouseEntry::Compare()); //TODO: sort with array of indices
 
 	size_t countWidth = standings.size() + 2;
 	size_t nameWidth = std::max_element(
 		standings.cbegin(), standings.cend(), 
-		[](const std::pair<std::string, HouseEntry>& lhs, const std::pair<std::string, HouseEntry>& rhs) -> bool {
-			return lhs.first.size() < rhs.first.size();
+		[](const HouseEntry& lhs, const HouseEntry& rhs) -> bool {
+			return lhs.data.name.size() < rhs.data.name.size();
 		}
-	)->first.size() + 2;
+	)->data.name.size() + 2;
 
 	size_t digits = static_cast<size_t>(log10(static_cast<double>(PLAYING_ROUNDS * 2))) + 1;
 	size_t balanceWidth = digits + 2;
@@ -51,23 +51,29 @@ void PrintHandler::PrintHouseStandings(const std::vector<std::pair<std::string, 
 	size_t place = 1;
 	for (auto& line : standings)
 	{
-		double precentage = static_cast<double>(line.second.wins) / (line.second.wins + line.second.losses);
+		double precentage = static_cast<double>(line.wins) / (line.wins + line.losses);
 		std::cout	<< std::left << std::setw(countWidth)	<< std::to_string(place++) + '.'
-					<< std::left << std::setw(nameWidth)	<< line.first
-					<< std::left << std::setw(balanceWidth)	<< line.second.wins
-					<< std::left << std::setw(balanceWidth)	<< line.second.losses
+					<< std::left << std::setw(nameWidth)	<< line.data.name
+					<< std::left << std::setw(balanceWidth)	<< line.wins
+					<< std::left << std::setw(balanceWidth)	<< line.losses
 					<< std::left << std::setw(percentWidth)	<< std::setprecision(percentWidth - 2) << precentage * 100
-					<< std::left << std::setw(scoreWidth)	<< line.second.ptsFor
-					<< std::left << std::setw(scoreWidth)	<< line.second.ptsAgainst
-					<< std::left << line.second.time
+					<< std::left << std::setw(scoreWidth)	<< line.ptsFor
+					<< std::left << std::setw(scoreWidth)	<< line.ptsAgainst
+					<< std::left << line.time
 					<< std::left << std::endl;
 	}
 	std::cout << std::endl;
 }
 
-void PrintHandler::PrintHouseStandings(const std::map<std::string, HouseEntry>& standings)
+void PrintHandler::PrintHouseStandings(const std::map<std::string, HouseEntry>& m)
 {
-	PrintHouseStandings(std::vector<std::pair<std::string, HouseEntry>>(standings.begin(), standings.end()));
+	std::vector<HouseEntry> vec;
+	vec.reserve(m.size());
+	for (auto& val : m)
+	{
+		vec.push_back(val.second);
+	}
+	PrintHouseStandings(vec);
 }
 
 void PrintHandler::gotoxy(SHORT x, SHORT y)

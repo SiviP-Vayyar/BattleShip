@@ -10,7 +10,6 @@ class GameMaker
 public:
 	GameMaker(IAlgo* playerA, IAlgo* playerB, const GameBoard& board) : _playerA(playerA), _playerB(playerB), _board(board) {}
 	GameMaker(const GameMaker& other) = delete; // We intend to instantiate only once
-	~GameMaker();
 
 	GameMaker& operator=(const GameMaker& otheBoard) = delete; // We intend to instantiate only once
 
