@@ -10,7 +10,7 @@ public:
 		_cols = board.cols();
 		_depth = board.depth();
 	}
-	char charAt(Coordinate c) const override { return GameBoard::isPlayerShip(_player, _board(c)) ? _board(c) : ' '; };
+	char charAt(Coordinate c) const override { return GameBoard::isPlayerShip(_player, _board(c)) ? _board(c) : EMPTY; };
 
 private:
 	const GameBoard& _board;

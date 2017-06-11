@@ -32,6 +32,7 @@ void  PlayerSmart::notifyOnAttackResult(int player, Coordinate coord, AttackResu
 void PlayerSmart::setBoard(const BoardData& board) {
 	PlayerBase::setBoard(board);
 	_shipsLengthsVector = _myBoard.getShipsOnBoardSizes();
+	_allHitCoords.clear();
 }
 
 

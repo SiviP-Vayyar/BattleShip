@@ -9,7 +9,6 @@ HeatMap::HeatMap(const GameBoard& opponentBoard, const std::vector<int>& shipsLe
 	, _shipsLengthsVector(shipsLengthsVector)
 	, _heatMap(heatCube(_rows * _cols * _depth, -1))
 	, _opponentBoard(opponentBoard)
-	, _allLegalCoords(opponentBoard.GetAllLegalCoords())
 {}
 
 /*returns the coordinate with the highest possible ships positioning options
@@ -121,7 +120,7 @@ int HeatMap::countPossibleShipsForCoordinate(const Coordinate& c, bool extendHit
 				for(auto tempCoord : startPosShiftSet)
 				{
 					tempCoord += inc;
-					if(!isLegalCoord(tempCoord) && (!extendHit || _opponentBoard(tempCoord) != HIT))
+					if(!isLegalCoord(tempCoord) && (!extendHit || !isHitCoord(tempCoord)))
 					{
 						// if extending hit - allow adding hit coords as well
 						break;

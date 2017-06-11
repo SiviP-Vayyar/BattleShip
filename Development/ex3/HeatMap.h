@@ -13,12 +13,16 @@ public:
 	HeatMap() = delete;
 	
 	Coordinate hottestCoordinate();
+	bool isHitCoord(const Coordinate& coord) const
+	{
+		return _opponentBoard.isInBoard(coord) && _opponentBoard(coord) == HIT;
+	};
 	int countPossibleShipsForCoordinate(const Coordinate &coord, bool extendHit = false) const;
 	bool IsHitInSet(const std::unordered_set<Coordinate>& coords) const;
 
 private:
 	void updateHeatMap();
-	bool isLegalCoord(const Coordinate& c) const { return _allLegalCoords.count(c) != 0; }
+	bool isLegalCoord(const Coordinate& c) const { return _opponentBoard.isInBoard(c) && _opponentBoard(c) == EMPTY; }
 
 	int& operator()(int row, int col, int depth) { return _heatMap[((depth - 1)*_cols + (col - 1))*_rows + (row - 1)]; } // used as getter, e.g. char piece = board(1,2,3)
 	int& operator()(const Coordinate& c) { return (*this)(c.row, c.col, c.depth); }
@@ -30,5 +34,4 @@ private:
 	const std::vector<int>& _shipsLengthsVector;
 	heatCube _heatMap;
 	const GameBoard& _opponentBoard;
-	const std::unordered_set<Coordinate> _allLegalCoords;
 };
