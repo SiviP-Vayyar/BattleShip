@@ -8,24 +8,23 @@
 #include <iostream>
 #include "TournamentMaker.h"
 
-void print_error(const std::string& s)
-{
-	std::cout << "Error: " << s.c_str() << std::endl;
-}
-
 int main(int argc, char* argv[])
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); // Memory leak detection
 #endif
+	int retCode = 0;
 	try
 	{
 		TournamentMaker tMaker(argc, argv);
 		if (!tMaker.isInitSuccess())
 		{
-			return -1;
+			retCode = -1;
 		}
-		tMaker.RunTournament();
+		else
+		{
+			tMaker.RunTournament();
+		}
 	}
 	catch (GameException ex)
 	{
@@ -33,13 +32,15 @@ int main(int argc, char* argv[])
 		 * the throwing method already printed the error msgs
 		 * all we need is to end the program
 		 */
-		return -1;
+		retCode = -1;
 	}
 	catch (std::exception ex)
 	{
 		// For every undefined error
-		print_error(ex.what());
-		return -1;
+		Logger::log(ex.what(), Error);
+		retCode = -1;
 	}
-	return 0;
+	
+	Logger::Shutdown();
+	return retCode;
 }

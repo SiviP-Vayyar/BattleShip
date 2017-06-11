@@ -38,6 +38,7 @@
     <ClInclude Include="..\..\ex3\GameUtils.h" />
     <ClInclude Include="..\..\ex3\HouseEntry.h" />
     <ClInclude Include="..\..\ex3\IBattleshipGameAlgo.h" />
+    <ClInclude Include="..\..\ex3\Logger.h" />
     <ClInclude Include="..\..\ex3\MatchGenerator.h" />
     <ClInclude Include="..\..\ex3\PrintHandler.h" />
     <ClInclude Include="..\..\ex3\TournamentMaker.h" />

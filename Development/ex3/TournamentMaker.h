@@ -4,8 +4,7 @@
 #include "HouseEntry.h"
 #include <mutex>
 #include "MatchGenerator.h"
-
-
+#include "Logger.h"
 
 #define GET_ALGORITHM_STR "GetAlgorithm"
 #define MIN_PLAYERS 2
@@ -13,7 +12,6 @@
 #define PLAYING_ROUNDS 25
 #define DEFAULT_THREAD_LIMIT 4
 #define HOUSE_PRINT_INTERVAL 500
-#define GAME_MODE_REUSE_DEFAULT false
 
 class TournamentMaker
 {
@@ -27,7 +25,7 @@ public:
 	void RunTournament() const;
 
 	static void RunGames(const GameBoard& board, MatchGenerator* matches);
-	static GameResult RunGame(const std::shared_ptr<AlgoData>& playerAData, const std::shared_ptr<AlgoData>& playerBData, const GameBoard& gameBoard);
+	static GameResult RunGame(std::shared_ptr<const AlgoData> playerAData, std::shared_ptr<const AlgoData> playerBData, const GameBoard& gameBoard);
 	static GameBoard::BoardErrors ValidateBoard(const GameBoard& gameBoard);
 
 	bool isInitSuccess() const { return _initSuccess; }
@@ -41,7 +39,7 @@ private:
 
 	bool _initSuccess;
 	size_t _threadLimit = DEFAULT_THREAD_LIMIT;
-	const static bool _gameModeReuse = GAME_MODE_REUSE_DEFAULT;
+	const static bool _gameModeReuse = GAME_MODE_REUSE;
 
 	bool ParseInput(int argc, char* argv[]);
 	bool SetAndValidateBoardsAndAlgos();

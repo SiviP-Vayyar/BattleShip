@@ -18,5 +18,7 @@ public:
 private:
 	IAlgo* _playerA = nullptr;
 	IAlgo* _playerB = nullptr;
+	std::string _nameA;
+	std::string _nameB;
 	GameBoard _board;
 };

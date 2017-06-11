@@ -20,6 +20,9 @@ TournamentMaker::TournamentMaker(int argc, char* argv[])
 		return;
 	}
 
+	//Init Logger
+	Logger::Init(_inputFolder + "/game.log");
+
 	// (2) Set all board & Validate them + Get algorithm file paths
 	if(!SetAndValidateBoardsAndAlgos())
 	{
@@ -81,7 +84,7 @@ bool TournamentMaker::ParseInput(int argc, char* argv[])
 		return true;
 	}
 
-	std::cout << "Wrong path: " << path.c_str() << std::endl;
+	Logger::log("Wrong path: " + path, Error);
 	return false;
 }
 
@@ -137,22 +140,22 @@ bool TournamentMaker::SetAndValidateBoardsAndAlgos()
 	{
 		if(misBoards)
 		{
-			std::cout << "No board files (*.sboard) looking in path: " << _inputFolder.c_str() << std::endl;
+			Logger::log("No board files (*.sboard) looking in path: " + _inputFolder, Error);
 		}
 		if(misAlgo)
 		{
-			std::cout << "Missing algorithm (dll) files looking in path: " << _inputFolder.c_str() << std::endl;
+			Logger::log("Missing algorithm (dll) files looking in path: " + _inputFolder, Error);
 		}
 		if(misGoodBoard)
 		{
-			std::cout << "Missing good board file (*.sboard) looking in path: " << _inputFolder.c_str() << " (needs at least two)" << std::endl;
+			Logger::log("Missing good board file (*.sboard) looking in path: " + _inputFolder, Error);
 		}
 		return false;
 	}
 
 	for (auto badBoard : badBoardsPaths)
 	{
-		std::cout << "Bad board file in path: " << badBoard << std::endl;
+		Logger::log("Bad board file in path: " + badBoard, Warning);
 	}
 
 	return true;
@@ -172,7 +175,7 @@ bool TournamentMaker::LoadAndInitAlgos()
 		failedLoadPlayer = failedGetPlayer = failedInitPlayer = true;
 		data->name = GameUtils::GetTeamNameFromFileName(data->algoFile);
 
-		std::cout << "Initializing: " << data->name << std::endl;
+		Logger::log("Initializing: " + data->name);
 
 		// Load dynamic library
 		data->handle = LoadLibraryA(data->algoFile.c_str()); // Notice: Unicode compatible version of LoadLibrary
@@ -241,7 +244,7 @@ bool TournamentMaker::LoadAndInitAlgos()
 	// Print accumulated errors
 	for (auto& err : logBuffer)
 	{
-		std::cout << err << std::endl;
+		Logger::log(err), Error;
 	}
 
 	return !_algoDataVec.empty();
@@ -278,7 +281,8 @@ void TournamentMaker::PlayHouse(const std::vector<std::shared_ptr<AlgoData>>& ho
 	// Prelimineries - Play all house games
 	for(const auto& board : _boardsVec)
 	{
-		std::cout << "Now playing on board: " << board.GetName() << " ..." << std::endl << std::endl;
+		Logger::log("Now playing on board: " + board.GetName() + " ...");
+
 		Sleep(HOUSE_PRINT_INTERVAL);
 		std::vector<std::thread> workers;
 		workers.reserve(_threadLimit);
@@ -357,12 +361,10 @@ GameResult TournamentMaker::RunGame(const std::shared_ptr<AlgoData>& playerAData
 	if (!techLossA || !techLossB) //if both did load correctly
 	{
 		//We have both players - let's start playing:
-		GameMaker maker(playerA, playerB, gameBoard);
+		GameMaker maker(playerA, playerB, gameBoard, playerAData->name, playerBData->name);
 		result = maker.RunGame();
 	}
 
-	playerAData->ReleasePlayer();
-	playerBData->ReleasePlayer();
 	return result;
 }
 

@@ -44,6 +44,8 @@ GameResult GameMaker::RunGame()
 		}
 		__except(TRUE)
 		{
+			std::string playerName = currentPlayerDef == PLAYER_A ? _nameA : _nameB;
+			Logger::log(playerName + ": Technical Loss due to exception in attack(). Player was: Player" + (currentPlayerDef == PLAYER_A ? "A" : "B"));
 			TECH_LOSS_CURR_PLAYER
 		}
 
@@ -53,11 +55,15 @@ GameResult GameMaker::RunGame()
 			if(!_board.isInBoard(attackPosition))// Not in board -> technical lost
 			{
 				TECH_LOSS_CURR_PLAYER //TODO: add log for technical loss
+				std::string playerName = currentPlayerDef == PLAYER_A ? _nameA : _nameB;
+				Logger::log(playerName + ": Technical Loss due to attack not in board. Coordinate: (" + std::to_string(attackPosition.row) + std::to_string(attackPosition.col) + std::to_string(attackPosition.depth) + "). Player was: Player" + (currentPlayerDef==PLAYER_A? "A" : "B"));
 			}
 		}
 		else
 		{
 			TECH_LOSS_CURR_PLAYER //TODO: add log for technical loss
+			std::string playerName = currentPlayerDef == PLAYER_A ? _nameA : _nameB;
+			Logger::log(playerName + ": Technical Loss due to end of moves. Player was: Player" + (currentPlayerDef == PLAYER_A ? "A" : "B"));
 		}
 
 		auto attackResultInfo = _board.boardAttack(attackPosition);
@@ -77,7 +83,7 @@ GameResult GameMaker::RunGame()
 			}
 			__except(TRUE)
 			{
-				std::cout << "_playerA->notifyOnAttackResult(" << currentPlayerDef << ", (" << attackPosition.row << ", " << attackPosition.col << ", " << attackPosition.depth << "), " << static_cast<int>(attackResult) << ");" << std::endl;
+				Logger::log("Technical Loss due to exception on call to: _playerA->notifyOnAttackResult(" + std::to_string(currentPlayerDef) + ", (" + std::to_string(attackPosition.row) + ", " + std::to_string(attackPosition.col) + ", " + std::to_string(attackPosition.depth) + "), " + std::to_string(static_cast<int>(attackResult)) + ");", Warning);
 				TECH_LOSS_A
 			}// if a player crashes - give technical win to other player			
 			__try
