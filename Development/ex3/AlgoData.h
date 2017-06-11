@@ -39,17 +39,10 @@ struct AlgoData
 	}
 
 	AlgoData() = default;
-	//AlgoData(const AlgoData& other) 
-	//: name(other.name), algoFile(other.algoFile), handle(other.handle) { GetPlayerUnsafe = other.GetPlayerUnsafe; }
-	//AlgoData& operator=(const AlgoData& other)
-	//{
-	//	name = other.name;
-	//	algoFile = other.algoFile;
-	//	handle = other.handle;
-	//	GetPlayerUnsafe = other.GetPlayerUnsafe;
-	//	return *this;
-	//	// TODO: mutex is not copied - consider a static mutex vector and pass refrences for copies
-	//}
+	AlgoData(const AlgoData&& other) = delete;
+	AlgoData(const AlgoData& other) = delete;
+	AlgoData& operator=(const AlgoData& other) = delete;
+	AlgoData& operator=(const AlgoData&& other) = delete;
 
 private:
 	mutable IAlgo* _instance = nullptr;

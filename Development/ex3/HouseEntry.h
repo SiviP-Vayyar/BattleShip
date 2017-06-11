@@ -1,20 +1,44 @@
 ﻿#pragma once
 
 #include "AlgoData.h"
-#include "GameBoard.h"
 #include "GameResult.h"
 
 class HouseEntry
 {
 public:
-	explicit HouseEntry(const AlgoData& data_, int _wins=0, int _losses=0, int _ptsFor=0, int _ptsAgainst=0, double _time = 0.0)
-	: data(data_), wins(_wins), losses(_losses), ptsFor(_ptsFor), ptsAgainst(_ptsAgainst), time(_time) {}
-	HouseEntry(const HouseEntry& other) 
-	: HouseEntry(other.data, other.wins, other.losses, other.ptsFor, other.ptsAgainst, other.time) {}
-	std::string GetTeamName() const	{ return data.name; }
+	HouseEntry() : HouseEntry("") {}
+	explicit HouseEntry(
+		const std::string& name_,
+		int _wins=0,
+		int _losses=0,
+		int _ptsFor=0,
+		int _ptsAgainst=0,
+		double _time = 0.0)
+		: name(name_)
+		, wins(_wins)
+		, losses(_losses)
+		, ptsFor(_ptsFor)
+		, ptsAgainst(_ptsAgainst)
+		, time(_time) {}
+
+	//HouseEntry(const HouseEntry& other) : HouseEntry(other.name, other.wins, other.losses, other.ptsFor, other.ptsAgainst, other.time) {}
+	//HouseEntry& operator=(const HouseEntry& other)
+	//{ 
+	//	name = other.name;
+	//	wins = other.wins;
+	//	losses = other.losses;
+	//	ptsFor = other.ptsFor;
+	//	ptsAgainst = other.ptsAgainst;
+	//	time = other.time;
+	//	return *this;
+	//}
+
+	HouseEntry& operator=(const HouseEntry& other) = default;
+	std::string GetTeamName() const	{ return name; }
 	void Update(const GameResult& result, int player);
 	
-	const AlgoData& data;
+
+	std::string name;
 	int wins;
 	int losses;
 	int ptsFor;

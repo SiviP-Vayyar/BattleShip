@@ -1,16 +1,16 @@
 #include "MatchGenerator.h"
 
 
-MatchGenerator::MatchGenerator(const std::vector<AlgoData>& house): _players(house)
+MatchGenerator::MatchGenerator(const std::vector<std::shared_ptr<AlgoData>>& house): _players(house)
 {
 	ResetIterators();
 	for (auto& data : house)
 	{
-		_houseEntries.emplace(data.name, data);
+		_houseEntries[data->name] = HouseEntry(data->name);
 	}
 }
 
-std::pair<std::vector<AlgoData>::const_iterator, std::vector<AlgoData>::const_iterator> MatchGenerator::GetNextMatch()
+std::pair<std::vector<std::shared_ptr<AlgoData>>::const_iterator, std::vector<std::shared_ptr<AlgoData>>::const_iterator> MatchGenerator::GetNextMatch()
 {
 	std::lock_guard<std::mutex> guard(matches_lock);
 	auto ret = std::make_pair(_playerAiter, _playerBiter);
@@ -34,7 +34,7 @@ std::pair<std::vector<AlgoData>::const_iterator, std::vector<AlgoData>::const_it
 	return ret;
 }
 
-boolean MatchGenerator::IsValidMatch(const std::vector<AlgoData>::const_iterator& playerAiter, const std::vector<AlgoData>::const_iterator& playerBiter) const
+boolean MatchGenerator::IsValidMatch(const std::vector<std::shared_ptr<AlgoData>>::const_iterator& playerAiter, const std::vector<std::shared_ptr<AlgoData>>::const_iterator& playerBiter) const
 {
 	return playerAiter != _players.cend() && playerBiter != _players.cend();
 }

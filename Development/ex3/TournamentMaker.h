@@ -22,11 +22,11 @@ public:
 
 	TournamentMaker(const TournamentMaker&) = delete;
 	TournamentMaker& operator= (const TournamentMaker&) = delete;
-	void PlayHouse(const std::vector<AlgoData>& house) const;
+	void PlayHouse(const std::vector<std::shared_ptr<AlgoData>>& house) const;
 	void RunTournament() const;
 
 	static void RunGames(const GameBoard& board, MatchGenerator* matches);
-	static GameResult RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard);
+	static GameResult RunGame(const std::shared_ptr<AlgoData>& playerAData, const std::shared_ptr<AlgoData>& playerBData, const GameBoard& gameBoard);
 	static GameBoard::BoardErrors ValidateBoard(const GameBoard& gameBoard);
 
 	bool isInitSuccess() const { return _initSuccess; }
@@ -34,7 +34,7 @@ public:
 private:
 	std::string _inputFolder;
 	std::string _boardFilePath;
-	std::vector<AlgoData> _algoDataVec;
+	std::vector<std::shared_ptr<AlgoData>> _algoDataVec;
 	std::vector<GameBoard> _boardsVec;
 	std::vector<std::string> _dllNamesVec;
 

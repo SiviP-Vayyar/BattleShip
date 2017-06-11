@@ -39,11 +39,11 @@ TournamentMaker::~TournamentMaker()
 {
 	for (auto& data : _algoDataVec)
 	{
-		if (data.handle != nullptr)
+		if (data->handle != nullptr)
 		{
 			try
 			{
-				FreeLibrary(data.handle);
+				FreeLibrary(data->handle);
 			}
 			catch(...){ }
 		}
@@ -164,77 +164,77 @@ bool TournamentMaker::LoadAndInitAlgos()
 	GameBoard dummyBoard(GameBoard::newEmptyRawBoard(DUMMY_DIMENTION, DUMMY_DIMENTION, DUMMY_DIMENTION), DUMMY_DIMENTION, DUMMY_DIMENTION, DUMMY_DIMENTION); //TODO: better way?
 	std::vector<std::string> logBuffer;
 
-	for(auto algoFile : _dllNamesVec)
+	for(auto& algoFile : _dllNamesVec)
 	{
-		_algoDataVec.emplace_back();
-		AlgoData& data = _algoDataVec[_algoDataVec.size() - 1];
-		data.algoFile = algoFile;
+		AlgoData* data = new AlgoData();
+		auto dataShared = std::shared_ptr<AlgoData>(data);
+		data->algoFile = algoFile;
 		failedLoadPlayer = failedGetPlayer = failedInitPlayer = true;
-		data.name = GameUtils::GetTeamNameFromFileName(data.algoFile);
+		data->name = GameUtils::GetTeamNameFromFileName(data->algoFile);
 
-		std::cout << "Initializing: " << data.name << std::endl;
+		std::cout << "Initializing: " << data->name << std::endl;
 
 		// Load dynamic library
-		data.handle = LoadLibraryA(data.algoFile.c_str()); // Notice: Unicode compatible version of LoadLibrary
-		if(data.handle)
+		data->handle = LoadLibraryA(data->algoFile.c_str()); // Notice: Unicode compatible version of LoadLibrary
+		if(data->handle)
 		{
 			failedLoadPlayer = false;
 			// GetAlgorithm function - assume not thread safe when loading. use only GetPlayer as thread safe wrapper.
-			data.GetPlayerUnsafe = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(data.handle, GET_ALGORITHM_STR));
-			if(data.GetPlayerUnsafe)
+			data->GetPlayerUnsafe = reinterpret_cast<GetAlgoFuncType>(GetProcAddress(data->handle, GET_ALGORITHM_STR));
+			if(data->GetPlayerUnsafe)
 			{
 				try
 				{
 					failedGetPlayer = false;
 					// See if player is valid - so he can enter the tournament
-					IAlgo* player = data.AcquirePlayer();
+					IAlgo* player = data->AcquirePlayer();
 
 					// Set boards for player - Sanity Check
 					GameBoardData boardData(PLAYER_A, dummyBoard);
 					player->setPlayer(PLAYER_A);
 					player->setBoard(boardData);
-					data.ReleasePlayer();
-					data.ClearPlayer();
+					data->ReleasePlayer();
+					data->ClearPlayer();
 					failedInitPlayer = false;
 				}
 				catch(std::exception ex)
 				{
-					logBuffer.push_back("Exception handling player: " + data.algoFile + "\tWhat: " + ex.what());
+					logBuffer.push_back("Exception handling player: " + data->algoFile + "\tWhat: " + ex.what());
 				}
 			}
 			else
 			{
-				logBuffer.push_back("Failed resolving GetAlgorithm: " + data.algoFile);
+				logBuffer.push_back("Failed resolving GetAlgorithm: " + data->algoFile);
 			}
 			if(failedGetPlayer || failedInitPlayer)
 			{
 				if (failedGetPlayer)
 				{
-					logBuffer.push_back(data.name +  ": failedGetPlayer");
+					logBuffer.push_back(data->name +  ": failedGetPlayer");
 				}
 				if(failedInitPlayer)
 				{
-					logBuffer.push_back(data.name + ": failedInitPlayer");
+					logBuffer.push_back(data->name + ": failedInitPlayer");
 				}
 				
 				try
 				{
-					FreeLibrary(data.handle);
+					FreeLibrary(data->handle);
 				}
 				catch(std::exception ex)
 				{
-					logBuffer.push_back("Exception FreeLibrary: " + data.algoFile + "\tWhat: " + ex.what());
+					logBuffer.push_back("Exception FreeLibrary: " + data->algoFile + "\tWhat: " + ex.what());
 				}
 			}
 		}
 		else
 		{
-			logBuffer.push_back("Cannot load dll: " + data.algoFile);
+			logBuffer.push_back("Cannot load dll: " + data->algoFile);
 		}
 
-		if(failedLoadPlayer || failedGetPlayer || failedInitPlayer) // Good player
+		if(!(failedLoadPlayer || failedGetPlayer || failedInitPlayer)) // Good player
 		{
-			_algoDataVec.pop_back();
+			_algoDataVec.push_back(dataShared);
 		}
 	}
 
@@ -252,11 +252,11 @@ void TournamentMaker::RunGames(const GameBoard& board, MatchGenerator* matches)
 {
 	for (auto match = matches->GetNextMatch(); matches->IsValidMatch(match.first, match.second); match = matches->GetNextMatch())
 	{
-		auto& dataA = match.first;
-		auto& dataB = match.second;
+		auto& dataA = *(match.first);
+		auto& dataB = *(match.second);
 		if (dataA->name != dataB->name)
 		{
-			GameResult result = RunGame(*dataA, *dataB, board);
+			GameResult result = RunGame(dataA, dataB, board);
 			matches->updateHouseEntry(dataA->name, result, PLAYER_A);
 			matches->updateHouseEntry(dataB->name, result, PLAYER_B);
 		}
@@ -268,7 +268,7 @@ void TournamentMaker::RunGames(const GameBoard& board, MatchGenerator* matches)
  * 2) As Player B
  * This way he has no advantage in starting against him
  */
-void TournamentMaker::PlayHouse(const std::vector<AlgoData>& house) const
+void TournamentMaker::PlayHouse(const std::vector<std::shared_ptr<AlgoData>>& house) const
 {
 	// match generator handles player matching and scoring thread safe
 	MatchGenerator matches(house);
@@ -307,7 +307,7 @@ void TournamentMaker::RunTournament() const
 	PlayHouse(_algoDataVec);
 }
 
-GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData& playerBData, const GameBoard& gameBoard)
+GameResult TournamentMaker::RunGame(const std::shared_ptr<AlgoData>& playerAData, const std::shared_ptr<AlgoData>& playerBData, const GameBoard& gameBoard)
 {
 	GameResult result;
 	IAlgo *playerA, *playerB;
@@ -319,7 +319,7 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 
 	try
 	{
-		playerA = playerAData.AcquirePlayer();
+		playerA = playerAData->AcquirePlayer();
 		GameBoardData boardData(PLAYER_A, gameBoard);
 		playerA->setPlayer(PLAYER_A);
 		playerA->setBoard(boardData);
@@ -331,7 +331,7 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 	
 	try
 	{
-		playerB = playerBData.AcquirePlayer();
+		playerB = playerBData->AcquirePlayer();
 		GameBoardData boardData(PLAYER_B, gameBoard);
 		playerB->setPlayer(PLAYER_B);
 		playerB->setBoard(boardData);
@@ -359,8 +359,8 @@ GameResult TournamentMaker::RunGame(const AlgoData& playerAData, const AlgoData&
 		result = maker.RunGame();
 	}
 
-	playerAData.ReleasePlayer();
-	playerBData.ReleasePlayer();
+	playerAData->ReleasePlayer();
+	playerBData->ReleasePlayer();
 	return result;
 }
 

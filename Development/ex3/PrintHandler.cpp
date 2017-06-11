@@ -13,15 +13,13 @@ void PrintHandler::cleanOutput()
 
 void PrintHandler::PrintHouseStandings(const std::vector<HouseEntry>& standings)
 {
-	// std::sort(standings.begin(), standings.end(), HouseEntry::Compare()); //TODO: sort with array of indices
-
 	size_t countWidth = standings.size() + 2;
 	size_t nameWidth = std::max_element(
 		standings.cbegin(), standings.cend(), 
 		[](const HouseEntry& lhs, const HouseEntry& rhs) -> bool {
-			return lhs.data.name.size() < rhs.data.name.size();
+			return lhs.name.size() < rhs.name.size();
 		}
-	)->data.name.size() + 2;
+	)->name.size() + 2;
 
 	size_t digits = static_cast<size_t>(log10(static_cast<double>(PLAYING_ROUNDS * 2))) + 1;
 	size_t balanceWidth = digits + 2;
@@ -53,7 +51,7 @@ void PrintHandler::PrintHouseStandings(const std::vector<HouseEntry>& standings)
 	{
 		double precentage = static_cast<double>(line.wins) / (line.wins + line.losses);
 		std::cout	<< std::left << std::setw(countWidth)	<< std::to_string(place++) + '.'
-					<< std::left << std::setw(nameWidth)	<< line.data.name
+					<< std::left << std::setw(nameWidth)	<< line.name
 					<< std::left << std::setw(balanceWidth)	<< line.wins
 					<< std::left << std::setw(balanceWidth)	<< line.losses
 					<< std::left << std::setw(percentWidth)	<< std::setprecision(percentWidth - 2) << precentage * 100
@@ -73,6 +71,7 @@ void PrintHandler::PrintHouseStandings(const std::map<std::string, HouseEntry>& 
 	{
 		vec.push_back(val.second);
 	}
+	std::sort(vec.begin(), vec.end(), HouseEntry::Compare());
 	PrintHouseStandings(vec);
 }
 
