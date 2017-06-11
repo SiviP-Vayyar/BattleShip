@@ -1,4 +1,6 @@
 #include "PlayerSmart.h"
+#include "GameUtils.h"
+#include "HeatMap.h"
 
 
 /* The algorithm is telling us what was the last move of the game*/

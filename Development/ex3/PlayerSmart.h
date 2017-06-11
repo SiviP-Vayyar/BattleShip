@@ -3,8 +3,6 @@
 #include "IBattleshipGameAlgo.h"
 #include "GameBoard.h"
 #include "PlayerBase.h"
-#include "GameUtils.h"
-#include "HeatMap.h"
 #include <vector>
 #include <algorithm>  
 

@@ -2,7 +2,6 @@
 
 #include "IBattleshipGameAlgo.h"
 #include "GameBoard.h"
-#include "GameResult.h"
 #include <vector>
 
 /* A static vector to hold all instances of algo in the dll

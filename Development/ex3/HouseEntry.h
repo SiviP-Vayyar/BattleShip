@@ -21,23 +21,10 @@ public:
 		, ptsAgainst(_ptsAgainst)
 		, time(_time) {}
 
-	//HouseEntry(const HouseEntry& other) : HouseEntry(other.name, other.wins, other.losses, other.ptsFor, other.ptsAgainst, other.time) {}
-	//HouseEntry& operator=(const HouseEntry& other)
-	//{ 
-	//	name = other.name;
-	//	wins = other.wins;
-	//	losses = other.losses;
-	//	ptsFor = other.ptsFor;
-	//	ptsAgainst = other.ptsAgainst;
-	//	time = other.time;
-	//	return *this;
-	//}
-
 	HouseEntry& operator=(const HouseEntry& other) = default;
 	std::string GetTeamName() const	{ return name; }
 	void Update(const GameResult& result, int player);
 	
-
 	std::string name;
 	int wins;
 	int losses;
