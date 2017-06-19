@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <array>
 #include <functional>
 
 template <size_t DIMENSIONS>
@@ -23,6 +24,12 @@ public:
     template<class Func, class G = typename std::result_of<Func(T)>::type>
     std::map<G, std::vector<groupOfCoords>> groupValues(Func mappingFunc) {
         std::map<G, std::vector<groupOfCoords>> groups;
+        
+        for (int i = 0 ; i < m.size() ;) {
+            auto layer = m[i];
+            auto groupsForLayer = layer.groupValues(mappingFunc);
+            i++; // TODO: fill in implementation
+        }
         
         // TODO: change to real implementation - copied from 1d specialization
         // for (int i = 0 ; i < m.size() ;) {
@@ -61,12 +68,12 @@ public:
         std::map<G, std::vector<groupOfCoords>> groups;
         
         for (int i = 0 ; i < m.size() ;) {
-            auto key = mappingFunc(m[i]);
+            G key = mappingFunc(m[i]);
             groupOfCoords group;
-            for (; i < m.size() && m[i] == key ; i++) {
-                group.emplace_back(i);
+            for (; i < m.size() && mappingFunc(m[i]) == key ; i++) {
+                group.emplace_back(coord{{i}});
             }
-            groups[key].push_back(std::move(group));
+            groups[key].emplace_back(std::move(group));
         }
         
         return groups;
